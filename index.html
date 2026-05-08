@@ -192,19 +192,6 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
 .typing-entry{display:flex;align-items:center;gap:8px;padding:5px 10px;background:var(--card);border:1px solid var(--border);border-radius:4px;font-size:11px}
 
 
-/* DINO RUNNER */
-#dino-stage{position:relative;min-height:190px;background:linear-gradient(#f7f4e8,#fffaf0);border:2px solid #3b2f22;border-radius:10px;overflow:hidden;margin-bottom:12px;touch-action:manipulation}
-#dino-ground{display:none}
-.dino-lane{position:absolute;left:0;right:0;height:62px;border-bottom:1px dashed rgba(59,47,34,.35)}
-.dino-lane-name{position:absolute;left:8px;top:5px;font-size:10px;font-weight:bold;color:#3b2f22;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.dino-runner{position:absolute;width:32px;height:32px;font-size:28px;line-height:32px;text-align:center;z-index:2}
-.dino-ob{position:absolute;bottom:12px;font-size:26px;line-height:26px;z-index:1}
-.dino-hearts{position:absolute;left:8px;top:20px;font-size:13px;letter-spacing:2px;color:#d6336c}
-.dino-lane-ground{position:absolute;left:0;right:0;bottom:10px;height:3px;background:#3b2f22}
-#dino-info{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;font-size:11px;color:var(--muted)}
-.dino-stat{padding:5px 9px;background:var(--card);border:1px solid var(--border);border-radius:12px}
-#dino-jump{display:none;width:100%;padding:16px;font-size:16px;margin-bottom:10px}
-@media(max-width:768px){#dino-jump{display:block}}
 .bb-help{font-size:11px;color:var(--muted);line-height:1.55;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:8px 10px;margin-bottom:10px}
 .bb-my-secret{font-size:12px;color:var(--accent);font-weight:bold;margin-bottom:8px}
 
@@ -240,6 +227,84 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
   .hcrumb{display:none}
   #mobile-chat-preview{display:flex}
 }
+
+/* ======= TRENDY UI OVERHAUL ======= */
+/* 게임 카드 */
+.gcard{background:linear-gradient(145deg,var(--card),rgba(8,13,23,.7));transition:all .2s}
+.gcard:hover,.gcard.sel{box-shadow:0 8px 28px rgba(56,217,169,.15),0 2px 8px rgba(0,0,0,.4);transform:translateY(-3px) !important}
+.gcard.sel{background:rgba(56,217,169,.07) !important}
+.gemo{font-size:26px !important;margin-bottom:8px}
+/* 턴 표시 */
+.turn-ind{background:linear-gradient(135deg,rgba(56,217,169,.1),rgba(77,171,247,.04)) !important;border:1px solid rgba(56,217,169,.3) !important;border-left:3px solid var(--accent) !important;box-shadow:0 0 14px rgba(56,217,169,.08)}
+.turn-ind.wait{background:rgba(84,106,138,.07) !important;border-color:rgba(84,106,138,.2) !important;border-left-color:var(--muted) !important;box-shadow:none !important}
+/* 승리 배너 */
+.winner-banner{background:linear-gradient(135deg,rgba(56,217,169,.14),rgba(77,171,247,.08)) !important;border:1px solid rgba(56,217,169,.45) !important;box-shadow:0 0 36px rgba(56,217,169,.18) !important;animation:wbIn .55s cubic-bezier(.34,1.56,.64,1)}
+@keyframes wbIn{from{opacity:0;transform:scale(.88) translateY(12px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.wtext{font-size:22px !important;letter-spacing:.5px}
+/* 버튼 */
+.btn-primary{box-shadow:0 4px 14px rgba(56,217,169,.25) !important;letter-spacing:.5px;transition:all .18s}
+.btn-primary:hover{box-shadow:0 6px 20px rgba(56,217,169,.4) !important;transform:translateY(-1px)}
+.btn:active{transform:translateY(1px) scale(.98) !important;box-shadow:none !important}
+/* 점수 카드 */
+.sc-card{background:linear-gradient(145deg,var(--card),rgba(8,13,23,.4)) !important;border-radius:10px !important;position:relative;overflow:hidden;transition:transform .2s}
+.sc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),transparent)}
+.sc-val{font-size:26px !important}
+/* 타이머 바 */
+#timer-fill{background:linear-gradient(90deg,var(--accent),var(--blue)) !important;border-radius:8px !important}
+/* RPS */
+.rps-btn{font-size:38px !important;width:90px !important;height:90px !important;border-radius:14px !important;transition:all .18s !important}
+.rps-btn:hover{transform:scale(1.1) translateY(-3px) !important;box-shadow:0 8px 24px rgba(56,217,169,.2) !important}
+.rps-btn.selected{box-shadow:0 0 22px rgba(56,217,169,.35) !important;transform:scale(1.06) !important}
+/* OX */
+.ox-btn{transition:all .2s !important;font-size:38px !important}
+.ox-btn:hover{transform:scale(1.06) !important;box-shadow:0 4px 22px rgba(56,217,169,.15) !important}
+.ox-btn.picked{box-shadow:0 0 22px rgba(56,217,169,.32) !important;transform:scale(1.04) !important}
+/* 텔레파시 */
+.tp-opt{transition:all .18s !important;font-size:14px !important;padding:15px 8px !important;border-radius:9px !important}
+.tp-opt:hover{transform:translateY(-2px) !important;box-shadow:0 4px 16px rgba(56,217,169,.12) !important}
+.tp-opt.selected{box-shadow:0 0 18px rgba(56,217,169,.28) !important}
+/* 끝말잇기 */
+.cword{font-size:42px !important}
+.wchip{border-radius:20px !important;animation:chipIn .28s cubic-bezier(.34,1.56,.64,1)}
+@keyframes chipIn{from{opacity:0;transform:scale(.75)}to{opacity:1;transform:scale(1)}}
+/* 초성 */
+.cho-chars{font-size:46px !important;letter-spacing:14px !important;text-shadow:0 0 24px rgba(56,217,169,.35)}
+.cho-display{background:linear-gradient(135deg,var(--card),rgba(8,13,23,.5)) !important}
+/* 타이핑 */
+#typing-text{font-size:19px !important;letter-spacing:.3px;border-left:3px solid var(--accent) !important;background:linear-gradient(135deg,var(--card),rgba(8,13,23,.4)) !important}
+/* 야구 */
+.bb-row{border-radius:6px !important;transition:background .15s}
+.bb-row:hover{background:rgba(56,217,169,.05) !important}
+.bb-num{width:50px !important;font-size:20px !important}
+/* 지뢰 */
+.mcell{border-radius:5px !important;transition:all .1s}
+.mcell:hover:not(.revealed){border-color:var(--accent) !important}
+.mcell.mmine{animation:explode .3s ease}
+@keyframes explode{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
+/* 오목 */
+#omok-board{box-shadow:0 8px 32px rgba(0,0,0,.5) !important}
+/* 빙고 */
+.bcell{width:52px !important;height:52px !important;font-size:15px !important;border-radius:7px !important;transition:all .2s}
+.bcell.marked{background:rgba(56,217,169,.18) !important;box-shadow:0 0 10px rgba(56,217,169,.15) !important}
+.bcell.bline{background:rgba(56,217,169,.32) !important;box-shadow:0 0 14px rgba(56,217,169,.28) !important}
+.b-col-hdr{width:52px !important;height:28px !important;font-size:15px !important;text-shadow:0 0 12px rgba(56,217,169,.6)}
+#bingo-myboard{gap:4px !important}
+.bingo-dot{width:20px !important;height:20px !important;transition:all .3s}
+.bingo-dot.won{background:var(--accent) !important;box-shadow:0 0 10px rgba(56,217,169,.55) !important;animation:dotPop .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes dotPop{from{transform:scale(0)}to{transform:scale(1)}}
+.bcalled-chip{width:34px !important;height:34px !important;font-size:12px !important;animation:chipIn .28s cubic-bezier(.34,1.56,.64,1);box-shadow:0 0 8px rgba(56,217,169,.3) !important}
+.bnum-btn{width:38px !important;height:38px !important;border-radius:6px !important;transition:all .12s}
+.bnum-btn:hover:not(:disabled):not(.bcalled){box-shadow:0 0 10px rgba(56,217,169,.2);transform:scale(1.08)}
+/* 야구 SBO 패널 */
+.bb-sbo-panel{display:flex;gap:10px;padding:10px 14px;background:linear-gradient(135deg,rgba(17,29,53,.9),var(--card));border:1px solid var(--border);border-radius:8px;margin-bottom:12px;align-items:center;flex-wrap:wrap}
+.bb-sbo-group{display:flex;flex-direction:column;align-items:center;gap:5px}
+.bb-sbo-label{font-size:9px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase}
+.bb-sbo-dots{display:flex;gap:4px}
+.bb-sbo-dot{width:13px;height:13px;border-radius:50%;border:1.5px solid;transition:all .2s}
+.bb-s-dot{border-color:#ffa94d}.bb-s-dot.on{background:#ffa94d;box-shadow:0 0 7px rgba(255,169,77,.6)}
+.bb-b-dot{border-color:#4dabf7}.bb-b-dot.on{background:#4dabf7;box-shadow:0 0 7px rgba(77,171,247,.6)}
+.bb-o-dot{border-color:#ff6b6b}.bb-o-dot.on{background:#ff6b6b;box-shadow:0 0 7px rgba(255,107,107,.6)}
+
 </style>
 </head>
 <body>
@@ -365,7 +430,6 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
           <div class="gcard" id="gc-telepathy" onclick="selectGame('telepathy')"><div class="gemo">🔮</div><div class="gname">텔레파시</div></div>
           <div class="gcard" id="gc-rps" onclick="selectGame('rps')"><div class="gemo">✊</div><div class="gname">가위바위보</div></div>
           <div class="gcard" id="gc-typing" onclick="selectGame('typing')"><div class="gemo">⌨️</div><div class="gname">타이핑 경주</div></div>
-          <div class="gcard" id="gc-dino" onclick="selectGame('dino')"><div class="gemo">🦖</div><div class="gname">공룡 달리기</div></div>
           <div class="gcard" id="gc-ox" onclick="selectGame('ox')"><div class="gemo">⭕</div><div class="gname">OX 퀴즈</div></div>
           <div class="gcard" id="gc-bingo" onclick="selectGame('bingo')"><div class="gemo">🎯</div><div class="gname">빙고</div></div>
         </div>
@@ -462,18 +526,6 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
         <div id="typing-win" class="winner-banner" style="display:none"><div class="wtext" id="typing-win-text"></div></div>
       </div>
 
-      <div id="view-dino" class="view">
-        <div class="ghdr"><div><div class="vtitle">🦖 공룡 달리기</div><div class="vsub">각자 한 줄씩 달립니다. 하트 2개로 장애물을 피하고 마지막까지 살아남으세요.</div></div><button class="btn btn-secondary" onclick="backToLobby()">나가기</button></div>
-        <div id="dino-info"></div>
-        <div id="dino-stage" tabindex="0" onclick="dinoJump()">
-          <div id="dino-ground"></div>
-          <div id="dino-runners"></div>
-          <div id="dino-obstacles"></div>
-        </div>
-        <button id="dino-jump" class="btn btn-primary" onclick="dinoJump()">점프</button>
-        <div id="dino-scores" class="scoreboard"></div>
-        <div id="dino-win" class="winner-banner" style="display:none"><div class="wtext" id="dino-win-text"></div></div>
-      </div>
 
       <div id="view-ox" class="view">
         <div class="ghdr"><div><div class="vtitle">⭕ OX 퀴즈</div></div><button class="btn btn-secondary" onclick="backToLobby()">나가기</button></div>
@@ -491,6 +543,7 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
 
     <div id="view-bingo" class="view">
       <div class="ghdr"><div><div class="vtitle">🎯 빙고</div><div class="vsub">3줄 빙고 완성 시 승리! 내 차례에 1~25 중 하나를 선언하세요.</div></div><button class="btn btn-secondary" onclick="backToLobby()">나가기</button></div>
+      <div id="bingo-status" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;min-height:38px"></div>
       <div id="bingo-turn" class="turn-ind wait" style="margin-bottom:10px">대기 중</div>
       <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
         <div>
@@ -546,8 +599,6 @@ let _flagMode=false;
 let _leftCurrentGame=false;
 const TURN_MS=10000;
 let _timerAnim=null, _timeoutKey='';
-let _dinoRAF=null, _dinoJumpAt=0, _dinoEndKey='', _dinoHitCooldown=0;
-let _dinoCurrentState=null;
 
 // Constants / DB
 const CHOSUNG_DB=[
@@ -652,12 +703,7 @@ function enterRoom(){
   });
   db.ref(`rooms/${roomId}/chat`).limitToLast(50).on('child_added', snap=>appendChat(snap.val()));
   sysChat(`${myName}님이 참여했습니다.`);
-  // 공룡 달리기 키보드 점프 (스페이스바 / 위 화살표)
-  document.addEventListener('keydown', e=>{
-    if((e.code==='Space'||e.code==='ArrowUp')&&_currentType==='dino'){
-      e.preventDefault(); dinoJump();
-    }
-  });
+
   
   // Mobile setup
   if(window.innerWidth<=768){ q('chatpanel').classList.remove('open'); q('sb').classList.remove('open'); }
@@ -703,7 +749,7 @@ function navTo(name){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   q('view-'+name)?.classList.add('active');
 }
-function stopAllTimers(){ clearInterval(_timer); clearInterval(_wTimer); clearInterval(_choTimer); clearInterval(_tpTimer); clearInterval(_oxTimer); clearInterval(_typingTimer); if(_dinoRAF){cancelAnimationFrame(_dinoRAF); _dinoRAF=null;} }
+function stopAllTimers(){ clearInterval(_timer); clearInterval(_wTimer); clearInterval(_choTimer); clearInterval(_tpTimer); clearInterval(_oxTimer); clearInterval(_typingTimer); }
 function backToLobby(){
   stopAllTimers(); hideCommonTimer(); renderControls(null);
   _leftCurrentGame=true;
@@ -867,7 +913,7 @@ function restartGame(){
   let ap=[...new Set([...( _currentGame.activePlayers||[]), ...Object.keys(_currentGame.pendingNextRound||{})])].filter(u=>players[u]?.online);
   if(ap.length<1){alert('참가자가 없습니다.');return;}
   if(_currentType==='omok') return startOmokActual(ap);
-  const inits={mine:initMine, word:initWord, chosung:initChosung, baseball:initBaseball, telepathy:initTelepathy, rps:initRPS, typing:initTyping, dino:initDino, ox:initOX, bingo:initBingo};
+  const inits={mine:initMine, word:initWord, chosung:initChosung, baseball:initBaseball, telepathy:initTelepathy, rps:initRPS, typing:initTyping, ox:initOX, bingo:initBingo};
   db.ref(`rooms/${roomId}/game/state`).set(inits[_currentType](ap));
 }
 function setMineDifficulty(d){ db.ref(`rooms/${roomId}/prep/mine`).set({difficulty:d}); }
@@ -936,7 +982,7 @@ function hostStartActualGame() {
   if(activePlayers.length < 1) { alert("최소 1명의 참가자가 필요합니다."); return; }
   if(_currentType==='baseball' && activePlayers.length < 2) { alert("숫자야구는 최소 2명부터 가능합니다."); return; }
   
-  const inits = {mine:initMine, word:initWord, chosung:initChosung, baseball:initBaseball, telepathy:initTelepathy, rps:initRPS, typing:initTyping, dino:initDino, ox:initOX, bingo:initBingo};
+  const inits = {mine:initMine, word:initWord, chosung:initChosung, baseball:initBaseball, telepathy:initTelepathy, rps:initRPS, typing:initTyping,  ox:initOX, bingo:initBingo};
   const state = inits[_currentType](activePlayers);
   db.ref(`rooms/${roomId}/game/state`).set(state);
 }
@@ -971,7 +1017,7 @@ function handleGameState() {
   updateSpectatorBanner(g);
   renderControls(g);
 
-  const R = {omok:renderOmok, mine:renderMine, word:renderWord, chosung:renderChosung, baseball:renderBaseball, telepathy:renderTelepathy, rps:renderRPS, typing:renderTyping, dino:renderDino, ox:renderOX, bingo:renderBingo};
+  const R = {omok:renderOmok, mine:renderMine, word:renderWord, chosung:renderChosung, baseball:renderBaseball, telepathy:renderTelepathy, rps:renderRPS, typing:renderTyping, ox:renderOX, bingo:renderBingo};
   if(R[_currentType]) R[_currentType](g);
 }
 
@@ -1358,23 +1404,30 @@ function initBaseball(ap){
 }
 function renderBaseball(s){
   hideCommonTimer(); renderControls(s); if(isEndedState(s)) addTotalsOnce(s);
-  // 야구 스코어보드 시각화
+  // 야구 스코어보드 시각화 (SBO 포함)
   const sbEl=document.getElementById('bb-scoreboard-vis');
   if(sbEl){
-    const guesses=s.guesses||[];
-    const innings=s.maxInnings||9;
-    let html='';
-    // 이닝별 결과 표시
     const ap=s.activePlayers||[];
-    html+=ap.map(u=>`<div class="bb-inning-block">
-      <div class="bb-inning-num" style="color:${getPC(u)}">${esc(players[u]?.name?.slice(0,3)||'')}</div>
-      <div style="font-size:14px;font-weight:bold;color:${getPC(u)}">${s.scores?.[u]||0}pt</div>
+    const guesses=s.guesses||[];
+    const lastGuess=guesses.filter(g=>!g.timeout).slice(-1)[0];
+    const ls=lastGuess?lastGuess.strikes:0, lb=lastGuess?lastGuess.balls:0, lo=lastGuess?lastGuess.outs:0;
+    const innings=s.maxInnings||9;
+    let html='<div class="bb-sbo-panel">';
+    // 플레이어 점수
+    html+=ap.map(u=>`<div style="display:flex;align-items:center;gap:6px;padding:5px 10px;background:var(--bg);border-radius:6px">
+      <span style="font-size:10px;color:${getPC(u)};font-weight:bold">${esc(players[u]?.name?.slice(0,4)||'')}</span>
+      <span style="font-size:18px;font-weight:bold;color:${getPC(u)}">${s.scores?.[u]||0}<span style="font-size:10px;color:var(--muted)">pt</span></span>
     </div>`).join('');
-    // 현재 이닝
-    html+=`<div class="bb-inning-block" style="border-color:var(--accent)">
-      <div class="bb-inning-num" style="color:var(--accent)">이닝</div>
-      <div style="font-size:14px;font-weight:bold;color:var(--accent)">${s.inning||1}/${innings}</div>
-    </div>`;
+    // S/B/O
+    if(!s.winner&&s.phase==='playing'){
+      html+=`<div style="display:flex;gap:10px;margin-left:auto">
+        <div class="bb-sbo-group"><div class="bb-sbo-label">S</div><div class="bb-sbo-dots">${[0,1,2].map(i=>`<div class="bb-sbo-dot bb-s-dot${i<ls?' on':''}"></div>`).join('')}</div></div>
+        <div class="bb-sbo-group"><div class="bb-sbo-label">B</div><div class="bb-sbo-dots">${[0,1,2,3].map(i=>`<div class="bb-sbo-dot bb-b-dot${i<lb?' on':''}"></div>`).join('')}</div></div>
+        <div class="bb-sbo-group"><div class="bb-sbo-label">O</div><div class="bb-sbo-dots">${[0,1,2].map(i=>`<div class="bb-sbo-dot bb-o-dot${i<lo?' on':''}"></div>`).join('')}</div></div>
+        <div class="bb-sbo-group"><div class="bb-sbo-label">이닝</div><div style="font-size:18px;font-weight:bold;color:var(--accent)">${s.inning||1}<span style="font-size:11px;color:var(--muted)">/${innings}</span></div></div>
+      </div>`;
+    }
+    html+='</div>';
     sbEl.innerHTML=html;
   }
   const active=(s.activePlayers||[]);
@@ -1688,182 +1741,6 @@ function submitTyping(){
 
 
 // =========================================================
-// 9. DINO RUNNER (공룡 달리기)
-// =========================================================
-function initDino(ap){
-  const scores={}, runners={};
-  ap.forEach(u=>{ scores[u]=0; runners[u]={alive:true, lives:2, deadAt:null, passed:0, score:0, invincibleUntil:0}; });
-  const now=Date.now();
-  return {phase:'playing', activePlayers:ap, startedAt:now+1200, seed:Math.floor(Math.random()*999999), runners, scores, ended:false};
-}
-function dinoRand(seed, i){
-  const x=Math.sin((seed||1)*999 + i*77.7)*10000;
-  return x-Math.floor(x);
-}
-function dinoSpeed(t){ return 175 + Math.min(420, Math.max(0,t)*10); }
-function dinoObstacles(s, elapsed){
-  const obs=[];
-  let dist=420;
-  for(let i=0;i<90;i++){
-    const gap=Math.max(125, 245 - elapsed*2) + Math.floor(dinoRand(s.seed, i)*95);
-    dist += gap;
-    const type=dinoRand(s.seed, i+200)>0.72?'🌵🌵':'🌵';
-    obs.push({i, x:dist - dinoSpeed(elapsed)*elapsed, type});
-  }
-  return obs;
-}
-function dinoJump(){
-  if(_currentType!=='dino' || !_currentGame || _currentGame.phase!=='playing' || !isActivePl()) return;
-  const me=_currentGame.runners?.[myUid];
-  if(!me || !me.alive) return;
-  const now=Date.now();
-  const p=(now-_dinoJumpAt)/680;
-  if(!_dinoJumpAt || p>=1) _dinoJumpAt=now;
-}
-function dinoMyY(){
-  if(!_dinoJumpAt) return 0;
-  const p=(Date.now()-_dinoJumpAt)/680;
-  if(p>=1) return 0;
-  return Math.sin(Math.PI*p)*82;
-}
-function renderDino(s){
-  _dinoCurrentState=s;
-  renderControls(s); if(isEndedState(s)) addTotalsOnce(s);
-  const stage=q('dino-stage'), runnersEl=q('dino-runners');
-  if(!stage||!runnersEl) return;
-  const laneH=62;
-  const ap=s.activePlayers||[];
-  stage.style.height=Math.max(ap.length*laneH+40,190)+'px';
-
-  if(s.ended||s.phase==='ended'){
-    if(_dinoRAF){cancelAnimationFrame(_dinoRAF);_dinoRAF=null;}
-    q('dino-win').style.display='block';
-    const best=Object.entries(s.scores||{}).sort((a,b)=>(b[1]||0)-(a[1]||0))[0];
-    q('dino-win-text').textContent=best?`🦖 ${players[best[0]]?.name||'플레이어'} 승리!`:'공룡 달리기 종료!';
-    renderScores('dino-scores',ap,s.scores);
-    return;
-  }
-  q('dino-win').style.display='none';
-  renderScores('dino-scores',ap,s.scores);
-
-  // 레인 DOM 구조 생성/재생성 (플레이어 수 변경 시에만)
-  if(runnersEl.querySelectorAll('.dino-lane').length!==ap.length){
-    runnersEl.innerHTML=ap.map((u,idx)=>{
-      const top=10+idx*laneH;
-      return `<div class="dino-lane" id="dlane-${u}" style="top:${top}px">
-        <div class="dino-lane-name" style="color:${getPC(u)}">${esc(players[u]?.name||'')}</div>
-        <div id="dh-${u}" class="dino-hearts"></div>
-        <div class="dino-lane-ground"></div>
-        <div id="do-${u}" style="position:absolute;left:0;right:0;top:0;bottom:0;pointer-events:none"></div>
-        <div id="dr-${u}" class="dino-runner" style="left:42px;bottom:14px;color:${getPC(u)}">🦖</div>
-      </div>`;
-    }).join('');
-  }
-
-  // rAF 루프 — Firebase 업데이트마다 재시작 안 함, 한 번만 실행
-  if(!_dinoRAF){
-    _dinoJumpAt=0; _dinoHitCooldown=0; _dinoEndKey='';
-    _dinoStartLoop();
-  }
-}
-
-function _dinoStartLoop(){
-  const draw=()=>{
-    const s=_dinoCurrentState;
-    if(!s||s.ended||s.phase==='ended'){_dinoRAF=null;return;}
-    const now=Date.now();
-    const elapsed=Math.max(0,(now-(s.startedAt||now))/1000);
-    const meRunner=s.runners?.[myUid]||{};
-
-    // 상단 정보 바
-    const info=q('dino-info');
-    if(info){
-      const h='❤️'.repeat(Math.max(0,meRunner.lives||0))+'♡'.repeat(Math.max(0,2-(meRunner.lives||0)));
-      info.innerHTML=`<div class="dino-stat">${h}</div><div class="dino-stat">시간 ${elapsed.toFixed(1)}s</div><div class="dino-stat">속도 ${Math.round(dinoSpeed(elapsed))}</div><div class="dino-stat">Space/↑/터치 점프</div>`;
-    }
-
-    const obs=dinoObstacles(s,elapsed).filter(o=>o.x>-100&&o.x<900);
-
-    (s.activePlayers||[]).forEach(u=>{
-      const r=s.runners?.[u]||{};
-      const isMe=u===myUid;
-      const y=isMe&&r.alive?dinoMyY():0;
-      const opacity=r.alive?1:.32;
-      const inv=r.invincibleUntil&&now<r.invincibleUntil;
-      const blink=inv&&Math.floor(now/120)%2===0?.35:opacity;
-
-      // 주자 위치
-      const runnerEl=document.getElementById('dr-'+u);
-      if(runnerEl){runnerEl.style.bottom=(14+y)+'px';runnerEl.style.opacity=blink;}
-
-      // 하트 (변경 시만)
-      const hEl=document.getElementById('dh-'+u);
-      if(hEl){
-        const hs='❤️'.repeat(Math.max(0,r.lives||0))+'♡'.repeat(Math.max(0,2-(r.lives||0)));
-        if(hEl.textContent!==hs) hEl.textContent=hs;
-      }
-
-      // 장애물 (DOM 재사용으로 효율화)
-      const oEl=document.getElementById('do-'+u);
-      if(oEl){
-        while(oEl.children.length>obs.length) oEl.removeChild(oEl.lastChild);
-        while(oEl.children.length<obs.length){
-          const d=document.createElement('div');d.className='dino-ob';oEl.appendChild(d);
-        }
-        obs.forEach((o,i)=>{
-          const el=oEl.children[i];
-          el.style.left=o.x+'px';
-          if(el.textContent!==o.type) el.textContent=o.type;
-        });
-      }
-
-      // 충돌 판정 (나만)
-      if(isMe&&isActivePl()&&r.alive&&elapsed>0&&now>_dinoHitCooldown&&(!r.invincibleUntil||now>r.invincibleUntil)){
-        const hit=obs.some(o=>o.x<82&&o.x>34&&y<34);
-        if(hit){
-          _dinoHitCooldown=now+900;
-          const passed=obs.filter(o=>o.x<34).length;
-          const score=Math.max(0,Math.floor(elapsed))+passed*2;
-          db.ref(`rooms/${roomId}/game/state`).transaction(cur=>{
-            if(!cur||cur.phase!=='playing'||cur.ended) return cur;
-            const r2=cur.runners?.[myUid];
-            if(!r2||!r2.alive||(r2.invincibleUntil&&Date.now()<r2.invincibleUntil)) return cur;
-            const lives=Math.max(0,(r2.lives||2)-1);
-            r2.lives=lives;r2.passed=passed;r2.score=score;r2.invincibleUntil=Date.now()+1200;
-            if(lives<=0){r2.alive=false;r2.deadAt=Date.now();}
-            cur.scores=cur.scores||{};cur.scores[myUid]=score;
-            return cur;
-          });
-        }
-      }
-    });
-
-    // 호스트: 게임 종료 조건 (1인 버그 수정 포함)
-    if(isHost){
-      const ap=s.activePlayers||[];
-      const live=ap.filter(u=>s.runners?.[u]?.alive);
-      const shouldEnd=elapsed>0&&(
-        (ap.length===1&&live.length===0) ||   // 1인: 목숨 다 떨어지면 종료
-        (ap.length>1&&live.length<=1)          // 다인: 1명 이하 생존 시 종료
-      );
-      const key=s.startedAt+':'+live.join(',');
-      if(shouldEnd&&_dinoEndKey!==key){
-        _dinoEndKey=key;
-        db.ref(`rooms/${roomId}/game/state`).transaction(cur=>{
-          if(!cur||cur.ended||cur.phase==='ended') return cur;
-          const e2=Math.max(0,(Date.now()-(cur.startedAt||Date.now()))/1000);
-          const ns=Object.assign({},cur.scores||{});
-          (cur.activePlayers||[]).forEach(u=>{const r2=cur.runners?.[u];if(r2?.alive)ns[u]=Math.max(ns[u]||0,Math.floor(e2)+10);});
-          return{...cur,scores:ns,ended:true,phase:'ended'};
-        });
-      }
-    }
-    _dinoRAF=requestAnimationFrame(draw);
-  };
-  _dinoRAF=requestAnimationFrame(draw);
-}
-
-// =========================================================
 // 10. OX QUIZ (무한 생존, 전체 라운드)
 // =========================================================
 function initOX(ap){
@@ -1942,13 +1819,23 @@ function initBingo(ap){
 }
 function renderBingo(s){
   renderCommonTimer(s); renderControls(s); if(isEndedState(s)) addTotalsOnce(s);
+  const called=s.called||[];
+  // 상단 플레이어 현황 패널
+  const _bsp=q('bingo-status');
+  if(_bsp) _bsp.innerHTML=(s.activePlayers||[]).map(u=>{
+    const bd=s.boards?.[u]; const cnt=bd?_getBingoLines(bd,called).length:0; const isMe=u===myUid;
+    return `<div style="display:flex;align-items:center;gap:5px;padding:5px 11px;background:${isMe?'rgba(56,217,169,.12)':'var(--card)'};border:1px solid ${isMe?'var(--accent)':'var(--border)'};border-radius:20px;font-size:11px;transition:all .2s">
+      <span style="color:${getPC(u)};font-weight:bold">${esc(players[u]?.name?.slice(0,5)||'')}</span>
+      ${[0,1,2].map(i=>`<div class="bingo-dot${i<cnt?' won':''}"></div>`).join('')}
+      <span style="color:var(--muted);font-size:10px">${cnt}/3</span>
+    </div>`;
+  }).join('');
   const isMyTurn=s.activePlayers[s.curIdx]===myUid&&isActivePl();
   const ti=q('bingo-turn');
   if(s.winner){ ti.textContent=`🎉 ${players[s.winner]?.name||''}님 3빙고!`; ti.className='turn-ind'; }
   else if(isMyTurn){ ti.textContent='🎯 내 차례! 숫자를 선언하세요'; ti.className='turn-ind'; }
   else { ti.textContent=`${players[s.activePlayers[s.curIdx]]?.name||''} 차례...`; ti.className='turn-ind wait'; }
 
-  const called=s.called||[];
   const myBoard=s.boards?.[myUid];
 
   // 내 빙고판
