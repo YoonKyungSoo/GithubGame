@@ -237,7 +237,7 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
 <div id="login-screen">
   <div class="login-box">
     <div class="login-logo">🎮 TEAMGAME</div>
-    <div class="login-sub">미니게임 플랫폼 · v5.0</div>
+    <div class="login-sub">미니게임 플랫폼 · v6.0</div>
     <div class="fgroup">
       <label>이름</label>
       <input id="inp-name" type="text" placeholder="홍길동" maxlength="10" autocomplete="off">
@@ -298,18 +298,53 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
     <div id="main">
       <!-- 관전 배너 -->
       <div id="spectator-banner">
-        <span>👁️ 관전 중</span>
-        <button onclick="requestJoinNext()">다음 판 참여 신청</button>
+        <span>👁️ 이번 판 관전 중</span>
+        <button onclick="requestJoinNextRound()">다음 판 참가 대기 신청</button>
       </div>
 
       <!-- LOBBY -->
       <div id="view-lobby" class="view active">
         <div class="vtitle">🎮 미니게임 플랫폼</div>
-        <div class="vsub">1~5인 지원 · 방 코드를 공유하세요</div>
+        <div class="vsub">이번 게임 참가 / 관전 / 다음 판 대기 구분 · 방 코드를 공유하세요</div>
+        <div style="margin-bottom:10px;font-size:10px;line-height:1.5;color:var(--muted)">
+          ✅ <strong>이번 참가</strong> · 👁 관전 중 · 📋 다음 판 대기<br>
+          진행 중엔 새 인원 입장 후 <strong>다음 판 대기</strong>만 선택할 수 있습니다. 한 판 끝나면 대기열이 참가로 들어옵니다.
+        </div>
+        <div class="sb-ttl" style="padding:0;margin-bottom:8px;color:var(--accent)">📋 다음 판 참가 대기</div>
+        <div id="lobby-queue" class="pready-list" style="margin-bottom:14px;min-height:24px"><span style="font-size:10px;color:var(--muted)">대기열 없음</span></div>
+        <div class="sb-ttl" style="padding:0;margin-bottom:9px">이번 게임 참가자</div>
         <div id="lobby-plist" class="pready-list"></div>
         <div class="sb-ttl" style="padding:0;margin-bottom:9px">게임 선택 (호스트만)</div>
+        <div id="omok-lobby-box" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px">
+          <div class="sb-ttl" style="padding:0;margin-bottom:8px">⚫ 오목 설정 (호스트)</div>
+          <div style="display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap;align-items:center">
+            <label style="display:flex;align-items:center;gap:6px;font-size:11px;cursor:pointer"><input type="radio" name="omok-mode" id="omok-m-solo" value="solo" checked onchange="syncOmokLobby()"> 개인전 1:1 (대기·교차)</label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:11px;cursor:pointer"><input type="radio" name="omok-mode" id="omok-m-team" value="team" onchange="syncOmokLobby()"> 팀전 (흑/백 각 팀 번갈아 수)</label>
+          </div>
+          <div id="omok-solo-ui" style="font-size:10px;color:var(--muted)">
+            시작 시 <strong style="color:var(--accent)">맨 아래 순서부터</strong> 흑·백 1명씩 자동 배치, 나머지는 다음 판 대기 순서입니다. 카드 버튼으로 순서 변경.
+          </div>
+          <div id="omok-team-ui" style="display:none">
+            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px">
+              <div style="flex:1;min-width:120px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px">
+                <div style="font-size:9px;margin-bottom:6px;color:var(--muted)">⚫ 흑 팀</div>
+                <div id="team-black-list"></div>
+              </div>
+              <div style="flex:1;min-width:120px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px">
+                <div style="font-size:9px;margin-bottom:6px;color:var(--muted)">⚪ 백 팀</div>
+                <div id="team-white-list"></div>
+              </div>
+              <div style="flex:1;min-width:120px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px">
+                <div style="font-size:9px;margin-bottom:6px;color:var(--muted)">대기</div>
+                <div id="team-bench-list"></div>
+              </div>
+            </div>
+            <div style="font-size:9px;color:var(--muted);margin-top:8px">참가자 목록에서 팀 이동 (호스트만)</div>
+          </div>
+          <div id="omok-order-ui" style="margin-top:10px"></div>
+        </div>
         <div class="gcards">
-          <div class="gcard" id="gc-omok" onclick="selectGame('omok')"><div class="gtag">2-5인</div><div class="gemo">⚫</div><div class="gname">오목</div><div class="gdesc">5개 연속 배치 · 승리 +10pt</div></div>
+          <div class="gcard" id="gc-omok" onclick="selectGame('omok')"><div class="gtag">1:1·팀</div><div class="gemo">⚫</div><div class="gname">오목</div><div class="gdesc">개인전 1:1 또는 흑/백 팀전 · +10pt</div></div>
           <div class="gcard" id="gc-mine" onclick="selectGame('mine')"><div class="gtag">협동</div><div class="gemo">💣</div><div class="gname">지뢰찾기</div><div class="gdesc">순서 클릭 · 클리어 전원 +5pt</div></div>
           <div class="gcard" id="gc-word" onclick="selectGame('word')"><div class="gtag">2-5인</div><div class="gemo">🔤</div><div class="gname">끝말잇기</div><div class="gdesc">30초 제한 · 단어 길이만큼 점수</div></div>
           <div class="gcard" id="gc-chosung" onclick="selectGame('chosung')"><div class="gtag">2-5인</div><div class="gemo">🅰️</div><div class="gname">초성게임</div><div class="gdesc">빠르게 맞히기 · 1등 5pt</div></div>
@@ -357,6 +392,7 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
           <span>✅ 해제 <strong id="mine-cleared">0</strong></span>
           <span>🚩 깃발 <strong id="mine-flags">0</strong></span>
         </div>
+        <div id="mine-role-hud" style="font-size:10px;color:var(--muted);margin-bottom:8px;line-height:1.5"></div>
         <div style="overflow:auto"><div id="mine-board"></div></div>
         <div id="mine-win" class="winner-banner" style="display:none">
           <div class="trophy" id="mine-icon">🎉</div><div class="wtext" id="mine-win-text"></div>
@@ -616,15 +652,34 @@ const OX_QUESTIONS=[
   {q:'코알라의 주식은 대나무이다',a:'X'}
 ];
 
+// 끝말잇기 허용 단어(화이트리스트 기반 · 없는 단어 불가)
+const WORD_EXTRA=['가령','가정','결혼','대학교','민주주의','설날','시험','인터넷','정치','종교','지구','통신','하천'];
+function buildWordSet(){
+  const s=new Set();
+  CHOSUNG_DB.forEach(x=>s.add(x.word));
+  TP_CATS.forEach(c=>c.opts.forEach(o=>{if(/^[가-힣]+$/.test(o))s.add(o);}));
+  TYPING_TEXTS.forEach(t=>String(t).split(/[\s,.'"]/).forEach(p=>{if(/^[가-힣]{2,}$/.test(p))s.add(p);}));
+  WORD_EXTRA.forEach(w=>s.add(w));
+  ['사과','하늘','바다','구름','나무','기차','사랑','학교'].forEach(w=>s.add(w));
+  return s;
+}
+const WORD_SET=buildWordSet();
+function isHangulWord2(w){return typeof w==='string'&&/^[가-힣]{2,15}$/.test(w.trim());}
+
+
 // ══════════════════════════════════════════
 // GLOBAL STATE
 // ══════════════════════════════════════════
 let myUid='u'+Math.random().toString(36).substr(2,8);
 let myName='',roomId='',isHost=false,players={},_uidOrder=[];
 let _participation={};
+let _wishNext={};
+let _omokPrep={mode:'solo',soloOrder:[],teamBlack:[],teamWhite:[],teamBench:[]};
+let _gameRunning=false,_amInRound=false;
 let _selGame=null,_wTimer=null,_choTimer=null,_tpTimer=null,_oxTimer=null,_typingTimer=null;
 let _currentGame=null,_currentType=null;
 let _flagMode=false;
+let _omokEnsureT=null;
 
 const q=id=>document.getElementById(id);
 const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -632,6 +687,7 @@ const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>
 function getPC(uid){let i=_uidOrder.indexOf(uid);if(i<0){_uidOrder.push(uid);i=_uidOrder.length-1;}return PC[i%PC.length];}
 function getPidx(uid){let i=_uidOrder.indexOf(uid);if(i<0){_uidOrder.push(uid);i=_uidOrder.length-1;}return i%PC.length;}
 function isActivePl(){return(_currentGame?.activePlayers||[]).includes(myUid);}
+function isPlayingThisRound(){return!!(_currentGame&&(_currentGame.activePlayers||[]).includes(myUid));}
 
 // ══════════════════════════════════════════
 // SCORE
@@ -667,7 +723,14 @@ function enterRoom(){
   getPC(myUid);
   db.ref('rooms/'+roomId+'/players/'+myUid).set({name:myName,score:0,online:true,joined:Date.now()});
   db.ref('rooms/'+roomId+'/players/'+myUid).onDisconnect().update({online:false});
-  db.ref('rooms/'+roomId+'/participation/'+myUid).set(true);
+
+  db.ref('rooms/'+roomId+'/game').once('value').then(gsnap=>{
+    const mid=!!(gsnap.val()&&gsnap.val().started);
+    db.ref('rooms/'+roomId+'/participation/'+myUid).set(mid?false:true);
+    if(mid){sysChat(myName+'님이 입장했습니다 (진행 중 — 이번 판은 관전) 👁️');return;}
+    sysChat(myName+'님이 입장했습니다 👋');
+  });
+
   q('login-screen').style.display='none';
   q('app').classList.add('on');
   q('room-code').textContent=roomId;
@@ -677,78 +740,275 @@ function enterRoom(){
     const sorted=Object.entries(raw).sort((a,b)=>(a[1].joined||0)-(b[1].joined||0));
     _uidOrder=sorted.map(([uid])=>uid);
     updatePlayerUI();
+    if(isHost&&_selGame==='omok'){
+      clearTimeout(_omokEnsureT);
+      _omokEnsureT=setTimeout(()=>ensureOmokPrepFromRoster(rosterParticipatingOnline()),400);
+    }
   });
   db.ref('rooms/'+roomId+'/participation').on('value',snap=>{
     _participation=snap.val()||{};
     updatePlayerUI();
   });
+  db.ref('rooms/'+roomId+'/wishNext').on('value',snap=>{
+    _wishNext=snap.val()||{};
+    updatePlayerUI();
+  });
+  db.ref('rooms/'+roomId+'/prep/omok').on('value',snap=>{
+    _omokPrep=snap.val()||{};
+    syncOmokModeRadiosFromPrep();
+    updatePlayerUI();
+  });
   db.ref('rooms/'+roomId+'/game').on('value',snap=>{
     const g=snap.val();
-    if(g&&g.started&&g.state)handleGameState(g);
-    else if(!g||!g.started){_currentGame=null;_currentType=null;q('spectator-banner').style.display='none';}
+    _gameRunning=!!(g&&g.started);
+    if(!_gameRunning){_amInRound=false;}
+    if(g&&g.started&&g.state){
+      _amInRound=(g.state.activePlayers||[]).includes(myUid);
+      handleGameState(g);
+    }else{_currentGame=null;_currentType=null;q('spectator-banner').style.display='none';updatePlayerUI();}
   });
   db.ref('rooms/'+roomId+'/hostKick').on('value',snap=>{
     if(snap.val()&&!isHost){stopAll();navTo('lobby');addSysChatLocal('방장이 게임을 종료했습니다');}
   });
   db.ref('rooms/'+roomId+'/chat').limitToLast(80).on('child_added',snap=>appendChat(snap.val()));
-  sysChat(myName+'님이 입장했습니다 👋');
   setupMobile();
 }
 function leaveRoom(){db.ref('rooms/'+roomId+'/players/'+myUid).update({online:false});setTimeout(()=>location.reload(),200);}
 
 // ══════════════════════════════════════════
-// PLAYER UI + PARTICIPATION
+// PLAYER UI + PARTICIPATION (이번 참가 · 관전 · 다음 판 대기)
 // ══════════════════════════════════════════
+function syncOmokModeRadiosFromPrep(){
+  const m=_omokPrep&&_omokPrep.mode==='team'?'team':'solo';
+  const rs=q('omok-m-solo'),rt=q('omok-m-team');
+  if(rs)rs.checked=m==='solo';
+  if(rt)rt.checked=m==='team';
+  const su=q('omok-solo-ui'),tu=q('omok-team-ui');
+  if(su)su.style.display=m==='solo'?'block':'none';
+  if(tu)tu.style.display=m==='team'?'block':'none';
+}
+
+function rosterParticipatingOnline(){
+  return _uidOrder.filter(uid=>players[uid]?.online&&_participation[uid]!==false);
+}
+
+function publishOmokPrep(patch){
+  if(!isHost)return;
+  db.ref('rooms/'+roomId+'/prep/omok').once('value').then(s=>{
+    const cur=s.val()||{};
+    db.ref('rooms/'+roomId+'/prep/omok').set({mode:'solo',soloOrder:[],teamBlack:[],teamWhite:[],teamBench:[],...cur,...patch});
+  });
+}
+
+function ensureOmokPrepFromRoster(active){
+  if(!isHost)return;
+  db.ref('rooms/'+roomId+'/prep/omok').once('value').then(s=>{
+    let p=s.val();
+    const need=!p||(p.mode!=='solo'&&p.mode!=='team');
+    const mode=(need||!p)?'solo':p.mode==='team'?'team':'solo';
+    const rev=[...active].reverse();
+    if(mode==='solo'){
+      let ord=[];
+      const hadSolo=!need&&Array.isArray(p.soloOrder)&&p.soloOrder.length>0;
+      if(!hadSolo)ord=[...rev];
+      else ord=[...p.soloOrder].filter(u=>active.includes(u));
+      active.forEach(u=>{if(!ord.includes(u))ord.push(u);});
+      publishOmokPrep({mode:'solo',soloOrder:ord});
+    }else{
+      let tb=[],tw=[],bb=[];
+      if(need||!p){
+        const mid=Math.ceil(active.length/2)||1;
+        tb=active.slice(0,mid);
+        tw=active.slice(mid);
+      }else{
+        tb=(p.teamBlack||[]).filter(u=>active.includes(u));
+        tw=(p.teamWhite||[]).filter(u=>active.includes(u));
+        bb=(p.teamBench||[]).filter(u=>active.includes(u));
+        active.forEach(u=>{
+          if(!tb.includes(u)&&!tw.includes(u)&&!bb.includes(u))bb.push(u);
+        });
+        if(tb.length===0&&tw.length>0){tb.push(tw.shift());}
+        if(tw.length===0&&tb.length>1){tw.push(tb.pop());}
+      }
+      publishOmokPrep({mode:'team',teamBlack:tb,teamWhite:tw,teamBench:bb});
+    }
+  });
+}
+
+function soloOrderRotate(uid,dir){
+  if(!isHost)return;
+  const lst=[...((_omokPrep.soloOrder||[]).filter(u=>rosterParticipatingOnline().includes(u)))];
+  const i=lst.indexOf(uid);if(i<0)return;
+  const j=i+dir;if(j<0||j>=lst.length)return;
+  [lst[i],lst[j]]=[lst[j],lst[i]];
+  publishOmokPrep({soloOrder:lst});
+}
+
+function omokTeamMove(uid,dest){
+  if(!isHost)return;
+  let tb=[...(_omokPrep.teamBlack||[])],tw=[...(_omokPrep.teamWhite||[])],bb=[...(_omokPrep.teamBench||[])];
+  [tb,tw,bb]=[tb,tw,bb].map(arr=>arr.filter(u=>u!==uid));
+  if(dest==='b')tb.push(uid);
+  else if(dest==='w')tw.push(uid);
+  else bb.push(uid);
+  publishOmokPrep({teamBlack:tb,teamWhite:tw,teamBench:bb});
+}
+
+function syncOmokLobby(){
+  if(!isHost)return;
+  const m=q('omok-m-team')?.checked?'team':'solo';
+  publishOmokPrep({mode:m});
+  ensureOmokPrepFromRoster(rosterParticipatingOnline());
+}
+
 function updatePlayerUI(){
-  const sbEl=q('sb-players'),lobbyEl=q('lobby-plist'),hpEl=q('hplayers');
+  const sbEl=q('sb-players'),lobbyEl=q('lobby-plist'),hpEl=q('hplayers'),qEl=q('lobby-queue'),ob=q('omok-order-ui');
+  const tb=q('team-black-list'),tw=q('team-white-list'),bb=q('team-bench-list');
   if(!sbEl||!lobbyEl||!hpEl)return;
   sbEl.innerHTML='';lobbyEl.innerHTML='';hpEl.innerHTML='';
+  if(qEl)qEl.innerHTML='';
+
   let playCount=0;
+  rosterParticipatingOnline().forEach(()=>playCount++);
+
+  const actForRound=_currentGame?.activePlayers||[];
+  const wishUids=_uidOrder.filter(uid=>_wishNext[uid]);
+
+  if(qEl){
+    if(!wishUids.length)qEl.innerHTML='<span style="font-size:10px;color:var(--muted)">대기열 없음</span>';
+    wishUids.forEach(uid=>{
+      const p=players[uid];if(!p)return;
+      const dot=document.createElement('div');dot.className='pready-card';
+      dot.style.borderColor=getPC(uid)+'80';
+      dot.innerHTML='<div class="prn" style="color:'+getPC(uid)+'">📋 '+esc(p.name)+'</div>';
+      qEl.appendChild(dot);
+    });
+  }
+
+  if(_selGame==='omok'&&isHost&&ob){
+    ob.innerHTML='';
+    const mode=_omokPrep.mode==='team'?'team':'solo';
+    if(mode==='solo'){
+      const ord=[...((_omokPrep.soloOrder||[]).filter(u=>rosterParticipatingOnline().includes(u)))];
+      rosterParticipatingOnline().forEach(u=>{if(!ord.includes(u))ord.push(u);});
+      ord.forEach((uid,idx)=>{
+        const p=players[uid];if(!p)return;
+        const wrap=document.createElement('div');wrap.style.cssText='display:flex;align-items:center;gap:6px;margin:6px 0;font-size:10px';
+        wrap.innerHTML='<span style="color:'+getPC(uid)+';min-width:70px;font-weight:bold">'+esc(p.name)+'</span>';
+        const up=document.createElement('button');up.className='part-btn';up.style.padding='4px 8px';up.textContent='▲';up.onclick=()=>soloOrderRotate(uid,-1);wrap.appendChild(up);
+        const dn=document.createElement('button');dn.className='part-btn';dn.style.padding='4px 8px';dn.textContent='▼';dn.onclick=()=>soloOrderRotate(uid,1);wrap.appendChild(dn);
+        const tag=document.createElement('span');tag.style.color='var(--muted)';
+        if(idx===ord.length-1)tag.textContent=' ← 다음 흑';else if(idx===ord.length-2)tag.textContent=' ← 다음 백';else tag.textContent='대기 순서 '+idx;
+        wrap.appendChild(tag);ob.appendChild(wrap);
+      });
+    }
+    if(tb&&tw&&bb&&mode==='team'){
+      const fill=(el,arr,dest)=>{
+        el.innerHTML='';
+        arr.forEach(uid=>{
+          const p=players[uid];if(!p)return;
+          const row=document.createElement('div');row.style.cssText='margin:5px 0;display:flex;gap:4px;align-items:center;flex-wrap:wrap';
+          row.innerHTML='<span style="color:'+getPC(uid)+';font-weight:bold;font-size:10px">'+esc(p.name)+'</span>';
+          if(dest==='b'){
+            const b1=document.createElement('button');b1.className='part-btn';b1.textContent='→백';b1.onclick=()=>omokTeamMove(uid,'w');row.appendChild(b1);
+            const b2=document.createElement('button');b2.className='part-btn';b2.textContent='대기';b2.onclick=()=>omokTeamMove(uid,'x');row.appendChild(b2);
+          }else if(dest==='w'){
+            const b1=document.createElement('button');b1.className='part-btn';b1.textContent='→흑';b1.onclick=()=>omokTeamMove(uid,'b');row.appendChild(b1);
+            const b2=document.createElement('button');b2.className='part-btn';b2.textContent='대기';b2.onclick=()=>omokTeamMove(uid,'x');row.appendChild(b2);
+          }else{
+            const b1=document.createElement('button');b1.className='part-btn';b1.textContent='흑';b1.onclick=()=>omokTeamMove(uid,'b');row.appendChild(b1);
+            const b2=document.createElement('button');b2.className='part-btn';b2.textContent='백';b2.onclick=()=>omokTeamMove(uid,'w');row.appendChild(b2);
+          }
+          el.appendChild(row);
+        });
+      };
+      fill(tb,_omokPrep.teamBlack||[],'b');
+      fill(tw,_omokPrep.teamWhite||[],'w');
+      fill(bb,_omokPrep.teamBench||[],'x');
+    }
+  }
+
   _uidOrder.forEach(uid=>{
     const p=players[uid];if(!p)return;
     const color=getPC(uid);
     const isPlaying=_participation[uid]!==false;
-    if(isPlaying&&p.online)playCount++;
 
-    // 헤더 도트
     const dot=document.createElement('div');
     dot.style.cssText=`width:8px;height:8px;border-radius:50%;background:${p.online?color:'var(--muted)'}`;
     dot.title=p.name;hpEl.appendChild(dot);
 
-    // 사이드바
     const si=document.createElement('div');si.className='pitem'+(uid===myUid?' me':'');
     si.innerHTML=`<div class="dot" style="background:${color}"></div><div class="pn">${esc(p.name)}${uid===myUid?' (나)':''}</div><div class="ps" style="color:${color}">${p.score||0}pt</div>`;
     sbEl.appendChild(si);
 
-    // 로비 카드
+    const inRound=actForRound.includes(uid);
+    let status=isPlaying?'✅ 시작 시 참여':'👁 관전';
+    if(_gameRunning){
+      status=inRound?'🎯 이번 판 플레이':'👁 이번 판 관전';
+      if(_wishNext[uid])status+= ' · 📋다음판 대기';
+    }else if(_wishNext[uid])status+= ' · 📋다음판 대기 신청됨';
+
     const lc=document.createElement('div');
     lc.className='pready-card';
-    lc.style.borderColor=p.online?color+80:undefined;
-    lc.innerHTML=`<div class="prn" style="color:${color}">${esc(p.name)}</div><div class="prs">${p.online?'● 온라인':'○ 오프라인'}</div><div style="font-size:10px;color:${color}">${p.score||0}pt</div>`;
-    const tb=document.createElement('button');
-    tb.className='part-btn'+(isPlaying?' playing':'');
-    tb.textContent=isPlaying?'✅ 참여 중':'👁️ 관전 중';
-    if(uid===myUid){tb.onclick=()=>toggleParticipation();}
-    else{tb.disabled=true;}
-    lc.appendChild(tb);lobbyEl.appendChild(lc);
+    lc.style.borderColor=p.online?color+'80':'';
+    lc.innerHTML='<div class="prn" style="color:'+color+'">'+esc(p.name)+'</div>'
+      +'<div class="prs">'+status+'</div>'
+      +'<div style="font-size:10px;color:'+color+'">'+(p.score||0)+'pt</div>';
+
+    if(uid===myUid){
+      const inRoundMe=actForRound.includes(myUid);
+      const canWish=_gameRunning&&!inRoundMe;
+      const row=document.createElement('div');row.style.cssText='display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;justify-content:center';
+      const mk=(label,fn,dis)=>{const b=document.createElement('button');b.className='part-btn';b.textContent=label;b.disabled=!!dis;b.style.fontSize='8px';b.onclick=fn;row.appendChild(b);};
+      mk('✅ 이번 시작 참가',()=>setLobbyIntentPlay(),!!_gameRunning);
+      mk('👁 관전',()=>setLobbySpectate(),false);
+      mk('📋 다음 판 대기',()=>requestJoinNextRound(),!canWish||!!_wishNext[myUid]);
+      mk('📋 대기 해제',()=>clearWishNext(),!_wishNext[myUid]||!canWish);
+      lc.appendChild(row);
+    }
+    lobbyEl.appendChild(lc);
   });
 
-  if(!isHost){q('sel-label').textContent='호스트가 선택 중...';q('start-btn').disabled=true;}
+  if(q('omok-lobby-box'))q('omok-lobby-box').style.display=_selGame==='omok'?'block':'none';
+
+  if(!isHost){q('sel-label').textContent=_gameRunning?'호스트에게 대기중...':'호스트가 선택 중...';q('start-btn').disabled=true;}
   else{
     const sl=q('sel-label');
-    if(_selGame&&sl)sl.textContent=(GAME_NAMES[_selGame]||'')+' 선택됨 ('+playCount+'명 참여)';
+    if(_selGame&&sl){let ex='';if(_selGame==='omok')ex=_omokPrep.mode==='team'?' · 팀전':' · 개인 1:1';sl.textContent=(GAME_NAMES[_selGame]||'')+' 선택됨 ('+playCount+'명 시작 시 참여)';}
     else if(sl)sl.textContent='게임을 선택하세요';
-    const sb2=q('start-btn');if(sb2)sb2.disabled=!_selGame;
+    q('start-btn').disabled=!_selGame;
   }
 }
 
-function toggleParticipation(){
-  const cur=_participation[myUid]!==false;
-  db.ref('rooms/'+roomId+'/participation/'+myUid).set(!cur);
-}
-function requestJoinNext(){
+function setLobbyIntentPlay(){
+  if(_gameRunning){alert('이미 진행 중인 판에서는 이렇게 바꿀 수 없습니다. 다음 판 대기 또는 관전 배너를 이용하세요.');return;}
+  db.ref('rooms/'+roomId+'/wishNext/'+myUid).remove();
   db.ref('rooms/'+roomId+'/participation/'+myUid).set(true);
-  sysChat(myName+'님이 다음 판 참여를 신청했습니다 ✋');
+}
+
+function setLobbySpectate(){
+  db.ref('rooms/'+roomId+'/wishNext/'+myUid).remove();
+  db.ref('rooms/'+roomId+'/participation/'+myUid).set(false);
+}
+
+function requestJoinNextRound(){
+  if(!_gameRunning){setLobbyParticipateWish();return;}
+  db.ref('rooms/'+roomId+'/participation/'+myUid).set(false);
+  db.ref('rooms/'+roomId+'/wishNext/'+myUid).set(true);
+  sysChat(myName+'님이 다음 판 참가 대기에 등록했습니다 📋');
+}
+
+function setLobbyParticipateWish(){
+  db.ref('rooms/'+roomId+'/participation/'+myUid).set(false);
+  db.ref('rooms/'+roomId+'/wishNext/'+myUid).set(true);
+}
+
+function clearWishNext(){
+  db.ref('rooms/'+roomId+'/wishNext/'+myUid).remove();
+}
+
+function toggleParticipation(){
+  if((_participation[myUid]!==false)&&!_wishNext[myUid])setLobbySpectate();else setLobbyIntentPlay();
 }
 
 // ══════════════════════════════════════════
@@ -784,11 +1044,45 @@ function backToLobby(){
   stopAll();_selGame=null;_currentGame=null;_currentType=null;
   document.querySelectorAll('.gcard').forEach(c=>c.classList.remove('sel'));
   q('spectator-banner').style.display='none';
-  if(isHost){
-    db.ref('rooms/'+roomId+'/hostKick').set(Date.now());
-    setTimeout(()=>{db.ref('rooms/'+roomId+'/game').remove();db.ref('rooms/'+roomId+'/hostKick').remove();},500);
-  }
-  navTo('lobby');updatePlayerUI();
+  navTo('lobby');
+
+  const finishClear=()=>{
+    db.ref('rooms/'+roomId+'/game').remove();
+    db.ref('rooms/'+roomId+'/hostKick').remove();
+    updatePlayerUI();
+  };
+
+  if(!isHost){updatePlayerUI();return;}
+
+  db.ref('rooms/'+roomId+'/hostKick').set(Date.now());
+
+  db.ref('rooms/'+roomId+'/game').once('value').then(gsnap=>{
+    const pkg=gsnap.val();
+
+    let chain=Promise.resolve();
+
+    chain=chain.then(()=>{
+      return db.ref('rooms/'+roomId+'/wishNext').once('value').then(ws=>{
+        const nx=ws.val()||{};
+        const ps=Object.keys(nx).filter(u=>nx[u]).map(u=>db.ref('rooms/'+roomId+'/participation/'+u).set(true));
+        return Promise.all(ps).then(()=>db.ref('rooms/'+roomId+'/wishNext').remove());
+      });
+    });
+
+    chain=chain.then(()=>{
+      if(pkg&&pkg.type==='omok'&&pkg.state&&pkg.state.omokMode==='solo'){
+        const st=pkg.state;
+        const b=st.soloBench||[];
+        const bu=st.blackUid,wu=st.whiteUid;
+        if(bu&&wu){
+          const nq=[...b,bu,wu];
+          return db.ref('rooms/'+roomId+'/prep/omok/soloOrder').set(nq);
+        }
+      }
+    }).catch(()=>{});
+
+    chain.then(()=>setTimeout(finishClear,450));
+  });
 }
 
 // ══════════════════════════════════════════
@@ -799,6 +1093,7 @@ function selectGame(gm){
   _selGame=gm;
   document.querySelectorAll('.gcard').forEach(c=>c.classList.remove('sel'));
   q('gc-'+gm)?.classList.add('sel');
+  if(isHost&&gm==='omok')ensureOmokPrepFromRoster(rosterParticipatingOnline());
   updatePlayerUI();
 }
 function startGame(){
@@ -807,8 +1102,9 @@ function startGame(){
   if(active.length<1){alert('최소 1명이 참여해야 합니다');return;}
   const inits={omok:initOmok,mine:initMine,word:initWord,chosung:initChosung,baseball:initBaseball,telepathy:initTelepathy,rps:initRPS,typing:initTyping,ox:initOX};
   const state=inits[_selGame](active);
+  if(!state){alert(_selGame==='omok'?'오목: 참가 인원 부족(개인전 2명 이상) 또는 팀 구성을 확인하세요.':'설정 오류');return;}
   db.ref('rooms/'+roomId+'/game').set({type:_selGame,started:true,state});
-  sysChat('🎮 게임 시작! '+GAME_NAMES[_selGame]+' ('+active.length+'명)');
+  sysChat('🎮 게임 시작! '+GAME_NAMES[_selGame]+' ('+(state.activePlayers||active).length+'명 플레이)');
 }
 function handleGameState(g){
   _currentType=g.type;_currentGame=g.state;
@@ -858,18 +1154,77 @@ function renderScores(elId,playerOrder,scores){
 }
 
 // ══════════════════════════════════════════
-// ★ 게임 1: 오목
+// ★ 게임 1: 오목 (개인전 1:1 / 팀전 흑·백)
 // ══════════════════════════════════════════
 const BS=13;
-function initOmok(order){return{activePlayers:order,board:Array(BS).fill(null).map(()=>Array(BS).fill(0)),playerOrder:order,curIdx:0,winner:null,scoreAwarded:false};}
+function initOmok(active){
+  const prep=_omokPrep||{};
+  const tm=(prep.mode==='team')?'team':'solo';
+  if(tm==='team'){
+    let bt=(prep.teamBlack||[]).filter(u=>active.includes(u));
+    let wt=(prep.teamWhite||[]).filter(u=>active.includes(u));
+    if(bt.length<1||wt.length<1){
+      const mid=Math.max(1,Math.ceil(active.length/2));
+      bt=active.slice(0,mid);wt=active.slice(mid);
+    }
+    if(bt.length<1||wt.length<1)return null;
+    const ap=[...bt,...wt];
+    return{omokMode:'team',activePlayers:ap,blackTeam:bt,whiteTeam:wt,playerOrder:[],curIdx:0,board:Array(BS).fill(null).map(()=>Array(BS).fill(0)),winner:null,winnerStone:null,scoreAwarded:false};
+  }
+  let ord=[...(prep.soloOrder||[])].filter(u=>active.includes(u));
+  active.forEach(u=>{if(!ord.includes(u))ord.push(u);});
+  if(ord.length<2)return null;
+  const blackUid=ord[ord.length-1],whiteUid=ord[ord.length-2];
+  const soloBench=ord.slice(0,-2);
+  return{omokMode:'solo',activePlayers:[blackUid,whiteUid],blackUid,whiteUid,soloBench,playerOrder:[blackUid,whiteUid],curIdx:0,board:Array(BS).fill(null).map(()=>Array(BS).fill(0)),winner:null,winnerStone:null,scoreAwarded:false};
+}
+
+function omokStoneForTurn(curIdx){return(curIdx%2===0)?1:2;}
+
+function omokCanMoveNow(s){
+  if(!isActivePl())return false;
+  if(s.omokMode==='team'){
+    const blackTurn=s.curIdx%2===0;
+    const arr=blackTurn?s.blackTeam:s.whiteTeam;
+    return(arr||[]).includes(myUid);
+  }
+  return s.playerOrder&&s.playerOrder[s.curIdx]===myUid;
+}
+
+function omokWinnerLabel(w,s){
+  if(!w)return'';
+  if(s.omokMode==='solo')return players[w]?.name||w;
+  if(w==='black')return'⚫ 흑 팀';
+  return'⚪ 백 팀';
+}
+
 function renderOmok(s){
-  const{playerOrder,curIdx,winner}=s;
-  const isMe=playerOrder[curIdx]===myUid&&isActivePl();
-  q('olegend').innerHTML=playerOrder.map((uid,i)=>`<span style="color:${getPC(uid)};margin-right:8px">${STONES[i]||'●'} ${esc(players[uid]?.name||uid)}${uid===myUid?' (나)':''}</span>`).join('');
+  const{curIdx,winner,winnerStone,omokMode,blackTeam,whiteTeam,blackUid,whiteUid,playerOrder,soloBench}=s;
+  const isMe=!winner&&omokCanMoveNow(s);
+  q('olegend').innerHTML='';
+  if(omokMode==='team'){
+    const bl=(blackTeam||[]).map(uid=>`<span style="color:${getPC(uid)}">${esc(players[uid]?.name||uid)}</span>`).join(', ');
+    const wl=(whiteTeam||[]).map(uid=>`<span style="color:${getPC(uid)}">${esc(players[uid]?.name||uid)}</span>`).join(', ');
+    q('olegend').innerHTML='<div style="font-size:11px;line-height:1.5;color:var(--muted)">⚫ 흑: '+bl+'</div>'
+      +'<div style="font-size:11px;line-height:1.5;color:var(--muted)">⚪ 백: '+wl+'</div>'
+      +'<div style="margin-top:6px"><span style="color:'+(curIdx%2===0?'#fff':'var(--muted)')+'">⚫ 차례</span> · <span style="color:'+(curIdx%2===1?'#fff':'var(--muted)')+'">⚪ 차례</span></div>';
+  }else{
+    q('olegend').innerHTML=(playerOrder||[]).map((uid,i)=>`<span style="color:${getPC(uid)};margin-right:10px">${i===0?'⚫':'⚪'} ${esc(players[uid]?.name||uid)}${uid===myUid?' (나)':''}</span>`).join('');
+    const sb=(soloBench||[]).filter(Boolean);
+    if(sb.length){
+      q('olegend').innerHTML+='<div style="font-size:10px;color:var(--muted);margin-top:8px">다음 순서 대기: '
+        +sb.map(uid=>`<span style="color:${getPC(uid)}">${esc(players[uid]?.name)}</span>`).join(' → ')
+        +'</div>';
+    }
+  }
   const ti=q('omok-turn');
-  if(winner){ti.textContent=(players[winner]?.name||winner)+' 승리!';ti.className='turn-ind';}
+  if(winner){ti.textContent=omokWinnerLabel(winner,s)+' 승리!';ti.className='turn-ind';}
   else if(isMe){ti.textContent='내 차례 — 클릭!';ti.className='turn-ind';}
-  else{ti.textContent=(players[playerOrder[curIdx]]?.name||'')+'의 차례...';ti.className='turn-ind wait';}
+  else{
+    if(omokMode==='team')ti.textContent=(curIdx%2===0?'⚫ 흑 팀':'⚪ 백 팀')+' 차례...';
+    else ti.textContent=(players[playerOrder[curIdx]]?.name||'')+' 차례...';
+    ti.className='turn-ind wait';
+  }
   const bd=q('omok-board');bd.style.gridTemplateColumns=`repeat(${BS},28px)`;bd.innerHTML='';
   for(let r=0;r<BS;r++)for(let c=0;c<BS;c++){
     const cell=document.createElement('div');cell.className='ocell';
@@ -878,17 +1233,28 @@ function renderOmok(s){
     else if(!winner&&isMe)cell.onclick=()=>placeOmok(r,c,s);
     bd.appendChild(cell);
   }
-  if(winner){q('omok-win').style.display='block';q('omok-win-text').textContent='🏆 '+(players[winner]?.name||winner)+' 승리! +10pt';
-    if(isHost&&!s.scoreAwarded)awardOnce(s,'scoreAwarded',()=>addScore(winner,10));
+  if(winner){q('omok-win').style.display='block';q('omok-win-text').textContent='🏆 '+omokWinnerLabel(winner,s)+' 승리! +10pt';
+    if(isHost&&!s.scoreAwarded)awardOnce(s,'scoreAwarded',()=>{
+      if(s.omokMode==='solo')addScore(winner,10);
+      else{(winner==='black'?s.blackTeam:s.whiteTeam||[]).forEach(uid=>addScore(uid,10));}
+    });
   }else q('omok-win').style.display='none';
 }
+
 function placeOmok(r,c,s){
-  if(s.board[r][c]!==0||s.winner||s.playerOrder[s.curIdx]!==myUid||!isActivePl())return;
-  const nb=s.board.map(row=>[...row]);const pv=s.curIdx+1;nb[r][c]=pv;
-  const won=checkOmok(nb,r,c,pv);
-  setGameState({...s,board:nb,curIdx:won?s.curIdx:(s.curIdx+1)%s.playerOrder.length,winner:won?myUid:null});
-  if(won)sysChat(myName+' 오목 승리! 🏆');
+  if(s.board[r][c]!==0||s.winner||!omokCanMoveNow(s))return;
+  const stone=omokStoneForTurn(s.curIdx);
+  const nb=s.board.map(row=>[...row]);nb[r][c]=stone;
+  const won=checkOmok(nb,r,c,stone)?stone:null;
+  let winner=null;if(won!==null){winner=(s.omokMode==='solo')?(won===1?s.blackUid:s.whiteUid):(won===1?'black':'white');}
+  setGameState({
+    ...s,board:nb,
+    curIdx:won!==null?s.curIdx:(s.curIdx+1)%(s.omokMode==='solo'?2:2),
+    winner,winnerStone:won!==null?won:null,
+  });
+  if(won!==null)sysChat(myName+' 오목 승리! 🏆');
 }
+
 function checkOmok(b,r,c,v){
   for(const[dr,dc]of[[1,0],[0,1],[1,1],[1,-1]]){
     let n=1;
@@ -922,48 +1288,85 @@ function floodReveal(b,r,c){
   return cnt;
 }
 function renderMine(s){
-  const{playerOrder,curIdx,board,gameOver,won,revealed}=s;
+  const{playerOrder,curIdx,board,gameOver,won,revealed,activePlayers}=s;
   const isMe=playerOrder[curIdx]===myUid&&isActivePl();
   const ti=q('mine-turn');
   if(won){ti.textContent='전원 클리어! 🎉';ti.className='turn-ind';}
   else if(gameOver){ti.textContent='💥 지뢰 폭발!';ti.className='turn-ind';}
-  else if(isMe){ti.textContent='내 차례 — 클릭!';ti.className='turn-ind';}
-  else{ti.textContent=(players[playerOrder[curIdx]]?.name||'')+'의 차례...';ti.className='turn-ind wait';}
+  else if(isMe){ti.textContent='내 차례 — 한 번 열기!';ti.className='turn-ind';}
+  else{ti.textContent=(players[playerOrder[curIdx]]?.name||'')+' 차례 (한 사람당 1열기)...';ti.className='turn-ind wait';}
   q('mine-count').textContent=MMINES;q('mine-cleared').textContent=revealed||0;
   let flags=0;if(board)board.flat().forEach(c=>{if(c.flagged)flags++;});q('mine-flags').textContent=flags;
+  const rh=q('mine-role-hud');if(rh){
+    const pl=(activePlayers||[]).map(uid=>(players[uid]?.name||uid)).join(', ');
+    const wq=_uidOrder.filter(u=>_wishNext[u]).map(u=>(players[u]?.name||u)).join(', ')||'(없음)';
+    rh.innerHTML='이번 판 플레이: <strong style="color:var(--accent)">'+esc(pl)+'</strong><br>'
+      +'📋 다음 판 대기: <span style="color:var(--muted)">'+esc(wq)+'</span>';
+  }
   const bd=q('mine-board');bd.style.gridTemplateColumns=`repeat(${MSIZE},32px)`;bd.innerHTML='';
   const canAct=isMe&&!gameOver&&!won;
   const makeCell=(r,c,data)=>{
     const cell=document.createElement('div');cell.className='mcell';
-    if(!data){if(canAct){cell.onclick=()=>clickMine(r,c,s);cell.oncontextmenu=e=>{e.preventDefault();flagMineCell(r,c,s);};}return cell;}
+    if(!data){if(canAct){cell.onclick=()=>commitMineReveal(r,c);cell.oncontextmenu=e=>{e.preventDefault();flagMineCellTx(r,c);};}return cell;}
     if(data.revealed){cell.classList.add('revealed');if(data.mine){cell.classList.add('mmine');cell.textContent='💥';}else if(data.adj>0){cell.textContent=data.adj;cell.style.color=NCOLORS[data.adj]||'#fff';}}
-    else if(data.flagged){cell.classList.add('mflagged');cell.textContent='🚩';if(canAct)cell.onclick=()=>flagMineCell(r,c,s);}
+    else if(data.flagged){cell.classList.add('mflagged');cell.textContent='🚩';if(canAct)cell.onclick=()=>flagMineCellTx(r,c);}
     else{if(gameOver&&data.mine){cell.textContent='💣';cell.style.color='var(--red)';}
-      if(canAct){cell.onclick=()=>_flagMode?flagMineCell(r,c,s):clickMine(r,c,s);cell.oncontextmenu=e=>{e.preventDefault();flagMineCell(r,c,s);};}
+      if(canAct){cell.onclick=()=>_flagMode?flagMineCellTx(r,c):commitMineReveal(r,c);cell.oncontextmenu=e=>{e.preventDefault();flagMineCellTx(r,c);};}
     }return cell;
   };
   for(let r=0;r<MSIZE;r++)for(let c=0;c<MSIZE;c++)bd.appendChild(makeCell(r,c,board?.[r]?.[c]||null));
   if(won){q('mine-icon').textContent='🎉';q('mine-win-text').textContent='지뢰 제거 성공! 전원 +5pt!';q('mine-win').style.display='block';
     if(isHost&&!s.scoreAwarded)awardOnce(s,'scoreAwarded',()=>s.playerOrder.forEach(uid=>addScore(uid,5)));
-  }else if(gameOver){q('mine-icon').textContent='💥';q('mine-win-text').textContent=(players[playerOrder[curIdx]]?.name||'')+'님이 지뢰를 밟음... '+( revealed||0)+'칸 해제';q('mine-win').style.display='block';}
+  }else if(gameOver){q('mine-icon').textContent='💥';q('mine-win-text').textContent=(players[playerOrder[curIdx]]?.name||'')+'님이 지뢰를 밟음... '+(revealed||0)+'칸 해제';q('mine-win').style.display='block';}
   else q('mine-win').style.display='none';
 }
-function clickMine(r,c,s){
-  if(s.gameOver||s.won||s.playerOrder[s.curIdx]!==myUid||!isActivePl())return;
-  let board=s.board,revealed=s.revealed||0;
-  if(!board)board=generateMineBoard(r,c);
-  const nb=board.map(row=>row.map(c=>({...c})));
-  const cell=nb[r][c];if(cell.revealed||cell.flagged)return;
-  if(cell.mine){cell.revealed=true;setGameState({...s,board:nb,gameOver:true,curIdx:(s.curIdx+1)%s.playerOrder.length,revealed});sysChat(myName+'이 지뢰를 밟았습니다! 💥');return;}
-  const cnt=floodReveal(nb,r,c);revealed+=cnt;
-  const won=revealed>=s.totalSafe;
-  setGameState({...s,board:nb,revealed,won,curIdx:(s.curIdx+1)%s.playerOrder.length});
-  if(won)sysChat('🎉 전원 클리어! +5pt!');
+
+function cloneMineBoard(b){return(b||[]).map(row=>row.map(c=>({mine:!!c.mine,revealed:!!c.revealed,flagged:!!c.flagged,adj:c.adj|0})));}
+
+function commitMineReveal(r,c){
+  if(!isActivePl())return;
+  const cref=db.ref('rooms/'+roomId+'/game/state');
+  cref.transaction(cur=>{
+    if(!cur||cur.gameOver||cur.won)return cur;
+    if(!cur.playerOrder||cur.playerOrder[cur.curIdx]!==myUid)return cur;
+    let board=cur.board;
+    let revealed=cur.revealed||0;
+    if(!board){
+      board=generateMineBoard(r,c);
+      const nb=cloneMineBoard(board);
+      const cell=nb[r][c];if(cell.revealed||cell.flagged)return cur;
+      if(cell.mine){
+        cell.revealed=true;return{...cur,board:nb,gameOver:true,won:false,revealed:cur.revealed||0,curIdx:(cur.curIdx+1)%cur.playerOrder.length};
+      }
+      const cnt=floodReveal(nb,r,c);revealed+=cnt;
+      const won=revealed>=cur.totalSafe;
+      return{...cur,board:nb,revealed,won,curIdx:won?cur.curIdx:(cur.curIdx+1)%cur.playerOrder.length};
+    }
+    const nb=cloneMineBoard(board);
+    const cell=nb[r][c];if(cell.revealed||cell.flagged)return cur;
+    if(cell.mine){
+      cell.revealed=true;return{...cur,board:nb,gameOver:true,won:false,revealed:cur.revealed||0,curIdx:(cur.curIdx+1)%cur.playerOrder.length};
+    }
+    const cnt=floodReveal(nb,r,c);revealed+=cnt;
+    const won=revealed>=cur.totalSafe;
+    return{...cur,board:nb,revealed,won,curIdx:won?cur.curIdx:(cur.curIdx+1)%cur.playerOrder.length};
+  }).then(tx=>{
+    const v=tx.snapshot&&tx.snapshot.val();
+    if(tx.committed&&v&&v.gameOver&&!v.won)sysChat(myName+'이 지뢰를 밟았습니다! 💥');
+    else if(tx.committed&&v&&v.won)sysChat('🎉 전원 클리어! +5pt!');
+  });
 }
-function flagMineCell(r,c,s){
-  if(s.gameOver||s.won||!s.board||!isActivePl())return;
-  const nb=s.board.map(row=>row.map(c=>({...c})));
-  if(nb[r][c].revealed)return;nb[r][c].flagged=!nb[r][c].flagged;setGameState({...s,board:nb});
+
+function flagMineCellTx(r,c){
+  if(!isActivePl())return;
+  db.ref('rooms/'+roomId+'/game/state').transaction(cur=>{
+    if(!cur||cur.gameOver||cur.won||!cur.board)return cur;
+    if(cur.playerOrder[cur.curIdx]!==myUid)return cur;
+    const nb=cloneMineBoard(cur.board);
+    if(nb[r][c].revealed)return cur;
+    nb[r][c].flagged=!nb[r][c].flagged;
+    return{...cur,board:nb};
+  });
 }
 
 // ══════════════════════════════════════════
@@ -984,7 +1387,7 @@ function renderWord(s){
   if(!gameOver){
     const rem=()=>Math.max(0,(timerEnd-Date.now())/31000);
     q('wbar').style.width=(rem()*100)+'%';
-    _wTimer=setInterval(()=>{const r=rem();q('wbar').style.width=(r*100)+'%';if(r===0){clearInterval(_wTimer);if(isHost)skipWord(s);}},600);
+    _wTimer=setInterval(()=>{const r=rem();q('wbar').style.width=(r*100)+'%';if(r===0){clearInterval(_wTimer);attemptSkipWord(s.timerEnd,s.curIdx);}},600);
   }
   const wh=q('whist');wh.innerHTML='';
   (hist||[]).forEach(item=>{const chip=document.createElement('div');chip.className='wchip';
@@ -999,6 +1402,8 @@ function renderWord(s){
 }
 function submitWord(){
   const inp=q('winput');const word=inp.value.trim();if(!word)return;inp.value='';
+  if(!isHangulWord2(word)){alert('한글 2~15자 단어만 입력 가능합니다.');return;}
+  if(!WORD_SET.has(word)){alert('등록된 단어 목록에 없습니다. 초성 게임 단어·과일·음식 등 흔한 명사만 허용됩니다.');return;}
   db.ref('rooms/'+roomId+'/game/state').once('value',snap=>{
     const s=snap.val();if(!s||s.playerOrder[s.curIdx]!==myUid||!isActivePl())return;
     if(word[0]!==s.lastChar){alert('"'+s.lastChar+'"(으)로 시작해야 합니다!');return;}
@@ -1010,11 +1415,15 @@ function submitWord(){
     setGameState({...s,curWord:word,lastChar:word[word.length-1],used:nu,hist:nh,scores:ns,curIdx:(s.curIdx+1)%s.playerOrder.length,timerEnd:Date.now()+31000,gameOver:nu.length>=(s.maxRounds||20)});
   });
 }
-function skipWord(s){
-  db.ref('rooms/'+roomId+'/game/state').once('value',snap=>{
-    const cur=snap.val()||s;if(cur.curIdx!==s.curIdx||cur.timerEnd!==s.timerEnd||cur.gameOver)return;
-    sysChat((players[cur.playerOrder[cur.curIdx]]?.name||cur.playerOrder[cur.curIdx])+' 시간 초과! ⏰');
-    setGameState({...cur,curIdx:(cur.curIdx+1)%cur.playerOrder.length,timerEnd:Date.now()+31000});
+function attemptSkipWord(te,idx){
+  db.ref('rooms/'+roomId+'/game/state').transaction(cur=>{
+    if(!cur||cur.gameOver||cur.curIdx!==idx||cur.timerEnd!==te)return cur;
+    return{...cur,curIdx:(cur.curIdx+1)%cur.playerOrder.length,timerEnd:Date.now()+31000};
+  }).then(tx=>{
+    if(tx.committed){
+      const u=tx.snapshot.val()?.playerOrder[idx];
+      sysChat((players[u]?.name||u)+' 시간 초과! ⏰');
+    }
   });
 }
 
@@ -1024,7 +1433,7 @@ function skipWord(s){
 function initChosung(order){
   const words=[...CHOSUNG_DB].sort(()=>Math.random()-.5).slice(0,8);
   const scores={};order.forEach(uid=>scores[uid]=0);
-  return{activePlayers:order,playerOrder:order,curRound:0,words,phase:'guessing',correctOrder:[],scores,timerEnd:Date.now()+16000,ended:false};
+  return{activePlayers:order,playerOrder:order,curRound:0,words,phase:'guessing',correctOrder:[],scores,timerEnd:Date.now()+10000,ended:false};
 }
 let _lastChosungRound=-1;
 function renderChosung(s){
@@ -1055,34 +1464,49 @@ function renderChosung(s){
 
   if(phase==='reveal'){
     q('cho-timer').textContent='정답: '+word.word;q('cho-timer').style.color='var(--orange)';
-    if(isHost&&_lastChosungRound!==curRound+'reveal'){_lastChosungRound=curRound+'reveal';
+    if(_lastChosungRound!==curRound+'reveal'){_lastChosungRound=curRound+'reveal';
       setTimeout(()=>{
-        db.ref('rooms/'+roomId+'/game/state').once('value',snap=>{
-          const cur=snap.val();if(!cur||cur.phase!=='reveal'||cur.curRound!==curRound)return;
+        db.ref('rooms/'+roomId+'/game/state').transaction(cur=>{
+          if(!cur||cur.phase!=='reveal'||cur.curRound!==curRound)return cur;
           const next=curRound+1;
-          if(next>=cur.words.length){db.ref('rooms/'+roomId+'/game/state').update({ended:true});}
-          else{db.ref('rooms/'+roomId+'/game/state').update({curRound:next,phase:'guessing',correctOrder:[],timerEnd:Date.now()+16000});}
+          if(next>=cur.words.length)return{...cur,ended:true};
+          return{...cur,curRound:next,phase:'guessing',correctOrder:[],scores:cur.scores||{},timerEnd:Date.now()+10000};
         });
-      },2800);
+      },2600);
     }
     return;
   }
-  // 타이머
   const tick=()=>{
     const rem=Math.max(0,Math.ceil((s.timerEnd-Date.now())/1000));
-    q('cho-timer').textContent=rem;q('cho-timer').style.color=rem<=5?'var(--red)':'var(--accent)';
-    if(rem===0){clearInterval(_choTimer);if(isHost)advanceChosung(s);}
+    q('cho-timer').textContent=rem;q('cho-timer').style.color=rem<=4?'var(--red)':'var(--accent)';
+    if(rem===0){clearInterval(_choTimer);attemptChosungTimeUp(s.timerEnd,curRound);}
   };
   tick();_choTimer=setInterval(tick,600);
 }
-function advanceChosung(s){
-  db.ref('rooms/'+roomId+'/game/state').once('value',snap=>{
-    const cur=snap.val()||s;if(cur.phase!=='guessing')return;
-    const pts=[5,3,1];const ns=Object.assign({},cur.scores);
-    (cur.correctOrder||[]).forEach((uid,i)=>{ns[uid]=(ns[uid]||0)+(pts[i]||0);});
-    // 점수 지급 후 reveal
-    db.ref('rooms/'+roomId+'/game/state').update({phase:'reveal',scores:ns});
-    // Award to Firebase player scores
+function chosungApplyRevealFromGuessing(cur){
+  const pts=[5,3,1];const ns=Object.assign({},cur.scores);
+  (cur.correctOrder||[]).forEach((uid,i)=>{ns[uid]=(ns[uid]||0)+(pts[i]||0);});
+  return{...cur,phase:'reveal',scores:ns};
+}
+function attemptChosungTimeUp(te,round){
+  db.ref('rooms/'+roomId+'/game/state').transaction(cur=>{
+    if(!cur||cur.phase!=='guessing'||cur.curRound!==round||cur.timerEnd!==te)return cur;
+    return chosungApplyRevealFromGuessing(cur);
+  }).then(tx=>{
+    if(!tx.committed)return;
+    const cur=tx.snapshot.val();const pts=[5,3,1];
+    (cur.correctOrder||[]).forEach((uid,i)=>{if(pts[i])addScore(uid,pts[i]);});
+  });
+}
+function tryChosungAllCorrectReveal(){
+  db.ref('rooms/'+roomId+'/game/state').transaction(cur=>{
+    if(!cur||cur.phase!=='guessing')return cur;
+    const ap=cur.activePlayers||[],co=cur.correctOrder||[];
+    if(co.length<ap.length)return cur;
+    return chosungApplyRevealFromGuessing(cur);
+  }).then(tx=>{
+    if(!tx.committed)return;
+    const cur=tx.snapshot.val();const pts=[5,3,1];
     (cur.correctOrder||[]).forEach((uid,i)=>{if(pts[i])addScore(uid,pts[i]);});
   });
 }
@@ -1096,14 +1520,10 @@ function submitChosung(){
   }
   inp.value='';
   db.ref('rooms/'+roomId+'/game/state/correctOrder').transaction(order=>{
-    if(!order)order=[];if(!order.includes(myUid))order.push(myUid);return order;
-  }).then(res=>{
-    if(res.committed){
-      const cur=res.snapshot.val();
-      const ap=(_currentGame?.activePlayers)||s.activePlayers||[];
-      if(isHost&&cur&&cur.length>=ap.length)advanceChosung(s);
-    }
-  });
+    if(!order)order=[];
+    if(!order.includes(myUid))order=[...order,myUid];
+    return order;
+  }).then(()=>tryChosungAllCorrectReveal());
 }
 
 // ══════════════════════════════════════════
@@ -1168,6 +1588,7 @@ function initTelepathy(order){
   return{activePlayers:order,playerOrder:order,curRound:0,cats,phase:'picking',picks:{},scores,timerEnd:Date.now()+21000,ended:false};
 }
 let _lastTpRound=-1;
+let _lastRpsRound=-1;
 function renderTelepathy(s){
   clearInterval(_tpTimer);
   const{playerOrder,curRound,cats,phase,picks,scores,ended}=s;
@@ -1186,7 +1607,7 @@ function renderTelepathy(s){
   if(phase==='picking'){
     cat.opts.forEach(opt=>{
       const btn=document.createElement('div');btn.className='tp-opt'+(myPick===opt?' selected':'');
-      btn.textContent=opt;if(isActive&&!myPick)btn.onclick=()=>pickTelepathy(opt,s);
+      btn.textContent=opt;if(isActive)btn.onclick=()=>pickTelepathy(opt,s);
       optsEl.appendChild(btn);
     });
   } else optsEl.innerHTML='';
@@ -1203,13 +1624,13 @@ function renderTelepathy(s){
       const color=getPC(uid);div.style.borderColor=matched?color:'';div.style.color=matched?color:'';
       div.innerHTML=`<b>${esc(players[uid]?.name||uid)}</b>: ${p||'?'}${matched?' ✅':''}`;rv.appendChild(div);
     });
-    if(isHost&&_lastTpRound!==curRound+'reveal'){_lastTpRound=curRound+'reveal';
+    if(_lastTpRound!==curRound+'reveal'){_lastTpRound=curRound+'reveal';
       setTimeout(()=>{
-        db.ref('rooms/'+roomId+'/game/state').once('value',snap=>{
-          const cur=snap.val();if(!cur||cur.phase!=='reveal'||cur.curRound!==curRound)return;
+        db.ref('rooms/'+roomId+'/game/state').transaction(cur=>{
+          if(!cur||cur.phase!=='reveal'||cur.curRound!==curRound)return cur;
           const next=curRound+1;
-          if(next>=cur.cats.length){db.ref('rooms/'+roomId+'/game/state').update({ended:true});}
-          else{db.ref('rooms/'+roomId+'/game/state').update({curRound:next,phase:'picking',picks:{},timerEnd:Date.now()+21000});}
+          if(next>=cur.cats.length)return{...cur,ended:true};
+          return{...cur,curRound:next,phase:'picking',picks:{},scores:cur.scores||{},timerEnd:Date.now()+21000};
         });
       },3000);
     }
@@ -1220,32 +1641,41 @@ function renderTelepathy(s){
     const tick=()=>{
       const rem=Math.max(0,Math.ceil((s.timerEnd-Date.now())/1000));
       q('tp-timer').textContent=rem;q('tp-timer').style.color=rem<=5?'var(--red)':'var(--accent)';
-      if(rem===0){clearInterval(_tpTimer);if(isHost)revealTelepathy(s);}
+      if(rem===0){clearInterval(_tpTimer);tryCommitTelepathyReveal();}
     };
     tick();_tpTimer=setInterval(tick,600);
   } else q('tp-timer').textContent='';
 }
-function pickTelepathy(opt,s){
-  if(!isActivePl()||(s.picks||{})[myUid])return;
-  db.ref('rooms/'+roomId+'/game/state/picks/'+myUid).set(opt);
-  // 모두 고르면 공개
-  if(isHost){
-    db.ref('rooms/'+roomId+'/game/state').once('value',snap=>{
-      const cur=snap.val();if(!cur)return;
-      const allPicked=cur.activePlayers.every(uid=>(cur.picks||{})[uid]);
-      if(allPicked)revealTelepathy(cur);
-    });
-  }
-}
-function revealTelepathy(s){
-  db.ref('rooms/'+roomId+'/game/state').once('value',snap=>{
-    const cur=snap.val()||s;if(cur.phase!=='picking')return;
+function tryCommitTelepathyReveal(){
+  db.ref('rooms/'+roomId+'/game/state').transaction(cur=>{
+    if(!cur||cur.phase!=='picking')return cur;
+    const ap=cur.activePlayers||[];
+    for(let i=0;i<ap.length;i++){
+      const pk=(cur.picks||{})[ap[i]];
+      if(pk===undefined||pk===null||pk==='')return cur;
+    }
     const picks=cur.picks||{};const pickCounts={};
-    cur.playerOrder.forEach(uid=>{const p=picks[uid];if(p)pickCounts[p]=(pickCounts[p]||0)+1;});
+    ap.forEach(uid=>{const p=picks[uid];if(p)pickCounts[p]=(pickCounts[p]||0)+1;});
     const ns=Object.assign({},cur.scores);
-    cur.playerOrder.forEach(uid=>{const p=picks[uid];if(p&&pickCounts[p]>1){const pts=pickCounts[p]-1;ns[uid]=(ns[uid]||0)+pts;addScore(uid,pts);}});
-    db.ref('rooms/'+roomId+'/game/state').update({phase:'reveal',scores:ns});
+    ap.forEach(uid=>{
+      const p=picks[uid];
+      if(p&&pickCounts[p]>1){const pts=pickCounts[p]-1;ns[uid]=(ns[uid]||0)+pts;}
+    });
+    return{...cur,phase:'reveal',scores:ns};
+  }).then(tx=>{
+    if(!tx.committed)return;
+    const cur=tx.snapshot.val();
+    const picks=cur.picks||{};const pickCounts={};
+    (cur.playerOrder||[]).forEach(uid=>{const p=picks[uid];if(p)pickCounts[p]=(pickCounts[p]||0)+1;});
+    (cur.playerOrder||[]).forEach(uid=>{
+      const p=picks[uid];
+      if(p&&pickCounts[p]>1){const pts=pickCounts[p]-1;if(pts)addScore(uid,pts);}
+    });
   });
+}
+function pickTelepathy(opt,s){
+  if(!isActivePl()||s.phase!=='picking')return;
+  db.ref('rooms/'+roomId+'/game/state/picks/'+myUid).set(opt).then(()=>setTimeout(tryCommitTelepathyReveal,40));
 }
 
 // ══════════════════════════════════════════
@@ -1274,12 +1704,12 @@ function renderRPS(s){
   ['rock','scissors','paper'].forEach((choice,i)=>{
     const b=btns.children[i];if(!b)return;
     b.classList.toggle('selected',myPick===choice);
-    b.style.opacity=(phase==='picking'&&isActive&&!myPick)?'1':'0.6';
-    b.onclick=phase==='picking'&&isActive&&!myPick?()=>pickRPS(choice):null;
+    b.style.opacity=(phase==='picking'&&isActive)?'1':'0.6';
+    b.onclick=phase==='picking'&&isActive?()=>pickRPS(choice):null;
   });
 
   const statusEl=q('rps-status');
-  if(phase==='picking'){statusEl.textContent=myPick?'제출 완료! 다른 플레이어 대기 중...':'선택하세요!';}
+  if(phase==='picking'){statusEl.textContent=myPick?'선택했습니다 (시간 내 변경 가능)':'선택하세요!';}
 
   const rv=q('rps-results');rv.innerHTML='';
   if(phase==='reveal'){
@@ -1292,40 +1722,47 @@ function renderRPS(s){
       div.innerHTML=`<div class="ri">${p?RPS_EMOJI[p]:'?'}</div><div class="rn" style="color:${color}">${esc(players[uid]?.name||uid)}</div><div class="rs" style="color:${color}">${wins}승</div>`;
       rv.appendChild(div);
     });
-    if(isHost){
+    if(_lastRpsRound!==curRound+'reveal'){
+      _lastRpsRound=curRound+'reveal';
       setTimeout(()=>{
-        db.ref('rooms/'+roomId+'/game/state').once('value',snap=>{
-          const cur=snap.val();if(!cur||cur.phase!=='reveal'||cur.curRound!==curRound)return;
+        db.ref('rooms/'+roomId+'/game/state').transaction(cur=>{
+          if(!cur||cur.phase!=='reveal'||cur.curRound!==curRound)return cur;
           const next=curRound+1;
-          if(next>totalRounds){db.ref('rooms/'+roomId+'/game/state').update({ended:true});}
-          else{db.ref('rooms/'+roomId+'/game/state').update({curRound:next,phase:'picking',picks:{}});}
+          if(next>cur.totalRounds)return{...cur,ended:true};
+          return{...cur,curRound:next,phase:'picking',picks:{},scores:cur.scores||{}};
         });
       },2500);
     }
   }
 }
-function pickRPS(choice){
-  if(!isActivePl())return;
-  db.ref('rooms/'+roomId+'/game/state/picks/'+myUid).set(choice);
-  if(isHost){
-    db.ref('rooms/'+roomId+'/game/state').once('value',snap=>{
-      const cur=snap.val();if(!cur)return;
-      const allPicked=cur.activePlayers.every(uid=>(cur.picks||{})[uid]);
-      if(allPicked)revealRPS(cur);
-    });
-  }
-}
-function revealRPS(s){
-  db.ref('rooms/'+roomId+'/game/state').once('value',snap=>{
-    const cur=snap.val()||s;if(cur.phase!=='picking')return;
-    const picks=cur.picks||{};const ns=Object.assign({},cur.scores);
+function tryCommitRPSReveal(){
+  db.ref('rooms/'+roomId+'/game/state').transaction(cur=>{
+    if(!cur||cur.phase!=='picking')return cur;
+    const ap=cur.activePlayers||[];
+    for(let i=0;i<ap.length;i++){
+      if(!cur.picks||cur.picks[ap[i]]===undefined||cur.picks[ap[i]]===null||cur.picks[ap[i]]==='')return cur;
+    }
+    const picks=cur.picks;
+    const ns={...cur.scores};
     cur.playerOrder.forEach(uid=>{
       const p=picks[uid];let wins=0;
       cur.playerOrder.forEach(uid2=>{if(uid!==uid2&&rpsWin(p,picks[uid2])===1)wins++;});
-      ns[uid]=(ns[uid]||0)+wins;if(wins>0)addScore(uid,wins);
+      ns[uid]=(ns[uid]||0)+wins;
     });
-    db.ref('rooms/'+roomId+'/game/state').update({phase:'reveal',scores:ns});
+    return{...cur,phase:'reveal',scores:ns};
+  }).then(tx=>{
+    if(!tx.committed)return;
+    const cur=tx.snapshot.val();const picks=cur.picks||{};
+    cur.playerOrder.forEach(uid=>{
+      const p=picks[uid];let wins=0;
+      cur.playerOrder.forEach(uid2=>{if(uid!==uid2&&rpsWin(p,picks[uid2])===1)wins++;});
+      if(wins>0)addScore(uid,wins);
+    });
   });
+}
+function pickRPS(choice){
+  if(!isActivePl())return;
+  db.ref('rooms/'+roomId+'/game/state/picks/'+myUid).set(choice).then(()=>setTimeout(tryCommitRPSReveal,40));
 }
 
 // ══════════════════════════════════════════
@@ -1361,14 +1798,14 @@ function renderTyping(s){
     ord.appendChild(div);
   });
 
-  if(phase==='reveal'&&isHost&&_lastTypingRound!==curRound+'reveal'){
+  if(phase==='reveal'&&_lastTypingRound!==curRound+'reveal'){
     _lastTypingRound=curRound+'reveal';
     setTimeout(()=>{
-      db.ref('rooms/'+roomId+'/game/state').once('value',snap=>{
-        const cur=snap.val();if(!cur||cur.phase!=='reveal'||cur.curRound!==curRound)return;
+      db.ref('rooms/'+roomId+'/game/state').transaction(cur=>{
+        if(!cur||cur.phase!=='reveal'||cur.curRound!==curRound)return cur;
         const next=curRound+1;
-        if(next>totalRounds){db.ref('rooms/'+roomId+'/game/state').update({ended:true});}
-        else{db.ref('rooms/'+roomId+'/game/state').update({curRound:next,phase:'typing',submissions:[],timerEnd:Date.now()+26000});}
+        if(next>cur.totalRounds)return{...cur,ended:true};
+        return{...cur,curRound:next,phase:'typing',submissions:[],scores:cur.scores||{},timerEnd:Date.now()+26000};
       });
     },3000);
   }
@@ -1377,10 +1814,26 @@ function renderTyping(s){
     const tick=()=>{
       const rem=Math.max(0,Math.ceil((s.timerEnd-Date.now())/1000));
       q('typing-timer').textContent=rem;q('typing-timer').style.color=rem<=5?'var(--red)':'var(--accent)';
-      if(rem===0){clearInterval(_typingTimer);if(isHost)endTypingRound(s);}
+      if(rem===0){clearInterval(_typingTimer);tryFinishTypingRound(s.timerEnd,s.curRound);}
     };
     tick();_typingTimer=setInterval(tick,600);
   } else q('typing-timer').textContent='결과 확인 중...';
+}
+function tryFinishTypingRound(te,round){
+  db.ref('rooms/'+roomId+'/game/state').transaction(cur=>{
+    if(!cur||cur.phase!=='typing'||cur.curRound!==round||(te!=null&&cur.timerEnd!==te))return cur;
+    const ap=cur.activePlayers||[];
+    const subs=[...(cur.submissions||[])];
+    if(subs.length<ap.length)return cur;
+    const pts=[5,3,1];
+    const ns={...cur.scores};
+    subs.forEach((sub,i)=>{ns[sub.uid]=(ns[sub.uid]||0)+(pts[i]||0);});
+    return{...cur,phase:'reveal',scores:ns};
+  }).then(tx=>{
+    if(!tx.committed)return;
+    const cur=tx.snapshot.val();const pts=[5,3,1];
+    (cur.submissions||[]).forEach((sub,i)=>{if(pts[i])addScore(sub.uid,pts[i]);});
+  });
 }
 function submitTyping(){
   const inp=q('typing-input');const text=inp.value;if(!text)return;
@@ -1388,22 +1841,12 @@ function submitTyping(){
   const target=s.texts[s.curRound-1];
   if(text!==target){q('typing-input').select();alert('정확하게 입력해주세요! 다시 시도하세요.');return;}
   inp.value='';
+  const rnd=s.curRound;
   db.ref('rooms/'+roomId+'/game/state/submissions').transaction(subs=>{
-    if(!subs)subs=[];if(!subs.some(s=>s.uid===myUid))subs.push({uid:myUid,t:Date.now()});return subs;
-  }).then(res=>{
-    if(res.committed&&isHost){
-      const cur=_currentGame;
-      if(cur&&(res.snapshot.val()||[]).length>=(cur.activePlayers||[]).length)endTypingRound(cur);
-    }
-  });
-}
-function endTypingRound(s){
-  db.ref('rooms/'+roomId+'/game/state').once('value',snap=>{
-    const cur=snap.val()||s;if(cur.phase!=='typing')return;
-    const pts=[5,3,1];const ns=Object.assign({},cur.scores);
-    (cur.submissions||[]).forEach((sub,i)=>{ns[sub.uid]=(ns[sub.uid]||0)+(pts[i]||0);if(pts[i])addScore(sub.uid,pts[i]);});
-    db.ref('rooms/'+roomId+'/game/state').update({phase:'reveal',scores:ns});
-  });
+    const list=subs?[...subs]:[];
+    if(list.some(x=>x.uid===myUid))return subs;
+    return[...list,{uid:myUid,t:Date.now()}];
+  }).then(()=>setTimeout(()=>tryFinishTypingRound(null,rnd),60));
 }
 
 // ══════════════════════════════════════════
@@ -1429,7 +1872,10 @@ function renderOX(s){
 
   if(phase==='answering'){
     oEl.className='ox-btn'+(myAns==='O'?' picked':'');xEl.className='ox-btn'+(myAns==='X'?' picked':'');
-    oEl.onclick=isActive&&!myAns?()=>answerOX('O'):null;xEl.onclick=isActive&&!myAns?()=>answerOX('X'):null;
+    if(isActive){
+      oEl.onclick=()=>answerOX('O');
+      xEl.onclick=()=>answerOX('X');
+    }else{oEl.onclick=null;xEl.onclick=null;}
     oEl.style.opacity=isActive?'1':'0.5';xEl.style.opacity=isActive?'1':'0.5';
     q('ox-result').textContent='';
   } else {
@@ -1450,50 +1896,57 @@ function renderOX(s){
   });
 
   if(phase==='reveal'){
-    if(isHost&&_lastOxQ!==curQ+'reveal'){_lastOxQ=curQ+'reveal';
+    if(_lastOxQ!==curQ+'reveal'){_lastOxQ=curQ+'reveal';
       setTimeout(()=>{
-        db.ref('rooms/'+roomId+'/game/state').once('value',snap=>{
-          const cur=snap.val();if(!cur||cur.phase!=='reveal')return;
-          const aliveCount=cur.playerOrder.filter(uid=>cur.alive[uid]).length;
-          const next=curQ+1;
-          if(aliveCount<=1||next>=cur.questions.length){db.ref('rooms/'+roomId+'/game/state').update({ended:true});}
-          else{db.ref('rooms/'+roomId+'/game/state').update({curQ:next,phase:'answering',answers:{},timerEnd:Date.now()+11000});}
+        db.ref('rooms/'+roomId+'/game/state').transaction(cur=>{
+          if(!cur||cur.phase!=='reveal')return cur;
+          const aliveCount=(cur.playerOrder||[]).filter(uid=>cur.alive&&cur.alive[uid]).length;
+          const nq=cur.curQ;
+          const next=nq+1;
+          if(aliveCount<=1||next>=cur.questions.length)return{...cur,ended:true};
+          return{...cur,curQ:next,phase:'answering',answers:{},timerEnd:Date.now()+11000};
         });
       },2800);
     }
     return;
   }
 
-  // 타이머
   const tick=()=>{
     const rem=Math.max(0,Math.ceil((s.timerEnd-Date.now())/1000));
     const tiEl=q('ox-timer');tiEl.textContent=rem;tiEl.className='ox-timer'+(rem<=3?' urgent':'');
-    if(rem===0){clearInterval(_oxTimer);if(isHost)revealOX(s);}
+    if(rem===0){clearInterval(_oxTimer);tryRevealOXTimeout(s.timerEnd,s.curQ);}
   };
   tick();_oxTimer=setInterval(tick,600);
 }
-function answerOX(choice){
-  if(!isActivePl())return;
-  db.ref('rooms/'+roomId+'/game/state/answers/'+myUid).set(choice);
-  if(isHost){
-    db.ref('rooms/'+roomId+'/game/state').once('value',snap=>{
-      const cur=snap.val();if(!cur)return;
-      const aliveUids=cur.activePlayers.filter(uid=>cur.alive[uid]);
-      const allAnswered=aliveUids.every(uid=>(cur.answers||{})[uid]);
-      if(allAnswered)revealOX(cur);
-    });
-  }
-}
-function revealOX(s){
-  db.ref('rooms/'+roomId+'/game/state').once('value',snap=>{
-    const cur=snap.val()||s;if(cur.phase!=='answering')return;
-    const correct=cur.questions[cur.curQ].a;const newAlive=Object.assign({},cur.alive);
-    cur.activePlayers.forEach(uid=>{
-      if(!cur.alive[uid])return;
-      if((cur.answers||{})[uid]!==correct)newAlive[uid]=false;
-    });
-    db.ref('rooms/'+roomId+'/game/state').update({phase:'reveal',alive:newAlive});
+function tryRevealOXTimeout(te,qIdx){
+  db.ref('rooms/'+roomId+'/game/state').transaction(cur=>{
+    if(!cur||cur.phase!=='answering'||cur.curQ!==qIdx||cur.timerEnd!==te)return cur;
+    return computeOXRevealState(cur);
   });
+}
+function tryRevealOXWhenAllAnswered(){
+  db.ref('rooms/'+roomId+'/game/state').transaction(cur=>{
+    if(!cur||cur.phase!=='answering')return cur;
+    const alive=(cur.playerOrder||[]).filter(uid=>cur.alive&&cur.alive[uid]);
+    const ans=cur.answers||{};
+    const ok=alive.every(uid=>ans[uid]==='O'||ans[uid]==='X');
+    if(!ok)return cur;
+    return computeOXRevealState(cur);
+  });
+}
+function computeOXRevealState(cur){
+  const correct=cur.questions[cur.curQ].a;
+  const na={...cur.alive};
+  (cur.playerOrder||[]).forEach(uid=>{
+    if(!cur.alive||!cur.alive[uid])return;
+    if((cur.answers||{})[uid]!==correct)na[uid]=false;
+  });
+  return{...cur,phase:'reveal',alive:na};
+}
+function answerOX(choice){
+  const g=_currentGame;if(!isActivePl()||!g||g.phase!=='answering')return;
+  if(g.alive&&g.alive[myUid]===false)return;
+  db.ref('rooms/'+roomId+'/game/state/answers/'+myUid).set(choice).then(()=>setTimeout(tryRevealOXWhenAllAnswered,40));
 }
 function showOXEnd(s){
   const alive=s.playerOrder.filter(uid=>s.alive[uid]);
