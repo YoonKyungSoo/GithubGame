@@ -439,6 +439,7 @@ let _totals={};
 let _currentGame=null, _currentType=null, _amInRound=false;
 let _timer=null, _wTimer=null, _choTimer=null, _tpTimer=null, _oxTimer=null, _typingTimer=null;
 let _flagMode=false;
+let _leftCurrentGame=false;
 const TURN_MS=10000;
 let _timerAnim=null, _timeoutKey='';
 
@@ -477,6 +478,7 @@ const TYPING_TEXTS=[
   '키보드를 바라보지 않고 화면을 보며 입력해보세요','짧은 문장도 방심하면 오타가 날 수 있습니다','빠른 사람에게 더 높은 점수가 주어집니다','연습할수록 타자 속도는 점점 빨라집니다','집중력이 승부를 가르는 순간입니다'
 ];
 const OX_Q = [
+  {q:'윤경수는 잘생기고 미남이다.',a:'O'},
   {q:'대한민국의 수도는 서울이다',a:'O'},{q:'세계에서 가장 큰 나라는 중국이다',a:'X'},{q:'물은 100도에서 끓는다',a:'O'},{q:'펭귄은 날 수 있다',a:'X'},{q:'달은 스스로 빛을 낸다',a:'X'},{q:'가장 짧은 달은 2월이다',a:'O'},
   {q:'한글은 세종대왕 때 창제되었다',a:'O'},{q:'지구는 태양 주위를 돈다',a:'O'},{q:'고래는 물고기다',a:'X'},{q:'사람의 심장은 보통 왼쪽 가슴 쪽에 있다',a:'O'},
   {q:'1년은 항상 365일이다',a:'X'},{q:'무지개는 보통 일곱 가지 색으로 표현한다',a:'O'},{q:'축구 한 팀은 경기장에 11명이 뛴다',a:'O'},{q:'올림픽은 매년 열린다',a:'X'},
@@ -529,7 +531,7 @@ function enterRoom(){
       _currentType=g.type; _currentGame=g.state;
       handleGameState();
     } else {
-      _currentType=null; _currentGame=null;
+      _currentType=null; _currentGame=null; _leftCurrentGame=false;
       closeEntryOverlay();
       navTo('lobby');
     }
@@ -573,7 +575,10 @@ function navTo(name){
 function stopAllTimers(){ clearInterval(_timer); clearInterval(_wTimer); clearInterval(_choTimer); clearInterval(_tpTimer); clearInterval(_oxTimer); clearInterval(_typingTimer); }
 function backToLobby(){
   stopAllTimers(); hideCommonTimer(); renderControls(null);
+  _leftCurrentGame=true;
   leaveCurrentRound(false);
+  closeEntryOverlay();
+  q('spectator-banner').style.display='none';
   navTo('lobby');
 }
 function leaveCurrentRound(removeGameIfEmpty=false){
@@ -763,6 +768,7 @@ function startEntryPhase(){
 }
 
 function setEntry(choice) {
+  _leftCurrentGame=false;
   if(_currentGame?.phase === 'entry') db.ref(`rooms/${roomId}/game/state/entries/${myUid}`).set(choice);
 }
 function closeEntryOverlay() { q('entry-overlay').classList.remove('active'); }
@@ -773,6 +779,7 @@ function hostStartActualGame() {
   // _uidOrder 기준으로 순서를 보장하여 activePlayers 배열 생성
   const activePlayers = _uidOrder.filter(u => entries[u] === 'play' && players[u]?.online);
   if(activePlayers.length < 1) { alert("최소 1명의 참가자가 필요합니다."); return; }
+  if(_currentType==='baseball' && activePlayers.length < 2) { alert("숫자야구는 최소 2명부터 가능합니다."); return; }
   
   const inits = {mine:initMine, word:initWord, chosung:initChosung, baseball:initBaseball, telepathy:initTelepathy, rps:initRPS, typing:initTyping, ox:initOX};
   const state = inits[_currentType](activePlayers);
@@ -783,6 +790,10 @@ function hostStartActualGame() {
 // Handle State Changes
 function handleGameState() {
   const g = _currentGame;
+  if(_leftCurrentGame && g && g.phase!=='entry' && !(g.activePlayers||[]).includes(myUid)){
+    closeEntryOverlay(); hideCommonTimer(); renderControls(null); q('spectator-banner').style.display='none'; navTo('lobby'); return;
+  }
+  if(g && (g.activePlayers||[]).includes(myUid)) _leftCurrentGame=false;
   navTo(_currentType);
   stopAllTimers();
   
@@ -980,7 +991,6 @@ function passWordTurn(){ db.ref(`rooms/${roomId}/game/state`).transaction(s=>{ i
 function submitWord(){
   const inp=q('winput'); const word=inp.value.trim(); if(!word)return;
   if(!isHangulWord2(word)){alert('한글 2~15자만 가능합니다.');return;}
-  if(!WORD_SET.has(word)){alert('사전에 등록되지 않은 단어입니다.');return;}
   db.ref(`rooms/${roomId}/game/state`).once('value',snap=>{
     const s=snap.val(); if(!s||s.activePlayers[s.curIdx]!==myUid||!isActivePl())return;
     if(word[0]!==s.lastChar){alert(`"${s.lastChar}"(으)로 시작해야 합니다!`);return;}
@@ -1106,7 +1116,7 @@ function initBaseball(ap){
   return withTimer({phase:'setup', activePlayers:ap, curIdx:0, inning:1, maxInnings:9, secrets:{}, guesses:[], winner:null, scores:Object.fromEntries(ap.map(u=>[u,0]))});
 }
 function renderBaseball(s){
-  renderCommonTimer(s, s.phase==='setup'?'비밀번호 설정 시간':'추리 시간'); renderControls(s); if(isEndedState(s)) addTotalsOnce(s);
+  renderCommonTimer(s, s.phase==='setup'?'번호 설정 시간':'추리 시간'); renderControls(s); if(isEndedState(s)) addTotalsOnce(s);
   const active=(s.activePlayers||[]);
   const ti=q('bb-turn');
   const hasSecret=!!s.secrets?.[myUid];
@@ -1116,7 +1126,7 @@ function renderBaseball(s){
   const canInput=(setup && isActivePl() && !hasSecret) || isMyTurn;
   const btn=q('bb-submit-btn');
   const targetSel=q('bb-target');
-  if(btn) btn.textContent = setup ? '비밀번호 저장' : '추리하기';
+  if(btn) btn.textContent = setup ? '번호 저장' : '추리하기';
 
   if(targetSel){
     targetSel.style.display = (!setup && !ended && isMyTurn) ? 'block' : 'none';
@@ -1133,7 +1143,7 @@ function renderBaseball(s){
     ti.textContent=`${players[s.winner]?.name||'승자'} 승리! (${near})`; ti.className='turn-ind';
   } else if(setup){
     const done=Object.keys(s.secrets||{}).length;
-    ti.textContent=hasSecret?`내 비밀번호 저장 완료 (${done}/${active.length})`:`나만의 비밀번호 3자리를 입력하세요 (${done}/${active.length})`;
+    ti.textContent=hasSecret?`내 번호 저장 완료 (${done}/${active.length})`:`나만의 번호 3개를 입력해주세요 (${done}/${active.length})`;
     ti.className=hasSecret?'turn-ind wait':'turn-ind';
   } else if(isMyTurn){
     ti.textContent=`${s.inning||1}/${s.maxInnings||9}회 — 맞힐 상대를 선택하고 추리하세요`; ti.className='turn-ind';
@@ -1149,7 +1159,7 @@ function renderBaseball(s){
     active.forEach(u=>{
       const row=document.createElement('div'); row.className='bb-row';
       const color=getPC(u);
-      row.innerHTML=`<span class="bb-who" style="color:${color}">${esc(players[u]?.name||'')}</span><span class="bb-guess">${s.secrets?.[u]?'🔒 설정완료':'⌛ 대기중'}</span><span class="bb-result"></span>`;
+      row.innerHTML=`<span class="bb-who" style="color:${color}">${esc(players[u]?.name||'')}</span><span class="bb-guess">${s.secrets?.[u]?'🔒 번호등록 완료':'⌛ 번호등록 대기중'}</span><span class="bb-result"></span>`;
       hist.appendChild(row);
     });
     return;
