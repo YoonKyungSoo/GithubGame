@@ -90,8 +90,12 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
 .timer-bar{height:8px;background:var(--bg);border:1px solid var(--border);border-radius:8px;overflow:hidden}
 #timer-fill{height:100%;width:100%;background:var(--accent);transition:width .15s linear}
 #game-controls{display:none;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-#total-scores{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+#status-row{display:flex;gap:8px;align-items:flex-start;margin-bottom:12px}
+#total-scores{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:0}
 .total-chip{font-size:10px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:4px 10px}
+#mobile-chat-preview{display:none;flex:1;min-width:0;align-items:center;gap:6px;background:rgba(17,29,53,.72);border:1px solid var(--border);border-radius:13px;padding:5px 10px;font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;cursor:pointer}
+#mobile-chat-preview .mcp-icon{flex:0 0 auto;color:var(--accent)}
+#mobile-chat-preview .mcp-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .opt-grid{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .opt-btn{padding:7px 10px;background:var(--bg);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:inherit;font-size:10px;cursor:pointer}
 .opt-btn.on{border-color:var(--accent);color:var(--accent);background:rgba(56,217,169,.1)}
@@ -174,6 +178,7 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
   #chatpanel.open{transform:translateX(0)}
   .icon-btn{display:flex}
   .hcrumb{display:none}
+  #mobile-chat-preview{display:flex}
 }
 </style>
 </head>
@@ -251,7 +256,10 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
         <button class="btn btn-secondary" onclick="backToLobby()">🏠 로비로</button>
         <button class="btn btn-danger" id="end-game-btn" onclick="endGameToLobby()">게임 종료</button>
       </div>
-      <div id="total-scores"></div>
+      <div id="status-row">
+        <div id="total-scores"></div>
+        <div id="mobile-chat-preview" onclick="toggleChat()"><span class="mcp-icon">💬</span><span class="mcp-text" id="mobile-chat-text">아직 채팅이 없습니다.</span></div>
+      </div>
 
       <div id="view-lobby" class="view active">
         <div class="vtitle">🎮 미니게임 플랫폼</div>
@@ -492,11 +500,16 @@ function enterRoom(){
     }
   });
   db.ref(`rooms/${roomId}/chat`).limitToLast(50).on('child_added', snap=>appendChat(snap.val()));
+  sysChat(`${myName}님이 참여했습니다.`);
   
   // Mobile setup
   if(window.innerWidth<=768){ q('chatpanel').classList.remove('open'); q('sb').classList.remove('open'); }
 }
-function leaveRoom(){db.ref(`rooms/${roomId}/players/${myUid}`).update({online:false}); setTimeout(()=>location.reload(),200);}
+function leaveRoom(){
+  sysChat(`${myName}님이 퇴장했습니다.`);
+  db.ref(`rooms/${roomId}/players/${myUid}`).update({online:false});
+  setTimeout(()=>location.reload(),200);
+}
 
 // Chat
 function sendChat(){
@@ -505,9 +518,15 @@ function sendChat(){
   inp.value='';
 }
 function appendChat(d){
-  const el=document.createElement('div'); el.className='cmsg';
-  el.innerHTML= d.uid==='sys' ? `<div class="ctext sys">— ${esc(d.msg)}</div>` : `<div class="csender" style="color:${getPC(d.uid)}">${esc(d.name)}</div><div class="ctext">${esc(d.msg)}</div>`;
+  const el=document.createElement('div'); el.className='cmsg' + (d.uid==='sys' ? ' sys' : '');
+  el.innerHTML= d.uid==='sys' ? `<div class="ctext">— ${esc(d.msg)}</div>` : `<div class="csender" style="color:${getPC(d.uid)}">${esc(d.name)}</div><div class="ctext">${esc(d.msg)}</div>`;
   const c=q('chatmsgs'); c.appendChild(el); c.scrollTop=c.scrollHeight;
+  updateMobileChatPreview(d);
+}
+function updateMobileChatPreview(d){
+  const el=q('mobile-chat-text'); if(!el || !d) return;
+  if(d.uid==='sys') el.textContent = `알림: ${d.msg||''}`;
+  else el.textContent = `${d.name||'익명'}: ${d.msg||''}`;
 }
 function sysChat(msg){db.ref(`rooms/${roomId}/chat`).push({uid:'sys', name:'', msg, t:Date.now()});}
 
