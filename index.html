@@ -145,6 +145,21 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
 .mcell.mmine{background:#7f1d1d}
 .mcell.mflagged{background:rgba(255,169,77,.15);color:var(--orange);}
 
+/* BINGO */
+#bingo-myboard{display:grid;grid-template-columns:repeat(5,46px);gap:3px;margin-bottom:6px}
+.b-col-hdr{width:46px;height:26px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:bold;color:var(--accent);letter-spacing:2px}
+.bcell{width:46px;height:46px;display:flex;align-items:center;justify-content:center;background:var(--card);border:1px solid var(--border);border-radius:5px;font-size:15px;font-weight:bold;color:var(--text);position:relative;transition:all .2s}
+.bcell.marked{background:rgba(56,217,169,.12);border-color:var(--accent);color:var(--accent)}
+.bcell.marked::after{content:'○';position:absolute;font-size:34px;color:var(--accent);opacity:.28;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
+.bcell.bline{background:rgba(56,217,169,.28);border-color:var(--accent)}
+.bnum-btn{width:36px;height:36px;background:var(--card);border:1px solid var(--border);border-radius:4px;font-size:12px;font-weight:bold;color:var(--text);cursor:pointer;transition:all .12s;display:flex;align-items:center;justify-content:center}
+.bnum-btn:hover:not(:disabled):not(.bcalled){border-color:var(--accent);color:var(--accent);background:rgba(56,217,169,.1)}
+.bnum-btn.bcalled{color:var(--muted);text-decoration:line-through;cursor:default;opacity:.5}
+.bnum-btn:disabled{cursor:not-allowed;opacity:.4}
+.bcalled-chip{width:32px;height:32px;background:var(--accent);color:#080d17;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold;flex-shrink:0}
+.bingo-counter{display:flex;gap:6px;align-items:center;font-size:13px;margin-top:8px}
+.bingo-dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--accent)}
+.bingo-dot.won{background:var(--accent)}
 /* CHOSUNG / WORD */
 .cho-display,.wchain{text-align:center;padding:22px;background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:12px}
 .cho-chars,.cword{font-size:36px;letter-spacing:8px;font-weight:bold;color:var(--accent)}
@@ -193,6 +208,29 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
 .bb-help{font-size:11px;color:var(--muted);line-height:1.55;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:8px 10px;margin-bottom:10px}
 .bb-my-secret{font-size:12px;color:var(--accent);font-weight:bold;margin-bottom:8px}
 
+/* 게임 뷰 공통 비주얼 개선 */
+.game-state-banner{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;margin-bottom:12px;font-size:13px;font-weight:bold}
+.vtitle{font-size:18px;font-weight:bold;margin-bottom:4px;letter-spacing:.5px}
+.vsub{font-size:11px;color:var(--muted);margin-bottom:14px;line-height:1.5}
+.winner-banner{animation:fadeIn .4s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+/* 숫자야구 스코어보드 */
+.bb-scoreboard{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.bb-inning-block{display:flex;flex-direction:column;align-items:center;padding:6px 10px;background:var(--card);border:1px solid var(--border);border-radius:6px;min-width:44px}
+.bb-inning-num{font-size:9px;color:var(--muted);margin-bottom:3px}
+.bb-sbo-row{display:flex;gap:3px}
+.sbo-dot{width:10px;height:10px;border-radius:50%;border:1.5px solid}
+.sbo-dot.s{border-color:#ffa94d}.sbo-dot.s.on{background:#ffa94d}
+.sbo-dot.b{border-color:#4dabf7}.sbo-dot.b.on{background:#4dabf7}
+.sbo-dot.o{border-color:#ff6b6b}.sbo-dot.o.on{background:#ff6b6b}
+.bb-field{position:relative;width:130px;height:130px;flex-shrink:0;margin-bottom:12px}
+.bb-diamond{position:absolute;top:50%;left:50%;width:60px;height:60px;border:2px solid var(--border);transform:translate(-50%,-50%) rotate(45deg)}
+.bb-base{position:absolute;width:12px;height:12px;background:var(--border);border-radius:2px}
+.bb-base.home{bottom:2px;left:50%;transform:translateX(-50%) rotate(45deg)}
+.bb-base.first{right:10px;top:50%;transform:translateY(-50%) rotate(45deg)}
+.bb-base.second{top:2px;left:50%;transform:translateX(-50%) rotate(45deg)}
+.bb-base.third{left:10px;top:50%;transform:translateY(-50%) rotate(45deg)}
+.bb-base.active{background:var(--accent)}
 @media(max-width:768px){
   #sb{position:fixed;left:0;top:0;height:100%;transform:translateX(-100%);transition:transform .25s;width:220px}
   #sb.open{transform:translateX(0)}
@@ -275,7 +313,7 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
       </div>
       <div id="game-controls">
         <button class="btn btn-primary" id="replay-btn" onclick="restartGame()">🔁 다시하기</button>
-        <button class="btn btn-secondary" onclick="backToLobby()">🏠 로비로</button>
+        <button class="btn btn-secondary" id="lobby-btn" onclick="backToLobby()">🏠 로비로</button>
         <button class="btn btn-danger" id="end-game-btn" onclick="endGameToLobby()">게임 종료</button>
       </div>
       <div id="status-row">
@@ -329,6 +367,7 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
           <div class="gcard" id="gc-typing" onclick="selectGame('typing')"><div class="gemo">⌨️</div><div class="gname">타이핑 경주</div></div>
           <div class="gcard" id="gc-dino" onclick="selectGame('dino')"><div class="gemo">🦖</div><div class="gname">공룡 달리기</div></div>
           <div class="gcard" id="gc-ox" onclick="selectGame('ox')"><div class="gemo">⭕</div><div class="gname">OX 퀴즈</div></div>
+          <div class="gcard" id="gc-bingo" onclick="selectGame('bingo')"><div class="gemo">🎯</div><div class="gname">빙고</div></div>
         </div>
         <div style="margin-top:10px">
           <button class="btn btn-primary" id="start-btn" onclick="startEntryPhase()" disabled>🎮 게임 방 생성</button>
@@ -377,6 +416,7 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
 
       <div id="view-baseball" class="view">
         <div class="ghdr"><div><div class="vtitle">⚾ 숫자야구</div></div><button class="btn btn-secondary" onclick="backToLobby()">나가기</button></div>
+        <div id="bb-scoreboard-vis" class="bb-scoreboard"></div>
         <div id="bb-turn" class="turn-ind wait" style="margin-bottom:10px">대기 중</div>
         <div class="bb-help">처음에는 나만의 서로 다른 숫자 3개를 등록합니다. 추리 단계에서는 상대를 선택해 3자리 숫자를 입력하세요. 숫자와 위치가 모두 맞으면 스트라이크, 숫자는 맞지만 위치가 틀리면 볼, 둘 다 틀리면 아웃입니다.</div>
         <div id="bb-my-secret" class="bb-my-secret"></div>
@@ -449,6 +489,30 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
 
     </div>
 
+    <div id="view-bingo" class="view">
+      <div class="ghdr"><div><div class="vtitle">🎯 빙고</div><div class="vsub">3줄 빙고 완성 시 승리! 내 차례에 1~25 중 하나를 선언하세요.</div></div><button class="btn btn-secondary" onclick="backToLobby()">나가기</button></div>
+      <div id="bingo-turn" class="turn-ind wait" style="margin-bottom:10px">대기 중</div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
+        <div>
+          <div style="font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-bottom:4px">내 빙고판</div>
+          <div style="display:flex;margin-bottom:3px"><div class="b-col-hdr">B</div><div class="b-col-hdr">I</div><div class="b-col-hdr">N</div><div class="b-col-hdr">G</div><div class="b-col-hdr">O</div></div>
+          <div id="bingo-myboard"></div>
+          <div id="bingo-counter" class="bingo-counter"></div>
+        </div>
+        <div style="flex:1;min-width:180px">
+          <div style="font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-bottom:6px">선언된 숫자 (<span id="bingo-called-count">0</span>/25)</div>
+          <div id="bingo-called" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:14px;min-height:36px"></div>
+          <div id="bingo-call-area">
+            <div style="font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-bottom:6px">숫자 선언 (내 차례)</div>
+            <div id="bingo-numpad" style="display:grid;grid-template-columns:repeat(5,36px);gap:3px"></div>
+          </div>
+        </div>
+      </div>
+      <div id="bingo-others" style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap"></div>
+      <div id="bingo-scores" class="scoreboard" style="margin-top:12px"></div>
+      <div id="bingo-win" class="winner-banner" style="display:none"><div class="wtext" id="bingo-win-text"></div></div>
+    </div>
+
     <div id="chatpanel">
       <div class="chdr"><span>💬 채팅</span></div>
       <div id="chatmsgs"></div>
@@ -472,7 +536,7 @@ const db = firebase.database();
 
 const PC = ['#38d9a9','#ffa94d','#9775fa','#4dabf7','#ff6b6b'];
 let myUid='u'+Math.random().toString(36).substr(2,8);
-let myName='', roomId='', isHost=false, players={}, _uidOrder=[];
+let myName='', roomId='', isHost=false, hostUid='', players={}, _uidOrder=[];
 let _omokPrep={mode:'solo',soloOrder:[],teamBlack:[],teamWhite:[],teamBench:[]};
 let _minePrep={difficulty:'normal'};
 let _totals={};
@@ -544,7 +608,9 @@ function isHangulWord2(w){return typeof w==='string'&&/^[가-힣]{2,15}$/.test(w
 // Room Logic
 function createRoom(){
   myName=q('inp-name').value.trim(); if(!myName)return;
-  roomId=Math.random().toString(36).substr(2,6).toUpperCase(); isHost=true; enterRoom();
+  roomId=Math.random().toString(36).substr(2,6).toUpperCase(); isHost=true; hostUid=myUid;
+  db.ref(`rooms/${roomId}/hostUid`).set(myUid);
+  enterRoom();
 }
 function joinRoom(){
   myName=q('inp-name').value.trim(); const code=q('inp-room').value.trim().toUpperCase();
@@ -565,6 +631,12 @@ function enterRoom(){
   });
   db.ref(`rooms/${roomId}/prep/omok`).on('value', snap=>{ _omokPrep=snap.val()||{}; updatePlayerUI(); });
   db.ref(`rooms/${roomId}/prep/mine`).on('value', snap=>{ _minePrep=snap.val()||{difficulty:'normal'}; updatePlayerUI(); });
+  db.ref(`rooms/${roomId}/hostUid`).on('value', snap=>{
+    const h=snap.val(); hostUid=h||'';
+    const wasHost=isHost; isHost=(h===myUid);
+    if(wasHost!==isHost){ updatePlayerUI(); if(_currentGame) renderControls(_currentGame); }
+    else updatePlayerUI();
+  });
   db.ref(`rooms/${roomId}/totals`).on('value', snap=>{ _totals=snap.val()||{}; renderTotals(); });
   db.ref(`rooms/${roomId}/selectedGame`).on('value', snap=>{ _selGame=snap.val()||null; _currentType=_selGame; document.querySelectorAll('.gcard').forEach(c=>c.classList.remove('sel')); if(_selGame) q('gc-'+_selGame)?.classList.add('sel'); if(q('start-btn')) q('start-btn').disabled=!_selGame; updatePlayerUI(); });
   db.ref(`rooms/${roomId}/game`).on('value', snap=>{
@@ -591,9 +663,20 @@ function enterRoom(){
   if(window.innerWidth<=768){ q('chatpanel').classList.remove('open'); q('sb').classList.remove('open'); }
 }
 function leaveRoom(){
+  if(isHost){
+    const next=_uidOrder.find(u=>u!==myUid&&players[u]?.online);
+    if(next){ db.ref(`rooms/${roomId}/hostUid`).set(next); sysChat(`👑 방장 권한이 ${players[next]?.name||''}님에게 자동 위임되었습니다.`); }
+    else db.ref(`rooms/${roomId}/hostUid`).remove();
+  }
   sysChat(`${myName}님이 퇴장했습니다.`);
   db.ref(`rooms/${roomId}/players/${myUid}`).update({online:false});
   setTimeout(()=>location.reload(),200);
+}
+function delegateHostTo(uid){
+  if(!isHost||uid===myUid||!players[uid]?.online) return;
+  if(!confirm(`${players[uid]?.name||''}님에게 방장을 위임할까요?`)) return;
+  db.ref(`rooms/${roomId}/hostUid`).set(uid);
+  sysChat(`👑 방장 권한이 ${players[uid]?.name||''}님에게 위임되었습니다.`);
 }
 
 // Chat
@@ -624,7 +707,11 @@ function stopAllTimers(){ clearInterval(_timer); clearInterval(_wTimer); clearIn
 function backToLobby(){
   stopAllTimers(); hideCommonTimer(); renderControls(null);
   _leftCurrentGame=true;
-  leaveCurrentRound(false);
+  if(isHost && _currentGame && !isEndedState(_currentGame)){
+    db.ref(`rooms/${roomId}/game`).remove();
+  } else {
+    leaveCurrentRound(false);
+  }
   closeEntryOverlay();
   q('spectator-banner').style.display='none';
   navTo('lobby');
@@ -633,6 +720,7 @@ function leaveCurrentRound(removeGameIfEmpty=false){
   if(!roomId || !_currentGame || _currentGame.phase==='entry') return;
   db.ref(`rooms/${roomId}/game/state`).transaction(cur=>{
     if(!cur) return cur;
+    const prevCount=(cur.activePlayers||[]).length;
     cur.activePlayers=(cur.activePlayers||[]).filter(u=>u!==myUid);
     if(cur.pendingNextRound) delete cur.pendingNextRound[myUid];
     if(cur.blackTeam) cur.blackTeam=(cur.blackTeam||[]).filter(u=>u!==myUid);
@@ -640,10 +728,17 @@ function leaveCurrentRound(removeGameIfEmpty=false){
     if(cur.soloOrder) cur.soloOrder=(cur.soloOrder||[]).filter(u=>u!==myUid);
     if(cur.activePlayers.length===0){
       if(removeGameIfEmpty) return null;
+      cur.ended=true; cur.phase='ended'; cur.deadline=null; return cur;
+    }
+    // 1:1에서 한 명이 나가면 남은 사람 즉시 승리
+    if(prevCount===2 && cur.activePlayers.length===1 && !cur.ended){
+      const winner=cur.activePlayers[0];
       cur.ended=true; cur.phase='ended'; cur.deadline=null;
+      cur.scores=cur.scores||{}; cur.scores[winner]=(cur.scores[winner]||0)+10;
+      cur.forcedWinner=winner;
       return cur;
     }
-    if(typeof cur.curIdx==='number') cur.curIdx=cur.curIdx % cur.activePlayers.length;
+    if(typeof cur.curIdx==='number') cur.curIdx=cur.curIdx % Math.max(1,cur.activePlayers.length);
     return cur;
   });
 }
@@ -661,8 +756,13 @@ function updatePlayerUI(){
   if(!h||!sb)return; h.innerHTML=''; sb.innerHTML='';
   _uidOrder.forEach(uid=>{
     const p=players[uid]; if(!p||!p.online)return;
-    h.innerHTML+=`<div style="width:8px;height:8px;border-radius:50%;background:${getPC(uid)}" title="${p.name}"></div>`;
-    sb.innerHTML+=`<div class="pitem"><div class="dot" style="background:${getPC(uid)}"></div><div class="pn">${esc(p.name)}</div></div>`;
+    const isH=uid===hostUid;
+    h.innerHTML+=`<div style="width:8px;height:8px;border-radius:50%;background:${getPC(uid)};${isH?'outline:2px solid var(--accent);outline-offset:2px':''}" title="${p.name}${isH?' 👑':''}"></div>`;
+    sb.innerHTML+=`<div class="pitem">
+      <div class="dot" style="background:${getPC(uid)}"></div>
+      <div class="pn">${esc(p.name)}${isH?' <span style=\'font-size:10px\'>👑</span>':''}</div>
+      ${isHost&&uid!==myUid&&uid!==hostUid?`<button onclick="delegateHostTo('${uid}')" style="font-size:9px;padding:1px 5px;background:none;border:1px solid var(--muted);border-radius:3px;color:var(--muted);cursor:pointer;margin-left:auto;flex-shrink:0">위임</button>`:''}
+    </div>`;
   });
   
   // Omok Lobby UI sync
@@ -725,10 +825,17 @@ function maybeScheduleTimeout(s, key, fn){
 }
 function renderControls(s){
   const el=q('game-controls'); if(!el)return;
-  const show=!!s && (isEndedState(s) || s.phase==='reveal');
+  const ended=!!s&&isEndedState(s);
+  const show=ended||(!!s&&s.phase==='reveal');
   el.style.display=show?'flex':'none';
-  q('replay-btn').style.display=isHost&&isEndedState(s)?'block':'none';
+  if(!show) return;
+  q('replay-btn').style.display=isHost&&ended?'block':'none';
   q('end-game-btn').style.display=isHost?'block':'none';
+  const lb=q('lobby-btn');
+  if(lb){
+    if(!isHost&&ended) lb.textContent='🏠 로비로 (방장 종료 대기)';
+    else lb.textContent='🏠 로비로';
+  }
 }
 function renderTotals(){
   const el=q('total-scores'); if(!el)return;
@@ -760,7 +867,7 @@ function restartGame(){
   let ap=[...new Set([...( _currentGame.activePlayers||[]), ...Object.keys(_currentGame.pendingNextRound||{})])].filter(u=>players[u]?.online);
   if(ap.length<1){alert('참가자가 없습니다.');return;}
   if(_currentType==='omok') return startOmokActual(ap);
-  const inits={mine:initMine, word:initWord, chosung:initChosung, baseball:initBaseball, telepathy:initTelepathy, rps:initRPS, typing:initTyping, dino:initDino, ox:initOX};
+  const inits={mine:initMine, word:initWord, chosung:initChosung, baseball:initBaseball, telepathy:initTelepathy, rps:initRPS, typing:initTyping, dino:initDino, ox:initOX, bingo:initBingo};
   db.ref(`rooms/${roomId}/game/state`).set(inits[_currentType](ap));
 }
 function setMineDifficulty(d){ db.ref(`rooms/${roomId}/prep/mine`).set({difficulty:d}); }
@@ -829,7 +936,7 @@ function hostStartActualGame() {
   if(activePlayers.length < 1) { alert("최소 1명의 참가자가 필요합니다."); return; }
   if(_currentType==='baseball' && activePlayers.length < 2) { alert("숫자야구는 최소 2명부터 가능합니다."); return; }
   
-  const inits = {mine:initMine, word:initWord, chosung:initChosung, baseball:initBaseball, telepathy:initTelepathy, rps:initRPS, typing:initTyping, dino:initDino, ox:initOX};
+  const inits = {mine:initMine, word:initWord, chosung:initChosung, baseball:initBaseball, telepathy:initTelepathy, rps:initRPS, typing:initTyping, dino:initDino, ox:initOX, bingo:initBingo};
   const state = inits[_currentType](activePlayers);
   db.ref(`rooms/${roomId}/game/state`).set(state);
 }
@@ -864,7 +971,7 @@ function handleGameState() {
   updateSpectatorBanner(g);
   renderControls(g);
 
-  const R = {omok:renderOmok, mine:renderMine, word:renderWord, chosung:renderChosung, baseball:renderBaseball, telepathy:renderTelepathy, rps:renderRPS, typing:renderTyping, dino:renderDino, ox:renderOX};
+  const R = {omok:renderOmok, mine:renderMine, word:renderWord, chosung:renderChosung, baseball:renderBaseball, telepathy:renderTelepathy, rps:renderRPS, typing:renderTyping, dino:renderDino, ox:renderOX, bingo:renderBingo};
   if(R[_currentType]) R[_currentType](g);
 }
 
@@ -1251,6 +1358,25 @@ function initBaseball(ap){
 }
 function renderBaseball(s){
   hideCommonTimer(); renderControls(s); if(isEndedState(s)) addTotalsOnce(s);
+  // 야구 스코어보드 시각화
+  const sbEl=document.getElementById('bb-scoreboard-vis');
+  if(sbEl){
+    const guesses=s.guesses||[];
+    const innings=s.maxInnings||9;
+    let html='';
+    // 이닝별 결과 표시
+    const ap=s.activePlayers||[];
+    html+=ap.map(u=>`<div class="bb-inning-block">
+      <div class="bb-inning-num" style="color:${getPC(u)}">${esc(players[u]?.name?.slice(0,3)||'')}</div>
+      <div style="font-size:14px;font-weight:bold;color:${getPC(u)}">${s.scores?.[u]||0}pt</div>
+    </div>`).join('');
+    // 현재 이닝
+    html+=`<div class="bb-inning-block" style="border-color:var(--accent)">
+      <div class="bb-inning-num" style="color:var(--accent)">이닝</div>
+      <div style="font-size:14px;font-weight:bold;color:var(--accent)">${s.inning||1}/${innings}</div>
+    </div>`;
+    sbEl.innerHTML=html;
+  }
   const active=(s.activePlayers||[]);
   const ti=q('bb-turn');
   const hasSecret=!!s.secrets?.[myUid];
@@ -1787,6 +1913,129 @@ function answerOX(c) {
   if(!isActivePl() || _currentGame?.phase !== 'picking') return;
   db.ref(`rooms/${roomId}/game/state/answers/${myUid}`).set(c).then(() => {
     finishOX(false);
+  });
+}
+
+
+// =========================================================
+// 11. BINGO (각자의 빙고판, 순서대로 숫자 선언, 3줄 빙고 승리)
+// =========================================================
+function _genBingoBoard(){
+  const n=Array.from({length:25},(_,i)=>i+1);
+  for(let i=24;i>0;i--){const j=Math.floor(Math.random()*(i+1));[n[i],n[j]]=[n[j],n[i]];}
+  return [n.slice(0,5),n.slice(5,10),n.slice(10,15),n.slice(15,20),n.slice(20,25)];
+}
+function _getBingoLines(board,called){
+  const lines=[];
+  for(let i=0;i<5;i++){
+    if(board[i].every(n=>called.includes(n))) lines.push('r'+i);
+    if([0,1,2,3,4].map(r=>board[r][i]).every(n=>called.includes(n))) lines.push('c'+i);
+  }
+  if([0,1,2,3,4].every(i=>called.includes(board[i][i]))) lines.push('d0');
+  if([0,1,2,3,4].every(i=>called.includes(board[i][4-i]))) lines.push('d1');
+  return lines;
+}
+function initBingo(ap){
+  const boards={},scores={},bingoCounts={};
+  ap.forEach(u=>{boards[u]=_genBingoBoard();scores[u]=0;bingoCounts[u]=0;});
+  return withTimer({phase:'playing',activePlayers:ap,curIdx:0,boards,called:[],bingoCounts,scores,winner:null,ended:false});
+}
+function renderBingo(s){
+  renderCommonTimer(s); renderControls(s); if(isEndedState(s)) addTotalsOnce(s);
+  const isMyTurn=s.activePlayers[s.curIdx]===myUid&&isActivePl();
+  const ti=q('bingo-turn');
+  if(s.winner){ ti.textContent=`🎉 ${players[s.winner]?.name||''}님 3빙고!`; ti.className='turn-ind'; }
+  else if(isMyTurn){ ti.textContent='🎯 내 차례! 숫자를 선언하세요'; ti.className='turn-ind'; }
+  else { ti.textContent=`${players[s.activePlayers[s.curIdx]]?.name||''} 차례...`; ti.className='turn-ind wait'; }
+
+  const called=s.called||[];
+  const myBoard=s.boards?.[myUid];
+
+  // 내 빙고판
+  if(myBoard){
+    const lines=_getBingoLines(myBoard,called);
+    const cnt=lines.length;
+    const ctr=q('bingo-counter');
+    if(ctr) ctr.innerHTML=`빙고: ${[0,1,2].map(i=>`<div class="bingo-dot${i<cnt?' won':''}"></div>`).join('')}<span style="font-size:12px;color:var(--muted);margin-left:4px">${cnt}/3줄</span>`;
+    const mb=q('bingo-myboard');
+    if(mb) mb.innerHTML=myBoard.map((row,ri)=>row.map((num,ci)=>{
+      const mk=called.includes(num);
+      const inL=lines.some(l=>(l==='r'+ri)||(l==='c'+ci)||(l==='d0'&&ri===ci)||(l==='d1'&&ri===4-ci));
+      return `<div class="bcell${mk?' marked':''}${inL?' bline':''}">${num}</div>`;
+    }).join('')).join('');
+  }
+
+  // 선언된 숫자들
+  const calledEl=q('bingo-called');
+  if(calledEl) calledEl.innerHTML=called.map(n=>`<div class="bcalled-chip">${n}</div>`).join('');
+  const ccEl=q('bingo-called-count'); if(ccEl) ccEl.textContent=called.length;
+
+  // 숫자 선언 패드
+  const np=q('bingo-numpad');
+  if(np){
+    np.style.display=(isMyTurn&&!s.winner)?'grid':'none';
+    np.innerHTML=Array.from({length:25},(_,i)=>i+1).map(n=>{
+      const isCalled=called.includes(n);
+      return `<button class="bnum-btn${isCalled?' bcalled':''}" onclick="callBingo(${n})" ${isCalled||!isMyTurn?'disabled':''}>${n}</button>`;
+    }).join('');
+  }
+
+  // 게임 종료 시 다른 유저 빙고판 공개
+  const othersEl=q('bingo-others');
+  if(othersEl){
+    if(isEndedState(s)){
+      othersEl.innerHTML=(s.activePlayers||[]).filter(u=>u!==myUid).map(u=>{
+        const bd=s.boards?.[u]; if(!bd) return '';
+        const ls=_getBingoLines(bd,called);
+        return `<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px">
+          <div style="font-size:11px;color:${getPC(u)};font-weight:bold;margin-bottom:6px">${esc(players[u]?.name||'')} (${ls.length}줄)</div>
+          <div style="display:grid;grid-template-columns:repeat(5,32px);gap:2px">
+            ${bd.map((row,ri)=>row.map((num,ci)=>{
+              const mk=called.includes(num);
+              const il=ls.some(l=>(l==='r'+ri)||(l==='c'+ci)||(l==='d0'&&ri===ci)||(l==='d1'&&ri===4-ci));
+              return `<div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold;border-radius:3px;border:1px solid ${mk?'var(--accent)':'var(--border)'};background:${il?'rgba(56,217,169,.3)':mk?'rgba(56,217,169,.1)':'var(--bg)'};color:${mk?'var(--accent)':'var(--muted)'}">${num}</div>`;
+            }).join('')).join('')}
+          </div>
+        </div>`;
+      }).join('');
+    } else othersEl.innerHTML='';
+  }
+
+  renderScores('bingo-scores',s.activePlayers,s.scores);
+  const we=q('bingo-win');
+  if(we){
+    if(s.winner){ we.style.display='block'; q('bingo-win-text').textContent=`🎉 ${players[s.winner]?.name||''}님 3줄 빙고! 승리!`; }
+    else we.style.display='none';
+  }
+  maybeScheduleTimeout(s,'bingo-'+s.curIdx,()=>passBingoTurn());
+}
+function passBingoTurn(){
+  db.ref(`rooms/${roomId}/game/state`).transaction(cur=>{
+    if(!cur||cur.ended) return cur;
+    cur.curIdx=nextTurnIndex(cur); return resetTimerFields(cur);
+  });
+}
+function callBingo(num){
+  if(!isActivePl()||!_currentGame||_currentGame.phase!=='playing') return;
+  if((_currentGame.called||[]).includes(num)) return;
+  db.ref(`rooms/${roomId}/game/state`).transaction(cur=>{
+    if(!cur||cur.ended||cur.activePlayers[cur.curIdx]!==myUid) return cur;
+    const called=[...(cur.called||[]),num];
+    cur.called=called;
+    const bc={};
+    let winner=null;
+    (cur.activePlayers||[]).forEach(u=>{
+      const bd=cur.boards?.[u]; if(!bd) return;
+      const ln=_getBingoLines(bd,called);
+      bc[u]=ln.length;
+      if(ln.length>=3&&!winner) winner=u;
+    });
+    cur.bingoCounts=bc;
+    if(winner){
+      cur.winner=winner; cur.ended=true; cur.phase='ended'; cur.deadline=null;
+      cur.scores=cur.scores||{}; cur.scores[winner]=(cur.scores[winner]||0)+20;
+    } else { cur.curIdx=nextTurnIndex(cur); resetTimerFields(cur); }
+    return cur;
   });
 }
 
