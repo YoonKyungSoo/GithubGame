@@ -83,6 +83,19 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
 .entry-players{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:15px 0}
 .entry-chip{padding:5px 12px;border-radius:15px;font-size:11px;border:1px solid var(--border);background:var(--panel)}
 
+/* COMMON TIMER / CONTROLS */
+#common-timer{display:none;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:12px}
+.timer-top{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px}
+.timer-num{color:var(--accent);font-weight:bold}
+.timer-bar{height:8px;background:var(--bg);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+#timer-fill{height:100%;width:100%;background:var(--accent);transition:width .15s linear}
+#game-controls{display:none;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+#total-scores{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.total-chip{font-size:10px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:4px 10px}
+.opt-grid{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.opt-btn{padding:7px 10px;background:var(--bg);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:inherit;font-size:10px;cursor:pointer}
+.opt-btn.on{border-color:var(--accent);color:var(--accent);background:rgba(56,217,169,.1)}
+
 /* SPECTATOR BANNER */
 #spectator-banner{display:none;align-items:center;gap:10px;padding:8px 14px;background:rgba(84,106,138,.12);border:1px solid var(--muted);border-radius:6px;margin-bottom:12px;font-size:11px;color:var(--muted)}
 #spectator-banner button{padding:4px 12px;font-size:10px;background:var(--card);border:1px solid var(--accent);border-radius:4px;color:var(--accent);cursor:pointer;}
@@ -212,9 +225,10 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
         <div class="entry-box">
           <h2 style="margin-bottom:10px;color:var(--accent)">게임 준비 중</h2>
           <p style="font-size:11px;color:var(--muted);margin-bottom:20px">이번 게임에 참여할지 관전할지 선택해주세요.</p>
-          <div style="display:flex;gap:10px;justify-content:center;margin-bottom:15px">
+          <div style="display:flex;gap:10px;justify-content:center;margin-bottom:15px;flex-wrap:wrap">
             <button class="btn btn-primary" onclick="setEntry('play')">✅ 참여하기</button>
             <button class="btn btn-secondary" onclick="setEntry('watch')">👁 관전하기</button>
+            <button class="btn btn-secondary" onclick="cancelEntryAndLobby()">🏠 로비로</button>
           </div>
           <div style="font-size:10px;color:var(--muted);margin-bottom:5px">현재 참가 확정 인원</div>
           <div id="entry-players" class="entry-players"></div>
@@ -223,9 +237,21 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
       </div>
 
       <div id="spectator-banner">
-        <span>👁️ 이번 판 관전 중</span>
-        <button onclick="requestJoinNextRound()">다음 판부터 참여 신청</button>
+        <span id="spectator-text">👁️ 이번 판 관전 중</span>
+        <button id="spectator-join-btn" onclick="requestJoinNextRound()">다음 판부터 참여 신청</button>
+        <button id="spectator-cancel-btn" onclick="cancelJoinNextRound()" style="display:none">신청 취소</button>
       </div>
+
+      <div id="common-timer">
+        <div class="timer-top"><span id="timer-label">남은 시간</span><span class="timer-num"><span id="timer-sec">10</span>초</span></div>
+        <div class="timer-bar"><div id="timer-fill"></div></div>
+      </div>
+      <div id="game-controls">
+        <button class="btn btn-primary" id="replay-btn" onclick="restartGame()">🔁 다시하기</button>
+        <button class="btn btn-secondary" onclick="backToLobby()">🏠 로비로</button>
+        <button class="btn btn-danger" id="end-game-btn" onclick="endGameToLobby()">게임 종료</button>
+      </div>
+      <div id="total-scores"></div>
 
       <div id="view-lobby" class="view active">
         <div class="vtitle">🎮 미니게임 플랫폼</div>
@@ -251,6 +277,15 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
             </div>
           </div>
           <div id="omok-solo-ui" style="margin-top:10px"></div>
+        </div>
+
+        <div id="mine-lobby-box" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px">
+          <div class="sb-ttl" style="padding:0;margin-bottom:8px">💣 지뢰찾기 난이도</div>
+          <div class="opt-grid">
+            <button class="opt-btn" id="mine-d-easy" onclick="setMineDifficulty('easy')">하 · 8x8 / 8개</button>
+            <button class="opt-btn" id="mine-d-normal" onclick="setMineDifficulty('normal')">중 · 10x10 / 15개</button>
+            <button class="opt-btn" id="mine-d-hard" onclick="setMineDifficulty('hard')">상 · 12x12 / 25개</button>
+          </div>
         </div>
 
         <div class="gcards">
@@ -386,9 +421,13 @@ const PC = ['#38d9a9','#ffa94d','#9775fa','#4dabf7','#ff6b6b'];
 let myUid='u'+Math.random().toString(36).substr(2,8);
 let myName='', roomId='', isHost=false, players={}, _uidOrder=[];
 let _omokPrep={mode:'solo',soloOrder:[],teamBlack:[],teamWhite:[],teamBench:[]};
+let _minePrep={difficulty:'normal'};
+let _totals={};
 let _currentGame=null, _currentType=null, _amInRound=false;
 let _timer=null, _wTimer=null, _choTimer=null, _tpTimer=null, _oxTimer=null, _typingTimer=null;
 let _flagMode=false;
+const TURN_MS=10000;
+let _timerAnim=null, _timeoutKey='';
 
 // Constants / DB
 const CHOSUNG_DB=[
@@ -438,6 +477,9 @@ function enterRoom(){
     updatePlayerUI();
   });
   db.ref(`rooms/${roomId}/prep/omok`).on('value', snap=>{ _omokPrep=snap.val()||{}; updatePlayerUI(); });
+  db.ref(`rooms/${roomId}/prep/mine`).on('value', snap=>{ _minePrep=snap.val()||{difficulty:'normal'}; updatePlayerUI(); });
+  db.ref(`rooms/${roomId}/totals`).on('value', snap=>{ _totals=snap.val()||{}; renderTotals(); });
+  db.ref(`rooms/${roomId}/selectedGame`).on('value', snap=>{ _selGame=snap.val()||null; _currentType=_selGame; document.querySelectorAll('.gcard').forEach(c=>c.classList.remove('sel')); if(_selGame) q('gc-'+_selGame)?.classList.add('sel'); if(q('start-btn')) q('start-btn').disabled=!_selGame; updatePlayerUI(); });
   db.ref(`rooms/${roomId}/game`).on('value', snap=>{
     const g=snap.val();
     if(g && g.state) {
@@ -476,8 +518,13 @@ function navTo(name){
 }
 function stopAllTimers(){ clearInterval(_timer); clearInterval(_wTimer); clearInterval(_choTimer); clearInterval(_tpTimer); clearInterval(_oxTimer); clearInterval(_typingTimer); }
 function backToLobby(){
-  stopAllTimers();
-  if(isHost) db.ref(`rooms/${roomId}/game`).remove();
+  stopAllTimers(); hideCommonTimer(); renderControls(null);
+  navTo('lobby');
+}
+function endGameToLobby(){ if(isHost) db.ref(`rooms/${roomId}/game`).remove(); else backToLobby(); }
+function cancelEntryAndLobby(){
+  if(isHost && _currentGame?.phase==='entry') db.ref(`rooms/${roomId}/game`).remove();
+  closeEntryOverlay(); navTo('lobby');
 }
 function toggleSb(){ q('sb').classList.toggle('open'); q('overlay').classList.toggle('show'); q('chatpanel').classList.remove('open'); }
 function toggleChat(){ q('chatpanel').classList.toggle('open'); q('overlay').classList.toggle('show'); q('sb').classList.remove('open'); }
@@ -493,31 +540,126 @@ function updatePlayerUI(){
   });
   
   // Omok Lobby UI sync
-  if(isHost && q('omok-lobby-box')){
+  if(q('omok-lobby-box')){
     q('omok-lobby-box').style.display = _currentType==='omok' ? 'block' : 'none';
     q('omok-m-solo').checked = _omokPrep.mode==='solo';
     q('omok-m-team').checked = _omokPrep.mode==='team';
+    q('omok-m-solo').disabled = !isHost; q('omok-m-team').disabled = !isHost;
     q('omok-solo-ui').style.display = _omokPrep.mode==='solo'?'block':'none';
     q('omok-team-ui').style.display = _omokPrep.mode==='team'?'block':'none';
     
     // Team builder logic
     const tb=q('team-black-list'), tw=q('team-white-list'), bx=q('team-bench-list');
     if(tb) {
-      const renderTeam = (arr, id) => {
-        let h=''; (arr||[]).forEach(u=>{ if(players[u]) h+=`<div style="color:${getPC(u)};font-size:11px;margin:3px 0">${players[u].name} <button class="btn" style="padding:2px 5px;font-size:8px" onclick="moveOmokTeam('${u}')">이동</button></div>`; });
+      const renderTeam = (arr, id, slot) => {
+        let h=''; (arr||[]).forEach(u=>{ if(players[u]) h+=`<div style="color:${getPC(u)};font-size:11px;margin:3px 0">${esc(players[u].name)} ${u===myUid?'(나)':''}</div>`; });
+        h += `<button class="opt-btn ${arr?.includes(myUid)?'on':''}" onclick="chooseOmokTeam('${slot}')">여기로 선택</button>`;
         q(id).innerHTML=h;
       };
-      renderTeam(_omokPrep.teamBlack, 'team-black-list');
-      renderTeam(_omokPrep.teamWhite, 'team-white-list');
-      renderTeam(_omokPrep.teamBench, 'team-bench-list');
+      renderTeam(_omokPrep.teamBlack, 'team-black-list', 'black');
+      renderTeam(_omokPrep.teamWhite, 'team-white-list', 'white');
+      renderTeam(_omokPrep.teamBench, 'team-bench-list', 'bench');
+      renderOmokSoloLobby();
     }
   }
+  if(q('mine-lobby-box')){
+    q('mine-lobby-box').style.display = _currentType==='mine' ? 'block' : 'none';
+    ['easy','normal','hard'].forEach(d=>q('mine-d-'+d)?.classList.toggle('on', (_minePrep.difficulty||'normal')===d));
+  }
 }
+
+
+function withTimer(state){ return {...state, durationMs:TURN_MS, deadline:Date.now()+TURN_MS}; }
+function resetTimerFields(cur){ cur.durationMs=TURN_MS; cur.deadline=Date.now()+TURN_MS; return cur; }
+function applyPendingPlayers(cur){
+  if(cur.pendingNextRound){ cur.activePlayers=[...new Set([...(cur.activePlayers||[]), ...Object.keys(cur.pendingNextRound)])]; cur.pendingNextRound=null; }
+  return cur;
+}
+function renderCommonTimer(s, label='남은 시간'){
+  const wrap=q('common-timer'); if(!wrap)return;
+  const timed = s && s.deadline && !isEndedState(s);
+  wrap.style.display = timed ? 'block' : 'none';
+  if(!timed) return;
+  q('timer-label').textContent=label;
+  clearInterval(_timerAnim);
+  const dur=s.durationMs||TURN_MS;
+  const tick=()=>{
+    const left=Math.max(0,(s.deadline||0)-Date.now());
+    q('timer-sec').textContent=Math.ceil(left/1000);
+    q('timer-fill').style.width=Math.max(0,Math.min(100,left/dur*100))+'%';
+  };
+  tick(); _timerAnim=setInterval(tick,120);
+}
+function hideCommonTimer(){ clearInterval(_timerAnim); const el=q('common-timer'); if(el)el.style.display='none'; }
+function isEndedState(s){ return !!(s?.ended||s?.winner||s?.gameOver||s?.won||s?.phase==='ended'); }
+function maybeScheduleTimeout(s, key, fn){
+  if(!isHost || !s?.deadline || isEndedState(s)) return;
+  const k=_currentType+':'+key+':'+s.deadline; if(_timeoutKey===k) return; _timeoutKey=k;
+  setTimeout(()=>{ if(_currentGame?.deadline===s.deadline) fn(); }, Math.max(0,s.deadline-Date.now()+80));
+}
+function renderControls(s){
+  const el=q('game-controls'); if(!el)return;
+  const show=!!s && (isEndedState(s) || s.phase==='reveal');
+  el.style.display=show?'flex':'none';
+  q('replay-btn').style.display=isHost&&isEndedState(s)?'block':'none';
+  q('end-game-btn').style.display=isHost?'block':'none';
+}
+function renderTotals(){
+  const el=q('total-scores'); if(!el)return;
+  const ids=_uidOrder.filter(u=>players[u]?.online || _totals[u]);
+  el.innerHTML=ids.map(u=>`<div class="total-chip" style="border-color:${getPC(u)}80;color:${getPC(u)}">${esc(players[u]?.name||'플레이어')}: 총점 ${_totals[u]||0}</div>`).join('');
+}
+function addTotalsOnce(s){
+  if(!isHost || !s || s.totalsAdded || !s.scores) return;
+  const updates={}; Object.entries(s.scores).forEach(([u,sc])=>updates[`rooms/${roomId}/totals/${u}`]=(_totals[u]||0)+(sc||0));
+  updates[`rooms/${roomId}/game/state/totalsAdded`]=true; db.ref().update(updates);
+}
+function requestJoinNextRound() {
+  if(!_currentGame || _currentGame.phase === 'entry') return;
+  db.ref(`rooms/${roomId}/game/state/pendingNextRound/${myUid}`).set(true);
+}
+function cancelJoinNextRound(){ db.ref(`rooms/${roomId}/game/state/pendingNextRound/${myUid}`).remove(); }
+function updateSpectatorBanner(g){
+  const el=q('spectator-banner'); if(!el||!g){el&&(el.style.display='none');return;}
+  const pending=!!g.pendingNextRound?.[myUid];
+  const inRound=(g.activePlayers||[]).includes(myUid);
+  const show=(!inRound && !isEndedState(g)) || pending;
+  el.style.display=show?'flex':'none';
+  q('spectator-text').textContent=pending?'✅ 다음 판부터 참여 신청됨':'👁️ 이번 판 관전 중';
+  q('spectator-join-btn').style.display=pending?'none':'inline-block';
+  q('spectator-cancel-btn').style.display=pending?'inline-block':'none';
+}
+function restartGame(){
+  if(!isHost || !_currentType || !_currentGame) return;
+  let ap=[...new Set([...( _currentGame.activePlayers||[]), ...Object.keys(_currentGame.pendingNextRound||{})])].filter(u=>players[u]?.online);
+  if(ap.length<1){alert('참가자가 없습니다.');return;}
+  if(_currentType==='omok') return startOmokActual(ap);
+  const inits={mine:initMine, word:initWord, chosung:initChosung, baseball:initBaseball, telepathy:initTelepathy, rps:initRPS, typing:initTyping, ox:initOX};
+  db.ref(`rooms/${roomId}/game/state`).set(inits[_currentType](ap));
+}
+function setMineDifficulty(d){ db.ref(`rooms/${roomId}/prep/mine`).set({difficulty:d}); }
+function mineCfg(d){ return {easy:{size:8,mines:8},normal:{size:10,mines:15},hard:{size:12,mines:25}}[d||'normal']; }
+function chooseOmokTeam(slot){
+  let tb=(_omokPrep.teamBlack||[]).filter(u=>u!==myUid), tw=(_omokPrep.teamWhite||[]).filter(u=>u!==myUid), bx=(_omokPrep.teamBench||[]).filter(u=>u!==myUid);
+  if(slot==='black')tb.push(myUid); else if(slot==='white')tw.push(myUid); else bx.push(myUid);
+  db.ref(`rooms/${roomId}/prep/omok`).update({teamBlack:tb,teamWhite:tw,teamBench:bx});
+}
+function chooseOmokSolo(slot){
+  let ord=(_omokPrep.soloOrder||[]).filter(u=>u!==myUid);
+  if(slot==='p1')ord=[myUid,...ord].slice(0,2); else if(slot==='p2'){ord=[ord[0],myUid].filter(Boolean).slice(0,2)}
+  db.ref(`rooms/${roomId}/prep/omok/soloOrder`).set(ord);
+}
+function renderOmokSoloLobby(){
+  const el=q('omok-solo-ui'); if(!el)return;
+  const ord=_omokPrep.soloOrder||[];
+  el.innerHTML=`<div class="opt-grid"><button class="opt-btn ${ord[0]===myUid?'on':''}" onclick="chooseOmokSolo('p1')">흑/1P: ${esc(players[ord[0]]?.name||'비어있음')}</button><button class="opt-btn ${ord[1]===myUid?'on':''}" onclick="chooseOmokSolo('p2')">백/2P: ${esc(players[ord[1]]?.name||'비어있음')}</button><button class="opt-btn ${!ord.includes(myUid)?'on':''}" onclick="chooseOmokSolo('bench')">관전 선택</button></div>`;
+}
+function nextTurnIndex(cur){ return ((cur.curIdx||0)+1)%Math.max(1,(cur.activePlayers||[]).length); }
 
 // GAME FLOW: Entry Phase -> Actual Game
 let _selGame = null;
 function selectGame(gm){
-  if(!isHost)return; _selGame=gm; _currentType=gm;
+  if(!isHost)return; _selGame=gm; _currentType=gm; db.ref(`rooms/${roomId}/selectedGame`).set(gm);
   document.querySelectorAll('.gcard').forEach(c=>c.classList.remove('sel'));
   q('gc-'+gm)?.classList.add('sel');
   q('start-btn').disabled=false;
@@ -525,8 +667,9 @@ function selectGame(gm){
   
   if(gm==='omok'){
      const active = _uidOrder.filter(u=>players[u]?.online);
-     db.ref(`rooms/${roomId}/prep/omok`).update({mode:'solo', soloOrder:active, teamBlack:active.slice(0,1), teamWhite:active.slice(1,2), teamBench:active.slice(2)});
+     db.ref(`rooms/${roomId}/prep/omok`).update({mode:_omokPrep.mode||'solo', soloOrder:_omokPrep.soloOrder?.length?_omokPrep.soloOrder:active, teamBlack:_omokPrep.teamBlack?.length?_omokPrep.teamBlack:active.slice(0,1), teamWhite:_omokPrep.teamWhite?.length?_omokPrep.teamWhite:active.slice(1,2), teamBench:_omokPrep.teamBench?.length?_omokPrep.teamBench:active.slice(2)});
   }
+  if(gm==='mine') db.ref(`rooms/${roomId}/prep/mine`).update({difficulty:_minePrep.difficulty||'normal'});
 }
 function syncOmokLobby(){ const m=q('omok-m-team').checked?'team':'solo'; db.ref(`rooms/${roomId}/prep/omok/mode`).set(m); }
 function moveOmokTeam(uid){
@@ -540,7 +683,7 @@ function moveOmokTeam(uid){
 
 function startEntryPhase(){
   if(!isHost || !_selGame) return;
-  if(_selGame === 'omok') { startOmokActual(); } // 오목은 로비 설정 그대로 즉시 시작
+  if(_selGame === 'omok') { startOmokActual(); }
   else {
     db.ref(`rooms/${roomId}/game`).set({ type: _selGame, state: { phase: 'entry', entries: {} } });
   }
@@ -563,12 +706,6 @@ function hostStartActualGame() {
   db.ref(`rooms/${roomId}/game/state`).set(state);
 }
 
-// 다음 판 난입 요청
-function requestJoinNextRound() {
-  if(!_currentGame || _currentGame.phase === 'entry') return;
-  db.ref(`rooms/${roomId}/game/state/pendingNextRound/${myUid}`).set(true);
-  alert("다음 라운드부터 참여가 예약되었습니다!");
-}
 
 // Handle State Changes
 function handleGameState() {
@@ -586,13 +723,14 @@ function handleGameState() {
       el.innerHTML += `<div class="entry-chip" style="color:${isPlay?'var(--accent)':'var(--muted)'};border-color:${isPlay?'var(--accent)':'var(--muted)'}">${esc(players[u]?.name)} (${isPlay?'참가':'관전'})</div>`;
     });
     q('entry-start-btn').style.display = isHost ? 'block' : 'none';
-    q('spectator-banner').style.display = 'none';
+    q('spectator-banner').style.display = 'none'; hideCommonTimer(); renderControls(null);
     return;
   }
   closeEntryOverlay();
   
   _amInRound = (g.activePlayers||[]).includes(myUid);
-  q('spectator-banner').style.display = !_amInRound && !g.winner && !g.ended ? 'flex' : 'none';
+  updateSpectatorBanner(g);
+  renderControls(g);
 
   const R = {omok:renderOmok, mine:renderMine, word:renderWord, chosung:renderChosung, baseball:renderBaseball, telepathy:renderTelepathy, rps:renderRPS, typing:renderTyping, ox:renderOX};
   if(R[_currentType]) R[_currentType](g);
@@ -607,16 +745,20 @@ function renderScores(elId, order, scores) {
 // =========================================================
 // 1. OMOK (팀 교대 지원)
 // =========================================================
-function startOmokActual(){
+function startOmokActual(forcePlayers){
   const p = _omokPrep;
-  let s = { phase: 'playing', mode: p.mode, board:Array(13).fill(null).map(()=>Array(13).fill(0)), curIdx:0, winner:null };
-  if(p.mode === 'team') {
-    s.blackTeam = p.teamBlack||[]; s.whiteTeam = p.teamWhite||[];
+  let s = { phase: 'playing', mode: p.mode||'solo', board:Array(13).fill(null).map(()=>Array(13).fill(0)), curIdx:0, winner:null, scores:{} };
+  if(s.mode === 'team') {
+    s.blackTeam = (p.teamBlack||[]).filter(u=>players[u]?.online); s.whiteTeam = (p.teamWhite||[]).filter(u=>players[u]?.online);
+    if(s.blackTeam.length<1||s.whiteTeam.length<1){ alert('흑팀/백팀에 각각 최소 1명씩 필요합니다.'); return; }
     s.bIdx = 0; s.wIdx = 0; s.activePlayers = [...s.blackTeam, ...s.whiteTeam];
   } else {
-    s.soloOrder = p.soloOrder||[]; s.activePlayers = s.soloOrder.slice(0,2);
+    s.soloOrder = forcePlayers || (p.soloOrder||[]).filter(u=>players[u]?.online);
+    s.activePlayers = s.soloOrder.slice(0,2);
+    if(s.activePlayers.length!==2){ alert('개인전은 정확히 2명이 필요합니다.'); return; }
   }
-  db.ref(`rooms/${roomId}/game`).set({type:'omok', state:s});
+  s.activePlayers.forEach(u=>s.scores[u]=0);
+  db.ref(`rooms/${roomId}/game`).set({type:'omok', state:withTimer(s)});
 }
 function omokCanMove(s) {
   if(s.winner) return false;
@@ -629,12 +771,14 @@ function omokCanMove(s) {
   return s.activePlayers[s.curIdx % 2] === myUid;
 }
 function renderOmok(s){
+  renderCommonTimer(s); renderControls(s); if(isEndedState(s)) addTotalsOnce(s);
   const isMe = omokCanMove(s);
   const ti = q('omok-turn');
   if(s.winner) { ti.textContent = '🏆 승리!'; ti.className='turn-ind'; }
   else if(isMe) { ti.textContent = '내 차례! 원하는 곳을 클릭하세요.'; ti.className='turn-ind'; }
   else { ti.textContent = '상대 차례 대기중...'; ti.className='turn-ind wait'; }
 
+  maybeScheduleTimeout(s, 'omok-'+s.curIdx, ()=>passOmokTurn());
   const bd = q('omok-board'); bd.style.gridTemplateColumns=`repeat(13,28px)`; bd.innerHTML='';
   for(let r=0;r<13;r++) for(let c=0;c<13;c++){
     const cell=document.createElement('div'); cell.className='ocell';
@@ -642,6 +786,9 @@ function renderOmok(s){
     else if(isMe) cell.onclick=()=>placeOmok(r,c);
     bd.appendChild(cell);
   }
+}
+function passOmokTurn(){
+  db.ref(`rooms/${roomId}/game/state`).transaction(s=>{ if(!s||s.winner)return s; s.curIdx++; if(s.mode==='team'){ const stone=((s.curIdx-1)%2===0)?1:2; if(stone===1)s.bIdx++; else s.wIdx++; } return resetTimerFields(s); });
 }
 function placeOmok(r,c) {
   db.ref(`rooms/${roomId}/game/state`).transaction(s => {
@@ -657,11 +804,12 @@ function placeOmok(r,c) {
       if(n>=5) won=true;
     }
     
-    if(won) s.winner = stone;
+    if(won) { s.winner = stone; s.ended=true; const winIds=s.mode==='team'?(stone===1?s.blackTeam:s.whiteTeam):[myUid]; winIds.forEach(u=>s.scores[u]=(s.scores[u]||0)+10); }
     else {
       s.curIdx++;
       if(s.mode === 'team') { if(stone===1) s.bIdx++; else s.wIdx++; }
     }
+    if(!won) resetTimerFields(s);
     return s;
   });
 }
@@ -670,33 +818,34 @@ function placeOmok(r,c) {
 // =========================================================
 // 2. MINE SWEEPER
 // =========================================================
-const MSIZE=10, MMINES=15;
+const MSIZE=10, MMINES=15; // fallback only
 function toggleFlag(){_flagMode=!_flagMode; q('flag-btn').classList.toggle('on',_flagMode);}
-function initMine(ap){ return {phase:'playing', activePlayers:ap, curIdx:0, board:null, gameOver:false, won:false, revealed:0, totalSafe:MSIZE*MSIZE-MMINES}; }
-function generateMineBoard(sr,sc){
-  const b=Array(MSIZE).fill(null).map(()=>Array(MSIZE).fill(null).map(()=>({mine:false,revealed:false,flagged:false,adj:0})));
-  let p=0; while(p<MMINES){const r=Math.floor(Math.random()*MSIZE),c=Math.floor(Math.random()*MSIZE); if(b[r][c].mine||Math.abs(r-sr)<=1&&Math.abs(c-sc)<=1)continue; b[r][c].mine=true;p++;}
-  for(let r=0;r<MSIZE;r++)for(let c=0;c<MSIZE;c++){if(b[r][c].mine)continue; let cnt=0;for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){if(b[r+dr]?.[c+dc]?.mine)cnt++;} b[r][c].adj=cnt;}
+function initMine(ap){ const cfg=mineCfg(_minePrep.difficulty); return withTimer({phase:'playing', activePlayers:ap, curIdx:0, board:null, gameOver:false, won:false, revealed:0, difficulty:_minePrep.difficulty||'normal', size:cfg.size, mines:cfg.mines, totalSafe:cfg.size*cfg.size-cfg.mines, scores:Object.fromEntries(ap.map(u=>[u,0]))}); }
+function generateMineBoard(sr,sc,size=MSIZE,mines=MMINES){
+  const b=Array(size).fill(null).map(()=>Array(size).fill(null).map(()=>({mine:false,revealed:false,flagged:false,adj:0})));
+  let p=0; while(p<mines){const r=Math.floor(Math.random()*size),c=Math.floor(Math.random()*size); if(b[r][c].mine||Math.abs(r-sr)<=1&&Math.abs(c-sc)<=1)continue; b[r][c].mine=true;p++;}
+  for(let r=0;r<size;r++)for(let c=0;c<size;c++){if(b[r][c].mine)continue; let cnt=0;for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){if(b[r+dr]?.[c+dc]?.mine)cnt++;} b[r][c].adj=cnt;}
   return b;
 }
 function floodReveal(b,r,c){
-  if(r<0||r>=MSIZE||c<0||c>=MSIZE)return 0; const cell=b[r][c]; if(cell.revealed||cell.mine||cell.flagged)return 0;
+  const size=b.length; if(r<0||r>=size||c<0||c>=size)return 0; const cell=b[r][c]; if(cell.revealed||cell.mine||cell.flagged)return 0;
   cell.revealed=true; let cnt=1;
   if(cell.adj===0)for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++)if(dr||dc)cnt+=floodReveal(b,r+dr,c+dc);
   return cnt;
 }
 function renderMine(s){
+  renderCommonTimer(s); renderControls(s); if(isEndedState(s)) addTotalsOnce(s);
   const isMe=s.activePlayers[s.curIdx]===myUid&&isActivePl();
   const ti=q('mine-turn');
   if(s.won){ti.textContent='전원 클리어! 🎉';ti.className='turn-ind';}
   else if(s.gameOver){ti.textContent='💥 지뢰 폭발!';ti.className='turn-ind';}
   else if(isMe){ti.textContent='내 차례 — 한 번 열기!';ti.className='turn-ind';}
   else{ti.textContent=(players[s.activePlayers[s.curIdx]]?.name||'')+' 차례 대기중...';ti.className='turn-ind wait';}
-  q('mine-count').textContent=MMINES; q('mine-cleared').textContent=s.revealed||0;
+  q('mine-count').textContent=s.mines||MMINES; q('mine-cleared').textContent=s.revealed||0;
   
-  const bd=q('mine-board'); bd.style.gridTemplateColumns=`repeat(${MSIZE},32px)`; bd.innerHTML='';
+  const size=s.size||MSIZE; const bd=q('mine-board'); bd.style.gridTemplateColumns=`repeat(${size},32px)`; bd.innerHTML='';
   const canAct=isMe&&!s.gameOver&&!s.won;
-  for(let r=0;r<MSIZE;r++)for(let c=0;c<MSIZE;c++){
+  for(let r=0;r<size;r++)for(let c=0;c<size;c++){
     const cell=document.createElement('div'); cell.className='mcell'; const data=s.board?.[r]?.[c];
     if(!data){ if(canAct){cell.onclick=()=>commitMineReveal(r,c); cell.oncontextmenu=e=>{e.preventDefault();flagMineCellTx(r,c);};} }
     else if(data.revealed){ cell.classList.add('revealed'); if(data.mine){cell.classList.add('mmine');cell.textContent='💥';}else if(data.adj>0){cell.textContent=data.adj;cell.style.color='#4dabf7';} }
@@ -708,16 +857,17 @@ function renderMine(s){
     bd.appendChild(cell);
   }
 }
+function passMineTurn(){ db.ref(`rooms/${roomId}/game/state`).transaction(cur=>{ if(!cur||cur.gameOver||cur.won)return cur; cur.curIdx=nextTurnIndex(cur); return resetTimerFields(cur); }); }
 function commitMineReveal(r,c){
   db.ref(`rooms/${roomId}/game/state`).transaction(cur=>{
     if(!cur||cur.gameOver||cur.won||cur.activePlayers[cur.curIdx]!==myUid)return cur;
     let board=cur.board; let revealed=cur.revealed||0;
-    if(!board) { board=generateMineBoard(r,c); }
+    if(!board) { board=generateMineBoard(r,c,cur.size||MSIZE,cur.mines||MMINES); }
     const cell=board[r][c]; if(cell.revealed||cell.flagged)return cur;
-    if(cell.mine){ cell.revealed=true; return{...cur,board,gameOver:true,curIdx:(cur.curIdx+1)%cur.activePlayers.length}; }
+    if(cell.mine){ cell.revealed=true; cur.scores=cur.scores||{}; cur.scores[myUid]=(cur.scores[myUid]||0)-5; return{...cur,board,gameOver:true,ended:true,curIdx:nextTurnIndex(cur)}; }
     revealed+=floodReveal(board,r,c);
     const won=revealed>=cur.totalSafe;
-    return{...cur,board,revealed,won,curIdx:won?cur.curIdx:(cur.curIdx+1)%cur.activePlayers.length};
+    cur.scores=cur.scores||{}; cur.scores[myUid]=(cur.scores[myUid]||0)+Math.max(1,revealed-(cur.revealed||0)); return resetTimerFields({...cur,board,revealed,won,ended:won,curIdx:won?cur.curIdx:nextTurnIndex(cur)});
   });
 }
 function flagMineCellTx(r,c){
@@ -734,9 +884,10 @@ function flagMineCellTx(r,c){
 // =========================================================
 function initWord(ap){
   const scores={}; ap.forEach(u=>scores[u]=0);
-  return {phase:'playing', activePlayers:ap, curIdx:0, scores, curWord:'사과', lastChar:'과', used:['사과'], hist:[], gameOver:false};
+  return withTimer({phase:'playing', activePlayers:ap, curIdx:0, scores, curWord:'사과', lastChar:'과', used:['사과'], hist:[], gameOver:false});
 }
 function renderWord(s){
+  renderCommonTimer(s); renderControls(s); if(isEndedState(s)) addTotalsOnce(s);
   const isMe=s.activePlayers[s.curIdx]===myUid&&isActivePl();
   const ti=q('word-turn'); ti.textContent=isMe?'내 차례! 단어 입력!':(players[s.activePlayers[s.curIdx]]?.name||'')+'의 차례...'; ti.className='turn-ind'+(isMe?'':' wait');
   q('cword').textContent=s.curWord; q('nchar').textContent='"'+s.lastChar+'"(으)로 시작하는 단어';
@@ -749,8 +900,10 @@ function renderWord(s){
   });
   wh.scrollTop=wh.scrollHeight;
   renderScores('word-scores', s.activePlayers, s.scores);
+  maybeScheduleTimeout(s, 'word-'+s.curIdx, ()=>passWordTurn());
   if(s.gameOver){ q('word-win').style.display='block'; q('word-win-text').textContent='게임 종료!'; } else q('word-win').style.display='none';
 }
+function passWordTurn(){ db.ref(`rooms/${roomId}/game/state`).transaction(s=>{ if(!s||s.gameOver)return s; s.scores=s.scores||{}; const u=s.activePlayers[s.curIdx]; s.scores[u]=(s.scores[u]||0)-1; s.curIdx=nextTurnIndex(s); return resetTimerFields(s); }); }
 function submitWord(){
   const inp=q('winput'); const word=inp.value.trim(); if(!word)return;
   if(!isHangulWord2(word)){alert('한글 2~15자만 가능합니다.');return;}
@@ -762,7 +915,7 @@ function submitWord(){
     inp.value='';
     const ns=Object.assign({},s.scores,{[myUid]:(s.scores[myUid]||0)+word.length});
     const nu=[...s.used,word], nh=[...(s.hist||[]),{uid:myUid,word}];
-    db.ref(`rooms/${roomId}/game/state`).update({curWord:word, lastChar:word[word.length-1], used:nu, hist:nh, scores:ns, curIdx:(s.curIdx+1)%s.activePlayers.length, gameOver:nu.length>=20});
+    db.ref(`rooms/${roomId}/game/state`).update(resetTimerFields({curWord:word, lastChar:word[word.length-1], used:nu, hist:nh, scores:ns, curIdx:(s.curIdx+1)%s.activePlayers.length, gameOver:nu.length>=20, ended:nu.length>=20}));
   });
 }
 
@@ -773,9 +926,10 @@ function submitWord(){
 function initChosung(ap){
   const words=[...CHOSUNG_DB].sort(()=>Math.random()-.5).slice(0,5);
   const scores={}; ap.forEach(u=>scores[u]=0);
-  return {phase:'guessing', activePlayers:ap, round:0, words, correctOrder:[], scores, ended:false};
+  return withTimer({phase:'guessing', activePlayers:ap, round:0, words, correctOrder:[], scores, ended:false});
 }
 function renderChosung(s){
+  renderCommonTimer(s); renderControls(s); if(isEndedState(s)) addTotalsOnce(s);
   renderScores('cho-scores', s.activePlayers, s.scores);
   if(s.ended){ q('cho-win').style.display='block'; q('cho-win-text').textContent='초성게임 종료!'; q('cho-input-area').style.display='none'; return; }
   
@@ -784,17 +938,19 @@ function renderChosung(s){
   q('cho-chars').textContent = s.phase==='reveal' ? word.word : getChosung(word.word);
   q('cho-input-area').style.display = s.phase==='guessing'&&isActivePl() ? 'flex':'none';
   
+  if(s.phase==='guessing') maybeScheduleTimeout(s, 'cho-'+s.round, ()=>timeoutChosung());
   if(s.phase==='reveal'){
     q('cho-timer').textContent='정답 공개!';
     if(isHost) setTimeout(()=>{
       db.ref(`rooms/${roomId}/game/state`).transaction(cur=>{
         if(!cur || cur.phase!=='reveal' || cur.round!==s.round) return cur;
         const next=cur.round+1; if(next>=cur.words.length) return{...cur,ended:true};
-        return {...cur, round:next, phase:'guessing', correctOrder:[]};
+        return resetTimerFields({...cur, round:next, phase:'guessing', correctOrder:[]});
       });
     }, 2500);
   }
 }
+function timeoutChosung(){ db.ref(`rooms/${roomId}/game/state`).transaction(cur=>{ if(!cur||cur.phase!=='guessing')return cur; const pts=[5,3,1]; const ns=Object.assign({},cur.scores); (cur.correctOrder||[]).forEach((u,i)=>{ ns[u]=(ns[u]||0)+(pts[i]||0); }); return {...cur,phase:'reveal',scores:ns,deadline:null}; }); }
 function submitChosung(){
   const inp=q('cho-input'); const answer=inp.value.trim(); if(!answer)return;
   const s=_currentGame; if(!s||s.phase!=='guessing'||!isActivePl())return;
@@ -810,7 +966,7 @@ function submitChosung(){
         if(!cur||cur.phase!=='guessing')return cur;
         const pts=[5,3,1]; const ns=Object.assign({},cur.scores);
         (cur.correctOrder||[]).forEach((u,i)=>{ ns[u]=(ns[u]||0)+(pts[i]||0); });
-        return {...cur, phase:'reveal', scores:ns};
+        return {...cur, phase:'reveal', scores:ns, deadline:null};
       });
     }
   });
@@ -828,9 +984,10 @@ function checkBB(secret,guess){
   let s=0,b=0; for(let i=0;i<3;i++){if(guess[i]===secret[i])s++;else if(secret.includes(guess[i]))b++;} return{strikes:s,balls:b};
 }
 function initBaseball(ap){
-  return {phase:'playing', activePlayers:ap, curIdx:0, secret:generateSecret(), guesses:[], winner:null};
+  return withTimer({phase:'playing', activePlayers:ap, curIdx:0, secret:generateSecret(), guesses:[], winner:null, scores:Object.fromEntries(ap.map(u=>[u,0]))});
 }
 function renderBaseball(s){
+  renderCommonTimer(s); renderControls(s); if(isEndedState(s)) addTotalsOnce(s);
   const isMe = s.activePlayers[s.curIdx]===myUid && isActivePl();
   const ti=q('bb-turn');
   if(s.winner){ti.textContent=(players[s.winner]?.name||'')+' 3스트라이크 승리! 🎉';ti.className='turn-ind';}
@@ -838,6 +995,7 @@ function renderBaseball(s){
   else{ti.textContent=(players[s.activePlayers[s.curIdx]]?.name||'')+' 차례...';ti.className='turn-ind wait';}
   
   ['bb-d1','bb-d2','bb-d3'].forEach(id=>{q(id).disabled=!isMe||!!s.winner;});
+  maybeScheduleTimeout(s, 'bb-'+s.curIdx, ()=>passBaseballTurn());
   const hist=q('bb-history'); hist.innerHTML='';
   (s.guesses||[]).slice().reverse().forEach(g=>{
     const row=document.createElement('div'); row.className='bb-row'+(g.strikes===3?' winner':'');
@@ -846,6 +1004,7 @@ function renderBaseball(s){
     hist.appendChild(row);
   });
 }
+function passBaseballTurn(){ db.ref(`rooms/${roomId}/game/state`).transaction(s=>{ if(!s||s.winner)return s; s.curIdx=nextTurnIndex(s); return resetTimerFields(s); }); }
 function submitBaseball(){
   const d1=q('bb-d1').value,d2=q('bb-d2').value,d3=q('bb-d3').value; if(!d1||!d2||!d3)return;
   const guess=d1+d2+d3; if([...new Set(guess)].length<3){alert('서로 다른 3자리!');return;}
@@ -854,7 +1013,7 @@ function submitBaseball(){
     const {strikes,balls}=checkBB(s.secret,guess);
     const ng=[...(s.guesses||[]), {uid:myUid, guess, strikes, balls}];
     const winner=strikes===3?myUid:null;
-    db.ref(`rooms/${roomId}/game/state`).update({guesses:ng, curIdx:(s.curIdx+1)%s.activePlayers.length, winner});
+    const ns=Object.assign({},s.scores||{}); if(winner) ns[myUid]=(ns[myUid]||0)+10; db.ref(`rooms/${roomId}/game/state`).update(resetTimerFields({guesses:ng, curIdx:(s.curIdx+1)%s.activePlayers.length, winner, ended:!!winner, scores:ns}));
     ['bb-d1','bb-d2','bb-d3'].forEach(id=>{q(id).value='';});
   });
 }
@@ -865,10 +1024,11 @@ function submitBaseball(){
 // =========================================================
 function initTelepathy(ap){
   const scores={}; ap.forEach(u=>scores[u]=0);
-  return { phase:'picking', activePlayers:ap, round:1, scores, baseUser: ap[Math.floor(Math.random()*ap.length)], answers:{} };
+  return withTimer({ phase:'picking', activePlayers:ap, round:1, scores, baseUser: ap[Math.floor(Math.random()*ap.length)], answers:{} });
 }
 let _lastTpRound=-1;
 function renderTelepathy(s){
+  renderCommonTimer(s); renderControls(s); if(isEndedState(s)) addTotalsOnce(s);
   renderScores('tp-scores', s.activePlayers, s.scores);
   q('tp-cat-name').textContent = '라운드 ' + s.round;
   if(s.ended) { q('tp-win').style.display='block'; q('tp-win-text').textContent='텔레파시 종료!'; return; }
@@ -881,6 +1041,7 @@ function renderTelepathy(s){
   const cat = TP_CATS[(s.round-1) % TP_CATS.length];
 
   if(s.phase === 'picking') {
+    maybeScheduleTimeout(s, 'tp-'+s.round, ()=>checkTelepathyComplete(true));
     cat.opts.forEach(opt => {
       const b = document.createElement('div'); b.className = 'tp-opt'; b.textContent=opt;
       if(s.answers?.[myUid] === opt) b.classList.add('selected');
@@ -912,16 +1073,16 @@ function renderTelepathy(s){
           
           let nextAp = cur.activePlayers;
           if(cur.pendingNextRound) { nextAp = [...new Set([...nextAp, ...Object.keys(cur.pendingNextRound)])]; }
-          return { ...cur, phase:'picking', round: cur.round+1, activePlayers: nextAp, answers:{}, pendingNextRound:null, baseUser: nextAp[Math.floor(Math.random()*nextAp.length)] };
+          return resetTimerFields({ ...cur, phase:'picking', round: cur.round+1, activePlayers: nextAp, answers:{}, pendingNextRound:null, baseUser: nextAp[Math.floor(Math.random()*nextAp.length)] });
         });
       }, 3500);
     }
   }
 }
-function checkTelepathyComplete(){
+function checkTelepathyComplete(force=false){
   db.ref(`rooms/${roomId}/game/state`).transaction(cur => {
     if(!cur || cur.phase !== 'picking') return cur;
-    if(Object.keys(cur.answers||{}).length < cur.activePlayers.length) return cur; // wait
+    if(!force && Object.keys(cur.answers||{}).length < cur.activePlayers.length) return cur; // wait
     
     const basePick = cur.answers[cur.baseUser];
     let matchCount = 0;
@@ -931,7 +1092,7 @@ function checkTelepathyComplete(){
     if(matchCount === 0 && basePick) ns[cur.baseUser] = (ns[cur.baseUser]||0) + 5;
     cur.activePlayers.forEach(u => { if(u !== cur.baseUser && cur.answers[u] === basePick) ns[u] = (ns[u]||0) + 5; });
     
-    return {...cur, phase: 'reveal', scores: ns};
+    return {...cur, phase: 'reveal', scores: ns, deadline:null};
   });
 }
 
@@ -941,10 +1102,11 @@ function checkTelepathyComplete(){
 // =========================================================
 function initRPS(ap){
   const scores={}; ap.forEach(u=>scores[u]=0);
-  return { phase:'picking', activePlayers:ap, round:1, scores, answers:{} };
+  return withTimer({ phase:'picking', activePlayers:ap, round:1, scores, answers:{} });
 }
 let _lastRpsRound=-1;
 function renderRPS(s){
+  renderCommonTimer(s); renderControls(s); if(isEndedState(s)) addTotalsOnce(s);
   renderScores('rps-scores', s.activePlayers, s.scores);
   q('rps-round').textContent = '라운드 ' + s.round;
   if(s.ended) { q('rps-win').style.display='block'; q('rps-win-text').textContent='가위바위보 종료!'; return; }
@@ -952,6 +1114,7 @@ function renderRPS(s){
   const rv = q('rps-reveal-area'); rv.innerHTML='';
 
   if(s.phase === 'picking') {
+    maybeScheduleTimeout(s, 'rps-'+s.round, ()=>finishRPS(true));
     ['rock','scissors','paper'].forEach((c,i) => {
        const el = q('rps-btns').children[i];
        el.className = 'rps-btn' + (s.answers?.[myUid]===c ? ' selected':'');
@@ -972,26 +1135,26 @@ function renderRPS(s){
           
           let nextAp = cur.activePlayers;
           if(cur.pendingNextRound) nextAp = [...new Set([...nextAp, ...Object.keys(cur.pendingNextRound)])];
-          return { ...cur, phase:'picking', round: cur.round+1, activePlayers: nextAp, answers:{}, pendingNextRound:null };
+          return resetTimerFields({ ...cur, phase:'picking', round: cur.round+1, activePlayers: nextAp, answers:{}, pendingNextRound:null });
         });
       }, 3000);
     }
   }
 }
+function finishRPS(force=false){
+  db.ref(`rooms/${roomId}/game/state`).transaction(cur => {
+    if(!cur || cur.phase !== 'picking') return cur;
+    if(!force && Object.keys(cur.answers||{}).length < cur.activePlayers.length) return cur;
+    const rpsWin = (a,b) => { if(!a||!b||a===b)return 0; if((a==='rock'&&b==='scissors')||(a==='scissors'&&b==='paper')||(a==='paper'&&b==='rock'))return 1; return -1; };
+    const ns = Object.assign({}, cur.scores);
+    cur.activePlayers.forEach(u => { let wins=0; cur.activePlayers.forEach(u2 => { if(u!==u2 && rpsWin(cur.answers?.[u], cur.answers?.[u2])===1) wins++; }); ns[u]=(ns[u]||0)+(wins*5); });
+    return {...cur, phase:'reveal', scores:ns, deadline:null};
+  });
+}
 function pickRPS(c) {
   if(!isActivePl() || _currentGame?.phase !== 'picking') return;
   db.ref(`rooms/${roomId}/game/state/answers/${myUid}`).set(c).then(() => {
-    db.ref(`rooms/${roomId}/game/state`).transaction(cur => {
-      if(!cur || cur.phase !== 'picking' || Object.keys(cur.answers||{}).length < cur.activePlayers.length) return cur;
-      
-      const rpsWin = (a,b) => { if(a===b)return 0; if((a==='rock'&&b==='scissors')||(a==='scissors'&&b==='paper')||(a==='paper'&&b==='rock'))return 1; return -1; };
-      const ns = Object.assign({}, cur.scores);
-      cur.activePlayers.forEach(u => {
-        let wins=0; cur.activePlayers.forEach(u2 => { if(u!==u2 && rpsWin(cur.answers[u], cur.answers[u2])===1) wins++; });
-        ns[u] = (ns[u]||0) + (wins * 5); // 승리 1번당 5점
-      });
-      return {...cur, phase: 'reveal', scores: ns};
-    });
+    finishRPS(false);
   });
 }
 
@@ -1001,9 +1164,10 @@ function pickRPS(c) {
 // =========================================================
 function initTyping(ap){
   const scores={}; ap.forEach(u=>scores[u]=0);
-  return {phase:'typing', activePlayers:ap, round:1, texts:TYPING_TEXTS, submissions:[], scores, ended:false};
+  return withTimer({phase:'typing', activePlayers:ap, round:1, texts:TYPING_TEXTS, submissions:[], scores, ended:false});
 }
 function renderTyping(s){
+  renderCommonTimer(s); renderControls(s); if(isEndedState(s)) addTotalsOnce(s);
   renderScores('typing-scores', s.activePlayers, s.scores);
   if(s.ended){ q('typing-win').style.display='block'; q('typing-win-text').textContent='타이핑 종료!'; q('typing-input-area').style.display='none'; return; }
   
@@ -1018,16 +1182,18 @@ function renderTyping(s){
     ord.innerHTML+=`<div class="typing-entry"><span style="color:${color};font-weight:bold">${i+1}위</span><span style="color:${color}">${esc(players[sub.uid]?.name)}</span></div>`;
   });
   
+  if(s.phase==='typing') maybeScheduleTimeout(s, 'typing-'+s.round, ()=>finishTypingRound(true));
   if(s.phase==='reveal'){
     if(isHost) setTimeout(()=>{
       db.ref(`rooms/${roomId}/game/state`).transaction(cur=>{
         if(!cur||cur.phase!=='reveal'||cur.round!==s.round)return cur;
         if(cur.round>=5)return{...cur,ended:true};
-        return{...cur, round:cur.round+1, phase:'typing', submissions:[]};
+        cur=applyPendingPlayers(cur); return resetTimerFields({...cur, round:cur.round+1, phase:'typing', submissions:[]});
       });
     }, 2500);
   }
 }
+function finishTypingRound(force=false){ db.ref(`rooms/${roomId}/game/state`).transaction(cur=>{ if(!cur||cur.phase!=='typing')return cur; if(!force && (cur.submissions||[]).length<cur.activePlayers.length)return cur; const pts=[5,3,1]; const ns=Object.assign({},cur.scores); (cur.submissions||[]).forEach((sub,i)=>{ ns[sub.uid]=(ns[sub.uid]||0)+(pts[i]||0); }); return {...cur, phase:'reveal', scores:ns, deadline:null}; }); }
 function submitTyping(){
   const inp=q('typing-input'); const text=inp.value; if(!text)return;
   const s=_currentGame; if(!s||s.phase!=='typing'||!isActivePl())return;
@@ -1038,12 +1204,7 @@ function submitTyping(){
   }).then(tx=>{
     const list=tx.snapshot.val();
     if(list.length >= s.activePlayers.length){
-      db.ref(`rooms/${roomId}/game/state`).transaction(cur=>{
-        if(!cur||cur.phase!=='typing')return cur;
-        const pts=[5,3,1]; const ns=Object.assign({},cur.scores);
-        (cur.submissions||[]).forEach((sub,i)=>{ ns[sub.uid]=(ns[sub.uid]||0)+(pts[i]||0); });
-        return{...cur, phase:'reveal', scores:ns};
-      });
+      finishTypingRound(false);
     }
   });
 }
@@ -1054,10 +1215,11 @@ function submitTyping(){
 // =========================================================
 function initOX(ap){
   const scores={}; ap.forEach(u=>scores[u]=0);
-  return { phase:'picking', activePlayers:ap, round:1, scores, answers:{} };
+  return withTimer({ phase:'picking', activePlayers:ap, round:1, scores, answers:{} });
 }
 let _lastOxRound=-1;
 function renderOX(s){
+  renderCommonTimer(s); renderControls(s); if(isEndedState(s)) addTotalsOnce(s);
   renderScores('ox-scores', s.activePlayers, s.scores);
   if(s.ended) { q('ox-win').style.display='block'; q('ox-win-text').textContent='OX 퀴즈 종료!'; return; }
   
@@ -1068,6 +1230,7 @@ function renderOX(s){
   ['ox-o','ox-x'].forEach(id=>{q(id).className='ox-btn'; q(id).style.borderColor='var(--border)';});
 
   if(s.phase === 'picking') {
+    maybeScheduleTimeout(s, 'ox-'+s.round, ()=>finishOX(true));
     if(s.answers?.[myUid]) q(s.answers[myUid]==='O'?'ox-o':'ox-x').classList.add('picked');
   } else if(s.phase === 'reveal') {
     q(qdata.a==='O'?'ox-o':'ox-x').style.borderColor = 'var(--accent)';
@@ -1086,25 +1249,17 @@ function renderOX(s){
           
           let nextAp = cur.activePlayers;
           if(cur.pendingNextRound) nextAp = [...new Set([...nextAp, ...Object.keys(cur.pendingNextRound)])];
-          return { ...cur, phase:'picking', round: cur.round+1, activePlayers: nextAp, answers:{}, pendingNextRound:null };
+          return resetTimerFields({ ...cur, phase:'picking', round: cur.round+1, activePlayers: nextAp, answers:{}, pendingNextRound:null });
         });
       }, 3000);
     }
   }
 }
+function finishOX(force=false){ db.ref(`rooms/${roomId}/game/state`).transaction(cur => { if(!cur||cur.phase!=='picking')return cur; if(!force && Object.keys(cur.answers||{}).length < cur.activePlayers.length)return cur; const qdata=OX_Q[(cur.round-1)%OX_Q.length]; const ns=Object.assign({},cur.scores); cur.activePlayers.forEach(u=>{ if(cur.answers?.[u]===qdata.a) ns[u]=(ns[u]||0)+5; }); return {...cur, phase:'reveal', scores:ns, deadline:null}; }); }
 function answerOX(c) {
   if(!isActivePl() || _currentGame?.phase !== 'picking') return;
   db.ref(`rooms/${roomId}/game/state/answers/${myUid}`).set(c).then(() => {
-    db.ref(`rooms/${roomId}/game/state`).transaction(cur => {
-      if(!cur || cur.phase !== 'picking' || Object.keys(cur.answers||{}).length < cur.activePlayers.length) return cur;
-      
-      const qdata = OX_Q[(cur.round-1) % OX_Q.length];
-      const ns = Object.assign({}, cur.scores);
-      cur.activePlayers.forEach(u => {
-        if(cur.answers[u] === qdata.a) ns[u] = (ns[u]||0) + 5; // 정답자 5점
-      });
-      return {...cur, phase: 'reveal', scores: ns};
-    });
+    finishOX(false);
   });
 }
 
