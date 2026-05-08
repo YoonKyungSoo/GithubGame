@@ -3,79 +3,68 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>TeamFlow Pro</title>
+<title>미니게임 플랫폼</title>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <style>
 :root{
   --bg:#080d17;--panel:#0d1526;--card:#111d35;--border:#1b2d4f;
   --accent:#38d9a9;--blue:#4dabf7;--orange:#ffa94d;--red:#ff6b6b;--purple:#9775fa;
-  --text:#cdd9e5;--muted:#546a8a;--sw:220px;--hh:52px;--cw:260px;
+  --text:#cdd9e5;--muted:#546a8a;
   --pc0:#38d9a9;--pc1:#ffa94d;--pc2:#9775fa;--pc3:#4dabf7;--pc4:#ff6b6b;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
-
-/* ── LOGIN ── */
+/* LOGIN */
 #login-screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg);z-index:200;padding:20px}
 .login-box{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:36px;width:100%;max-width:380px}
-.login-logo{font-size:20px;font-weight:bold;color:var(--accent);letter-spacing:3px;margin-bottom:5px}
-.login-sub{font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-bottom:30px}
+.login-logo{font-size:22px;font-weight:bold;color:var(--accent);letter-spacing:3px;margin-bottom:4px}
+.login-sub{font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-bottom:28px}
 .fgroup{margin-bottom:14px}
 .fgroup label{display:block;font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:5px}
 .fgroup input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:5px;padding:11px 13px;color:var(--text);font-family:inherit;font-size:14px;outline:none;transition:border-color .15s}
 .fgroup input:focus{border-color:var(--accent)}
-.btn-row{display:flex;gap:8px;margin-top:20px}
-.btn{flex:1;padding:11px 14px;border:none;border-radius:5px;font-family:inherit;font-size:11px;font-weight:bold;letter-spacing:1px;cursor:pointer;transition:opacity .15s;touch-action:manipulation}
+.btn-row{display:flex;gap:8px;margin-top:18px}
+.btn{flex:1;padding:10px 14px;border:none;border-radius:5px;font-family:inherit;font-size:11px;font-weight:bold;letter-spacing:1px;cursor:pointer;transition:opacity .15s;touch-action:manipulation}
 .btn:hover{opacity:.85}.btn:disabled{opacity:.35;cursor:not-allowed}
 .btn-primary{background:var(--accent);color:#080d17}
 .btn-secondary{background:var(--border);color:var(--text)}
+.btn-danger{background:var(--red);color:#fff}
 #login-err{margin-top:10px;font-size:11px;color:var(--red);display:none}
-
-/* ── APP SHELL ── */
+/* APP */
 #app{display:none;height:100vh;flex-direction:column}
 #app.on{display:flex}
-
-/* Header */
-#hdr{height:var(--hh);background:var(--panel);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;z-index:30}
+#hdr{height:52px;background:var(--panel);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:10px;flex-shrink:0;z-index:30}
 .hlogo{font-size:13px;font-weight:bold;color:var(--accent);letter-spacing:2px;white-space:nowrap}
-.hsep{color:var(--border)}
-.hcrumb{font-size:10px;color:var(--muted);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;flex:1}
-.hright{display:flex;align-items:center;gap:8px;flex-shrink:0}
-.rbadge{font-size:10px;background:var(--card);border:1px solid var(--border);padding:3px 10px;border-radius:12px;color:var(--muted)}
+.hcrumb{font-size:10px;color:var(--muted);flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.hright{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.rbadge{font-size:10px;background:var(--card);border:1px solid var(--border);padding:3px 10px;border-radius:12px;color:var(--muted);cursor:pointer;transition:border-color .15s;user-select:none}
+.rbadge:hover{border-color:var(--accent)}
 .rbadge span{color:var(--accent);font-weight:bold}
 .icon-btn{background:var(--card);border:1px solid var(--border);border-radius:5px;color:var(--text);width:32px;height:32px;font-size:16px;cursor:pointer;display:none;align-items:center;justify-content:center;touch-action:manipulation}
-.icon-btn.notify{border-color:var(--accent);color:var(--accent)}
-
-/* Body */
+.icon-btn.has-notif{border-color:var(--accent);color:var(--accent)}
 #body{display:flex;flex:1;overflow:hidden;position:relative}
-
-/* Overlay */
 #overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:40}
 #overlay.show{display:block}
-
-/* Sidebar */
-#sb{width:var(--sw);background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:14px 0;flex-shrink:0;z-index:45}
-.sb-sec{padding:0 10px;margin-bottom:18px}
+/* SIDEBAR */
+#sb{width:220px;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:12px 0;flex-shrink:0;z-index:45}
+.sb-sec{padding:0 10px;margin-bottom:16px}
 .sb-ttl{font-size:8px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);padding:0 8px;margin-bottom:7px}
-.sb-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:5px;cursor:pointer;font-size:11px;color:var(--muted);transition:all .1s;white-space:nowrap;border-left:2px solid transparent;touch-action:manipulation}
+.sb-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:5px;cursor:pointer;font-size:11px;color:var(--muted);transition:all .1s;white-space:nowrap;border-left:2px solid transparent;touch-action:manipulation}
 .sb-item:hover,.sb-item:active{background:var(--card);color:var(--text)}
 .sb-item.active{background:rgba(56,217,169,.08);color:var(--accent);border-left-color:var(--accent)}
 .sb-item .ic{font-size:13px;width:16px;text-align:center}
-.plist{margin-top:auto;padding:12px;border-top:1px solid var(--border)}
-.pitem{display:flex;align-items:center;gap:8px;padding:5px 4px;font-size:11px;color:var(--muted)}
+.plist{margin-top:auto;padding:10px;border-top:1px solid var(--border)}
+.pitem{display:flex;align-items:center;gap:7px;padding:4px 3px;font-size:11px;color:var(--muted)}
 .pitem .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .pitem .pn{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pitem .ps{font-size:10px;font-weight:bold;white-space:nowrap}
 .pitem.me .pn{color:var(--text)}
-
-/* Main */
-#main{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column}
-
-/* Chat */
-#chatpanel{width:var(--cw);background:var(--panel);border-left:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;z-index:45}
-.chdr{padding:10px 14px;border-bottom:1px solid var(--border);font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);display:flex;align-items:center;justify-content:space-between}
-#chatmsgs{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:8px}
+/* MAIN & CHAT */
+#main{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:0}
+#chatpanel{width:260px;background:var(--panel);border-left:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;z-index:45}
+.chdr{padding:10px 13px;border-bottom:1px solid var(--border);font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);display:flex;align-items:center;justify-content:space-between}
+#chatmsgs{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:7px}
 .cmsg{font-size:11px}
 .cmsg .csender{font-weight:bold;margin-bottom:2px}
 .cmsg .ctext{color:var(--text);word-break:break-word;line-height:1.45}
@@ -83,129 +72,163 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
 .cinput{padding:8px;border-top:1px solid var(--border);display:flex;gap:5px}
 .cinput input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:4px;padding:7px 9px;color:var(--text);font-family:inherit;font-size:11px;outline:none;min-width:0}
 .cinput input:focus{border-color:var(--accent)}
-.csend{padding:7px 10px;background:var(--accent);color:#080d17;border:none;border-radius:4px;font-family:inherit;font-size:11px;font-weight:bold;cursor:pointer;white-space:nowrap;touch-action:manipulation}
-
-/* Views */
+.csend{padding:7px 10px;background:var(--accent);color:#080d17;border:none;border-radius:4px;font-family:inherit;font-size:11px;font-weight:bold;cursor:pointer;touch-action:manipulation}
+/* VIEWS */
 .view{display:none}
 .view.active{display:flex;flex-direction:column;flex:1}
 .vtitle{font-size:16px;font-weight:bold;margin-bottom:3px}
-.vsub{font-size:10px;color:var(--muted);margin-bottom:16px;letter-spacing:.5px}
+.vsub{font-size:10px;color:var(--muted);margin-bottom:14px}
 .ghdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;gap:10px;flex-wrap:wrap}
 .turn-ind{padding:5px 12px;border-radius:4px;font-size:11px;font-weight:bold;background:rgba(56,217,169,.12);border:1px solid var(--accent);color:var(--accent);white-space:nowrap}
 .turn-ind.wait{background:rgba(84,106,138,.15);border-color:var(--muted);color:var(--muted)}
-.winner-banner{text-align:center;padding:24px;background:var(--card);border:2px solid var(--accent);border-radius:12px;margin-top:16px}
-.winner-banner .trophy{font-size:40px;margin-bottom:8px}
-.winner-banner .wtext{font-size:20px;font-weight:bold;color:var(--accent)}
-
-/* Lobby */
-.gcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-bottom:18px}
-.gcard{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px;cursor:pointer;transition:all .15s;position:relative;touch-action:manipulation}
+.winner-banner{text-align:center;padding:22px;background:var(--card);border:2px solid var(--accent);border-radius:12px;margin-top:14px}
+.winner-banner .trophy{font-size:38px;margin-bottom:8px}
+.winner-banner .wtext{font-size:19px;font-weight:bold;color:var(--accent)}
+/* SPECTATOR BANNER */
+#spectator-banner{display:none;align-items:center;gap:10px;padding:8px 14px;background:rgba(84,106,138,.12);border:1px solid var(--muted);border-radius:6px;margin-bottom:12px;font-size:11px;color:var(--muted)}
+#spectator-banner button{padding:4px 12px;font-size:10px;background:var(--card);border:1px solid var(--accent);border-radius:4px;color:var(--accent);cursor:pointer;font-family:inherit;touch-action:manipulation}
+/* LOBBY */
+.gcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:9px;margin-bottom:16px}
+.gcard{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px;cursor:pointer;transition:all .15s;position:relative;touch-action:manipulation}
 .gcard:hover,.gcard:active{border-color:var(--accent);transform:translateY(-2px)}
 .gcard.sel{border-color:var(--accent);background:rgba(56,217,169,.05)}
-.gcard .gemo{font-size:24px;margin-bottom:7px}
-.gcard .gname{font-size:11px;font-weight:bold;margin-bottom:3px}
-.gcard .gdesc{font-size:10px;color:var(--muted);line-height:1.4}
-.gcard .gtag{position:absolute;top:8px;right:8px;font-size:9px;background:var(--border);padding:2px 6px;border-radius:10px;color:var(--muted)}
-.pready-list{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
-.pready-card{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:80px}
-.pready-card .prn{color:var(--text);font-weight:bold}
-.pready-card .prs{color:var(--muted);font-size:9px}
-.pready-card.on{border-color:var(--accent)}.pready-card.on .prs{color:var(--accent)}
-.lobby-footer{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-
-/* 오목 */
-#omok-board{background:#0a1628;border:1px solid var(--border);border-radius:6px;padding:5px;display:inline-grid;gap:1px;overflow:auto;max-width:100%}
+.gcard .gemo{font-size:22px;margin-bottom:6px}
+.gcard .gname{font-size:11px;font-weight:bold;margin-bottom:2px}
+.gcard .gdesc{font-size:9px;color:var(--muted);line-height:1.4}
+.gcard .gtag{position:absolute;top:7px;right:7px;font-size:8px;background:var(--border);padding:2px 6px;border-radius:10px;color:var(--muted)}
+.pready-list{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.pready-card{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:85px}
+.pready-card .prn{font-weight:bold}
+.pready-card .prs{font-size:9px;color:var(--muted)}
+.part-btn{width:100%;padding:3px 0;font-size:9px;border-radius:3px;border:1px solid var(--border);background:var(--bg);color:var(--muted);cursor:pointer;font-family:inherit;margin-top:2px;touch-action:manipulation}
+.part-btn.playing{border-color:var(--accent);color:var(--accent);background:rgba(56,217,169,.08)}
+/* OMOK */
+#omok-board{background:#0a1628;border:1px solid var(--border);border-radius:6px;padding:4px;display:inline-grid;gap:1px;overflow:auto;max-width:100%}
 .ocell{width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid rgba(255,255,255,.04);transition:background .1s;touch-action:manipulation}
 .ocell:hover,.ocell:active{background:rgba(255,255,255,.07)}
 .ostone{width:22px;height:22px;border-radius:50%}
 .os0{background:radial-gradient(circle at 35% 35%,#555,#111);box-shadow:2px 2px 4px rgba(0,0,0,.6)}
 .os1{background:radial-gradient(circle at 35% 35%,#fff,#ccc);box-shadow:2px 2px 4px rgba(0,0,0,.5)}
-.os2{background:radial-gradient(circle at 35% 35%,#ff8c5a,#b03020);box-shadow:2px 2px 4px rgba(0,0,0,.5)}
-.os3{background:radial-gradient(circle at 35% 35%,#74b9ff,#0984e3);box-shadow:2px 2px 4px rgba(0,0,0,.5)}
-.os4{background:radial-gradient(circle at 35% 35%,#ffeaa7,#e6b800);box-shadow:2px 2px 4px rgba(0,0,0,.5)}
-.olegend{display:flex;gap:12px;margin-bottom:8px;font-size:11px;color:var(--muted);flex-wrap:wrap}
-
-/* 지뢰찾기 */
-#mine-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;overflow:auto}
-#mine-board{display:inline-grid;gap:2px;background:var(--border);padding:4px;border-radius:6px}
-.mcell{width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:var(--card);border:1px solid var(--border);border-radius:3px;cursor:pointer;font-size:12px;font-weight:bold;user-select:none;transition:background .1s;touch-action:manipulation}
+.os2{background:radial-gradient(circle at 35% 35%,#ff8c5a,#b03020);}
+.os3{background:radial-gradient(circle at 35% 35%,#74b9ff,#0984e3);}
+.os4{background:radial-gradient(circle at 35% 35%,#ffeaa7,#e6b800);}
+.olegend{display:flex;gap:10px;margin-bottom:8px;font-size:11px;flex-wrap:wrap}
+/* MINE */
+#mine-board{display:inline-grid;gap:2px;background:var(--border);padding:3px;border-radius:6px}
+.mcell{width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:var(--card);border:1px solid var(--border);border-radius:3px;cursor:pointer;font-size:12px;font-weight:bold;user-select:none;touch-action:manipulation}
 .mcell:hover:not(.revealed):not(.mflagged),.mcell:active:not(.revealed):not(.mflagged){background:var(--panel)}
 .mcell.revealed{background:var(--bg);cursor:default;border-color:rgba(255,255,255,.04)}
-.mcell.mmine{background:#7f1d1d;color:var(--red)}
+.mcell.mmine{background:#7f1d1d}
 .mcell.mflagged{background:rgba(255,169,77,.15);color:var(--orange);border-color:var(--orange)}
-.mine-hud{display:flex;gap:16px;font-size:11px;color:var(--muted);flex-wrap:wrap;justify-content:center}
+.mine-hud{display:flex;gap:14px;font-size:11px;color:var(--muted);flex-wrap:wrap;margin-bottom:10px}
 .mine-hud strong{color:var(--accent)}
-#flag-toggle{padding:6px 14px;font-size:11px}
-.flag-mode-on{background:rgba(255,169,77,.2)!important;border-color:var(--orange)!important;color:var(--orange)!important}
-
-/* 슈팅 */
-#shoot-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;overflow:auto}
-#shoot-canvas{display:block;border:1px solid var(--border);border-radius:8px;max-width:100%;height:auto;touch-action:none}
-.shoot-hud{display:flex;justify-content:space-between;width:100%;max-width:480px;font-size:11px;color:var(--muted)}
-.sh-item{display:flex;flex-direction:column;align-items:center;gap:2px}
-.sh-val{color:var(--text);font-size:14px;font-weight:bold}
-.shoot-ctrl{font-size:10px;color:var(--muted);text-align:center}
-#shoot-dpad{display:none;gap:0;flex-direction:column;align-items:center;margin-top:4px}
-.dpad-row{display:flex;gap:4px;justify-content:center}
-.dpad-btn{width:52px;height:52px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;touch-action:manipulation;-webkit-user-select:none}
-.dpad-btn:active{background:var(--border)}
-
-/* 끝말잇기 */
-.wchain-display{text-align:center;padding:20px;background:var(--card);border:1px solid var(--border);border-radius:8px;margin-bottom:12px}
+.flag-btn{padding:5px 12px;font-size:10px}
+.flag-btn.on{background:rgba(255,169,77,.15)!important;border-color:var(--orange)!important;color:var(--orange)!important}
+/* WORD */
+.wchain{text-align:center;padding:18px;background:var(--card);border:1px solid var(--border);border-radius:8px;margin-bottom:12px}
 .cword{font-size:30px;font-weight:bold;letter-spacing:3px;margin-bottom:5px}
 .nchar{font-size:12px;color:var(--accent)}
 .wbar{height:4px;background:var(--accent);margin-top:10px;border-radius:2px;transition:width .5s linear}
-.winput-area{display:flex;gap:8px;margin-bottom:10px}
-.winput{flex:1;background:var(--card);border:1px solid var(--border);border-radius:5px;padding:11px 13px;color:var(--text);font-family:inherit;font-size:16px;outline:none}
-.winput:focus{border-color:var(--accent)}
-.whist{display:flex;flex-wrap:wrap;gap:4px;max-height:100px;overflow-y:auto}
-.wchip{padding:3px 8px;background:var(--card);border:1px solid var(--border);border-radius:12px;font-size:10px;color:var(--muted)}
-.wscores{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
-.qscard{flex:1;min-width:70px;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:8px;text-align:center}
-.qscard .qs{font-size:20px;font-weight:bold}
-.qscard .ql{font-size:9px;color:var(--muted)}
-
-::-webkit-scrollbar{width:3px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-
-/* ══ MOBILE RESPONSIVE ══ */
-@media (max-width:768px){
-  #sb{
-    position:fixed;left:-var(--sw);top:0;height:100%;
-    transform:translateX(-100%);transition:transform .25s ease;
-  }
+.whist{display:flex;flex-wrap:wrap;gap:4px;max-height:100px;overflow-y:auto;margin-bottom:10px}
+.wchip{padding:3px 8px;border:1px solid var(--border);border-radius:12px;font-size:10px;background:var(--card)}
+/* SHARED GAME INPUT */
+.ginput-row{display:flex;gap:8px;margin-bottom:10px}
+.ginput{flex:1;background:var(--card);border:1px solid var(--border);border-radius:5px;padding:10px 12px;color:var(--text);font-family:inherit;font-size:15px;outline:none;min-width:0}
+.ginput:focus{border-color:var(--accent)}
+/* CHOSUNG */
+.cho-display{text-align:center;padding:22px;background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:12px}
+.cho-hint{font-size:11px;color:var(--muted);margin-bottom:8px}
+.cho-chars{font-size:40px;letter-spacing:10px;font-weight:bold;color:var(--accent)}
+.cho-round{font-size:10px;color:var(--muted);margin-top:6px}
+.cho-order{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.cho-correct{padding:4px 10px;border-radius:12px;font-size:11px;background:rgba(56,217,169,.12);border:1px solid var(--accent)}
+/* BASEBALL */
+.bb-input-area{display:flex;gap:8px;margin-bottom:12px}
+.bb-num{width:42px;background:var(--card);border:1px solid var(--border);border-radius:5px;padding:10px 8px;color:var(--text);font-family:inherit;font-size:18px;text-align:center;outline:none}
+.bb-num:focus{border-color:var(--accent)}
+.bb-history{max-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
+.bb-row{display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--card);border:1px solid var(--border);border-radius:4px;font-size:11px}
+.bb-row .bb-who{font-weight:bold;min-width:60px}
+.bb-row .bb-guess{letter-spacing:4px;font-size:14px;font-weight:bold;color:var(--text)}
+.bb-row .bb-result{margin-left:auto;font-size:12px}
+.bb-row.winner{border-color:var(--accent)}
+/* TELEPATHY */
+.tp-category{text-align:center;padding:20px;background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:12px}
+.tp-cat-label{font-size:11px;color:var(--muted);margin-bottom:6px}
+.tp-cat-name{font-size:32px;font-weight:bold;color:var(--accent)}
+.tp-timer{font-size:22px;font-weight:bold;text-align:center;margin-bottom:10px}
+.tp-options{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:10px}
+.tp-opt{padding:12px 6px;background:var(--card);border:2px solid var(--border);border-radius:7px;cursor:pointer;font-size:13px;font-weight:bold;text-align:center;touch-action:manipulation;transition:all .1s}
+.tp-opt:hover,.tp-opt:active{border-color:var(--accent)}
+.tp-opt.selected{border-color:var(--accent);background:rgba(56,217,169,.12);color:var(--accent)}
+.tp-reveal{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.tp-pick{padding:8px 14px;border-radius:6px;font-size:11px;background:var(--card);border:1px solid var(--border)}
+.tp-pick.matched{border-color:var(--accent)}
+/* RPS */
+.rps-btns{display:flex;gap:12px;justify-content:center;margin:14px 0}
+.rps-btn{width:90px;height:90px;font-size:36px;background:var(--card);border:2px solid var(--border);border-radius:12px;cursor:pointer;touch-action:manipulation;transition:all .15s;display:flex;align-items:center;justify-content:center}
+.rps-btn:hover,.rps-btn:active{border-color:var(--accent);transform:scale(1.05)}
+.rps-btn.selected{border-color:var(--accent);background:rgba(56,217,169,.1)}
+.rps-results{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:10px}
+.rps-card{text-align:center;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:6px;min-width:80px}
+.rps-card .ri{font-size:28px;margin-bottom:4px}
+.rps-card .rn{font-size:10px;color:var(--muted)}
+.rps-card .rs{font-size:11px;font-weight:bold}
+/* TYPING */
+.typing-display{text-align:center;padding:20px;background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:12px}
+.typing-text{font-size:18px;font-weight:bold;line-height:1.5;color:var(--text);letter-spacing:1px}
+.typing-round{font-size:10px;color:var(--muted);margin-top:5px}
+.typing-order{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.typing-entry{display:flex;align-items:center;gap:8px;padding:5px 10px;background:var(--card);border:1px solid var(--border);border-radius:4px;font-size:11px}
+/* OX QUIZ */
+.ox-question{text-align:center;padding:20px;background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:12px}
+.ox-qtxt{font-size:16px;font-weight:bold;line-height:1.5;margin-bottom:8px}
+.ox-qnum{font-size:10px;color:var(--muted);margin-bottom:10px}
+.ox-timer{font-size:28px;font-weight:bold;color:var(--accent);margin-bottom:6px}
+.ox-timer.urgent{color:var(--red);animation:blink .5s ease-in-out infinite alternate}
+@keyframes blink{from{opacity:1}to{opacity:.3}}
+.ox-btns{display:flex;gap:12px;justify-content:center;margin-bottom:10px}
+.ox-btn{flex:1;max-width:140px;padding:18px;font-size:32px;background:var(--card);border:2px solid var(--border);border-radius:10px;cursor:pointer;touch-action:manipulation;transition:all .1s;text-align:center;font-weight:bold}
+.ox-btn:hover,.ox-btn:active{transform:scale(1.03)}
+.ox-btn.picked{border-color:var(--accent);background:rgba(56,217,169,.1)}
+.ox-btn.correct{border-color:var(--accent);background:rgba(56,217,169,.15)}
+.ox-btn.wrong{border-color:var(--red);background:rgba(255,107,107,.1)}
+.ox-status{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.ox-pcard{padding:6px 12px;border-radius:4px;font-size:11px;background:var(--card);border:1px solid var(--border)}
+.ox-pcard.alive{border-color:var(--accent)}
+.ox-pcard.dead{opacity:.4;text-decoration:line-through}
+/* SCORE BOARD */
+.scoreboard{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.sc-card{flex:1;min-width:70px;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:8px;text-align:center}
+.sc-val{font-size:20px;font-weight:bold}
+.sc-lbl{font-size:9px;color:var(--muted)}
+/* MOBILE */
+@media(max-width:768px){
+  #sb{position:fixed;left:0;top:0;height:100%;transform:translateX(-100%);transition:transform .25s;width:220px}
   #sb.open{transform:translateX(0)}
-  #chatpanel{
-    position:fixed;right:0;top:0;height:100%;
-    transform:translateX(100%);transition:transform .25s ease;
-    width:min(var(--cw),90vw);
-  }
+  #chatpanel{position:fixed;right:0;top:0;height:100%;transform:translateX(100%);transition:transform .25s;width:min(260px,90vw)}
   #chatpanel.open{transform:translateX(0)}
   .icon-btn{display:flex}
-  .hsep,.hcrumb{display:none}
-  .rbadge{font-size:9px;padding:3px 8px}
+  .hcrumb{display:none}
   #main{padding:12px}
-  .gcards{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
-  .vtitle{font-size:15px}
+  .gcards{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
   .ocell{width:24px;height:24px}
   .ostone{width:18px;height:18px}
   .mcell{width:28px;height:28px;font-size:10px}
   .cword{font-size:24px}
-  .winput{font-size:14px}
-  #shoot-dpad{display:flex}
-  .shoot-ctrl{display:none}
-  .winner-banner{padding:16px}
-  .winner-banner .trophy{font-size:32px}
-  .winner-banner .wtext{font-size:17px}
+  .cho-chars{font-size:30px}
+  .rps-btn{width:75px;height:75px;font-size:30px}
+  .tp-options{grid-template-columns:repeat(2,1fr)}
+  .ox-btn{font-size:26px;padding:14px}
 }
-@media (max-width:400px){
-  .login-box{padding:24px}
+@media(max-width:400px){
   .gcards{grid-template-columns:1fr 1fr}
   .ocell{width:20px;height:20px}
-  .ostone{width:16px;height:16px}
+  .ostone{width:15px;height:15px}
   .mcell{width:24px;height:24px;font-size:9px}
 }
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 </style>
 </head>
 <body>
@@ -213,19 +236,19 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
 <!-- LOGIN -->
 <div id="login-screen">
   <div class="login-box">
-    <div class="login-logo">◈ TEAMFLOW PRO</div>
-    <div class="login-sub">팀 성과 분석 플랫폼 · v4.0</div>
+    <div class="login-logo">🎮 TEAMGAME</div>
+    <div class="login-sub">미니게임 플랫폼 · v5.0</div>
     <div class="fgroup">
       <label>이름</label>
       <input id="inp-name" type="text" placeholder="홍길동" maxlength="10" autocomplete="off">
     </div>
     <div class="fgroup">
-      <label>세션 코드 (없으면 새 세션 생성)</label>
+      <label>방 코드 (없으면 새 방 만들기)</label>
       <input id="inp-room" type="text" placeholder="ABC123" maxlength="6" style="text-transform:uppercase" autocomplete="off">
     </div>
     <div class="btn-row">
       <button class="btn btn-secondary" onclick="joinRoom()">참여하기</button>
-      <button class="btn btn-primary" onclick="createRoom()">새 세션 생성</button>
+      <button class="btn btn-primary" onclick="createRoom()">새 방 만들기</button>
     </div>
     <div id="login-err"></div>
   </div>
@@ -234,13 +257,12 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
 <!-- APP -->
 <div id="app">
   <div id="hdr">
-    <button class="icon-btn" id="sb-btn" onclick="toggleSidebar()">☰</button>
-    <div class="hlogo">◈ TEAM</div>
-    <div class="hsep">/</div>
-    <div class="hcrumb" id="hcrumb">대시보드</div>
+    <button class="icon-btn" id="sb-btn" onclick="toggleSb()">☰</button>
+    <div class="hlogo">🎮 TEAM</div>
+    <div class="hcrumb" id="hcrumb">미니게임 플랫폼</div>
     <div class="hright">
-      <div class="rbadge">ID: <span id="room-code">------</span></div>
-      <div id="hplayers" style="display:flex;gap:5px;align-items:center"></div>
+      <div class="rbadge" onclick="copyRoomCode()" title="클릭하여 복사">방 코드: <span id="room-code">------</span> 📋</div>
+      <div id="hplayers" style="display:flex;gap:4px;align-items:center"></div>
       <button class="icon-btn" id="chat-btn" onclick="toggleChat()">💬</button>
     </div>
   </div>
@@ -248,173 +270,268 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
   <div id="body">
     <div id="overlay" onclick="closeAll()"></div>
 
-    <!-- Sidebar -->
+    <!-- SIDEBAR -->
     <div id="sb">
       <div class="sb-sec">
-        <div class="sb-ttl">워크스페이스</div>
-        <div class="sb-item active" data-view="lobby" onclick="navTo('lobby');closeAll()"><span class="ic">📊</span> 대시보드</div>
+        <div class="sb-ttl">게임 목록</div>
+        <div class="sb-item active" data-view="lobby" onclick="navTo('lobby');closeAll()"><span class="ic">🏠</span> 로비</div>
         <div class="sb-item" data-view="omok" onclick="navTo('omok');closeAll()"><span class="ic">⚫</span> 오목</div>
         <div class="sb-item" data-view="mine" onclick="navTo('mine');closeAll()"><span class="ic">💣</span> 지뢰찾기</div>
-        <div class="sb-item" data-view="shoot" onclick="navTo('shoot');closeAll()"><span class="ic">✈️</span> 슈팅게임</div>
         <div class="sb-item" data-view="word" onclick="navTo('word');closeAll()"><span class="ic">🔤</span> 끝말잇기</div>
+        <div class="sb-item" data-view="chosung" onclick="navTo('chosung');closeAll()"><span class="ic">🅰️</span> 초성게임</div>
+        <div class="sb-item" data-view="baseball" onclick="navTo('baseball');closeAll()"><span class="ic">⚾</span> 숫자야구</div>
+        <div class="sb-item" data-view="telepathy" onclick="navTo('telepathy');closeAll()"><span class="ic">🔮</span> 텔레파시</div>
+        <div class="sb-item" data-view="rps" onclick="navTo('rps');closeAll()"><span class="ic">✊</span> 가위바위보</div>
+        <div class="sb-item" data-view="typing" onclick="navTo('typing');closeAll()"><span class="ic">⌨️</span> 타이핑 경주</div>
+        <div class="sb-item" data-view="ox" onclick="navTo('ox');closeAll()"><span class="ic">⭕</span> OX 퀴즈</div>
       </div>
       <div class="plist">
-        <div class="sb-ttl">팀원 현황</div>
+        <div class="sb-ttl">팀원</div>
         <div id="sb-players"></div>
-        <div style="margin-top:10px">
-          <button class="btn btn-secondary" style="width:100%;font-size:9px;padding:6px" onclick="leaveRoom()">세션 종료</button>
+        <div style="margin-top:8px">
+          <button class="btn btn-secondary" style="width:100%;font-size:9px;padding:5px" onclick="leaveRoom()">방 나가기</button>
         </div>
       </div>
     </div>
 
-    <!-- Main -->
+    <!-- MAIN -->
     <div id="main">
+      <!-- 관전 배너 -->
+      <div id="spectator-banner">
+        <span>👁️ 관전 중</span>
+        <button onclick="requestJoinNext()">다음 판 참여 신청</button>
+      </div>
 
       <!-- LOBBY -->
       <div id="view-lobby" class="view active">
-        <div class="vtitle">팀 게임 대시보드</div>
-        <div class="vsub">세션 활성 중 · 1~5인 지원</div>
+        <div class="vtitle">🎮 미니게임 플랫폼</div>
+        <div class="vsub">1~5인 지원 · 방 코드를 공유하세요</div>
         <div id="lobby-plist" class="pready-list"></div>
-        <div class="sb-ttl" style="padding:0;margin-bottom:10px">게임 선택</div>
+        <div class="sb-ttl" style="padding:0;margin-bottom:9px">게임 선택 (호스트만)</div>
         <div class="gcards">
-          <div class="gcard" id="gc-omok" onclick="selectGame('omok')">
-            <div class="gtag">1-5인</div>
-            <div class="gemo">⚫</div>
-            <div class="gname">오목</div>
-            <div class="gdesc">13×13, 5개 연속 승리</div>
-          </div>
-          <div class="gcard" id="gc-mine" onclick="selectGame('mine')">
-            <div class="gtag">1-5인 협동</div>
-            <div class="gemo">💣</div>
-            <div class="gname">지뢰찾기</div>
-            <div class="gdesc">순서대로 클릭, 지뢰 조심!</div>
-          </div>
-          <div class="gcard" id="gc-shoot" onclick="selectGame('shoot')">
-            <div class="gtag">1-5인 협동</div>
-            <div class="gemo">✈️</div>
-            <div class="gname">슈팅게임</div>
-            <div class="gdesc">협동 5스테이지, 목숨 2개</div>
-          </div>
-          <div class="gcard" id="gc-word" onclick="selectGame('word')">
-            <div class="gtag">1-5인</div>
-            <div class="gemo">🔤</div>
-            <div class="gname">끝말잇기</div>
-            <div class="gdesc">30초 제한, 단어 체인</div>
-          </div>
+          <div class="gcard" id="gc-omok" onclick="selectGame('omok')"><div class="gtag">2-5인</div><div class="gemo">⚫</div><div class="gname">오목</div><div class="gdesc">5개 연속 배치 · 승리 +10pt</div></div>
+          <div class="gcard" id="gc-mine" onclick="selectGame('mine')"><div class="gtag">협동</div><div class="gemo">💣</div><div class="gname">지뢰찾기</div><div class="gdesc">순서 클릭 · 클리어 전원 +5pt</div></div>
+          <div class="gcard" id="gc-word" onclick="selectGame('word')"><div class="gtag">2-5인</div><div class="gemo">🔤</div><div class="gname">끝말잇기</div><div class="gdesc">30초 제한 · 단어 길이만큼 점수</div></div>
+          <div class="gcard" id="gc-chosung" onclick="selectGame('chosung')"><div class="gtag">2-5인</div><div class="gemo">🅰️</div><div class="gname">초성게임</div><div class="gdesc">빠르게 맞히기 · 1등 5pt</div></div>
+          <div class="gcard" id="gc-baseball" onclick="selectGame('baseball')"><div class="gtag">2-5인</div><div class="gemo">⚾</div><div class="gname">숫자야구</div><div class="gdesc">3자리 숫자 · 먼저 맞히면 승리</div></div>
+          <div class="gcard" id="gc-telepathy" onclick="selectGame('telepathy')"><div class="gtag">2-5인</div><div class="gemo">🔮</div><div class="gname">텔레파시</div><div class="gdesc">같은 걸 골라야 점수 · 5라운드</div></div>
+          <div class="gcard" id="gc-rps" onclick="selectGame('rps')"><div class="gtag">2-5인</div><div class="gemo">✊</div><div class="gname">가위바위보</div><div class="gdesc">동시 선택 · 5라운드 토너먼트</div></div>
+          <div class="gcard" id="gc-typing" onclick="selectGame('typing')"><div class="gtag">2-5인</div><div class="gemo">⌨️</div><div class="gname">타이핑 경주</div><div class="gdesc">빠르게 타이핑 · 5라운드</div></div>
+          <div class="gcard" id="gc-ox" onclick="selectGame('ox')"><div class="gtag">2-5인</div><div class="gemo">⭕</div><div class="gname">OX 퀴즈</div><div class="gdesc">틀리면 탈락 · 생존자 승리</div></div>
         </div>
-        <div class="lobby-footer">
-          <div id="sel-label" style="font-size:11px;color:var(--muted)">게임을 선택하세요 (호스트만)</div>
-          <button class="btn btn-primary" id="start-btn" onclick="startGame()" disabled style="min-width:110px">🎮 게임 시작</button>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <div id="sel-label" style="font-size:11px;color:var(--muted)">게임을 선택하세요</div>
+          <button class="btn btn-primary" id="start-btn" onclick="startGame()" disabled style="min-width:120px">🎮 게임 시작</button>
         </div>
       </div>
 
       <!-- 오목 -->
       <div id="view-omok" class="view">
         <div class="ghdr">
-          <div><div class="vtitle">⚫ 오목</div><div class="vsub">5개 연속 배치 시 승리 · 승리 +10pt</div></div>
-          <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap">
+          <div><div class="vtitle">⚫ 오목</div><div class="vsub">5개 연속 배치 승리 · +10pt</div></div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
             <div id="omok-turn" class="turn-ind wait">대기 중</div>
-            <button class="btn btn-secondary" style="font-size:9px;padding:5px 10px" onclick="backToLobby()">← 나가기</button>
+            <button class="btn btn-secondary" style="font-size:9px;padding:5px 9px" onclick="backToLobby()">← 나가기</button>
           </div>
         </div>
         <div class="olegend" id="olegend"></div>
         <div style="overflow:auto"><div id="omok-board"></div></div>
         <div id="omok-win" class="winner-banner" style="display:none">
-          <div class="trophy">🏆</div>
-          <div class="wtext" id="omok-win-text"></div>
-          <div style="margin-top:12px"><button class="btn btn-primary" onclick="backToLobby()">로비로</button></div>
+          <div class="trophy">🏆</div><div class="wtext" id="omok-win-text"></div>
+          <div style="margin-top:10px"><button class="btn btn-primary" onclick="backToLobby()">로비로</button></div>
         </div>
       </div>
 
       <!-- 지뢰찾기 -->
       <div id="view-mine" class="view">
         <div class="ghdr">
-          <div><div class="vtitle">💣 지뢰찾기</div><div class="vsub">협동 순서제 · 성공 +5pt 전원</div></div>
-          <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap">
+          <div><div class="vtitle">💣 지뢰찾기</div><div class="vsub">협동 순서제 · 전원 클리어 +5pt</div></div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
             <div id="mine-turn" class="turn-ind wait">대기 중</div>
-            <button id="flag-toggle" class="btn btn-secondary" style="font-size:9px;padding:5px 10px" onclick="toggleFlagMode()">🚩 깃발모드</button>
-            <button class="btn btn-secondary" style="font-size:9px;padding:5px 10px" onclick="backToLobby()">← 나가기</button>
+            <button class="btn btn-secondary flag-btn" id="flag-btn" onclick="toggleFlag()">🚩 깃발</button>
+            <button class="btn btn-secondary" style="font-size:9px;padding:5px 9px" onclick="backToLobby()">← 나가기</button>
           </div>
         </div>
-        <div id="mine-wrap">
-          <div class="mine-hud">
-            <div>💣 지뢰 <strong id="mine-count">--</strong></div>
-            <div>✅ 해제 <strong id="mine-cleared">0</strong></div>
-            <div>🚩 깃발 <strong id="mine-flags">0</strong></div>
-          </div>
-          <div id="mine-board"></div>
+        <div class="mine-hud">
+          <span>💣 지뢰 <strong id="mine-count">--</strong></span>
+          <span>✅ 해제 <strong id="mine-cleared">0</strong></span>
+          <span>🚩 깃발 <strong id="mine-flags">0</strong></span>
         </div>
+        <div style="overflow:auto"><div id="mine-board"></div></div>
         <div id="mine-win" class="winner-banner" style="display:none">
-          <div class="trophy" id="mine-win-icon">🎉</div>
-          <div class="wtext" id="mine-win-text"></div>
-          <div style="margin-top:12px"><button class="btn btn-primary" onclick="backToLobby()">로비로</button></div>
-        </div>
-      </div>
-
-      <!-- 슈팅 -->
-      <div id="view-shoot" class="view">
-        <div class="ghdr">
-          <div><div class="vtitle">✈️ 슈팅게임</div><div class="vsub">WASD/방향키 또는 화면 터치 · 자동발사</div></div>
-          <button class="btn btn-secondary" style="font-size:9px;padding:5px 10px" onclick="backToLobby()">← 나가기</button>
-        </div>
-        <div id="shoot-wrap">
-          <div class="shoot-hud" id="shoot-hud">
-            <div class="sh-item"><div class="sh-val" id="sh-stage">-</div><div>스테이지</div></div>
-            <div class="sh-item"><div class="sh-val" id="sh-score">0</div><div>점수</div></div>
-            <div class="sh-item" id="sh-lives-area"></div>
-          </div>
-          <canvas id="shoot-canvas" width="480" height="520"></canvas>
-          <div class="shoot-ctrl">WASD / ↑↓←→ 이동 · 자동 발사</div>
-          <div id="shoot-dpad">
-            <div class="dpad-row"><div class="dpad-btn" id="d-up">▲</div></div>
-            <div class="dpad-row">
-              <div class="dpad-btn" id="d-left">◀</div>
-              <div style="width:52px"></div>
-              <div class="dpad-btn" id="d-right">▶</div>
-            </div>
-            <div class="dpad-row"><div class="dpad-btn" id="d-down">▼</div></div>
-          </div>
-        </div>
-        <div id="shoot-win" class="winner-banner" style="display:none">
-          <div class="trophy">🏆</div>
-          <div class="wtext" id="shoot-win-text"></div>
-          <div style="margin-top:12px"><button class="btn btn-primary" onclick="backToLobby()">로비로</button></div>
+          <div class="trophy" id="mine-icon">🎉</div><div class="wtext" id="mine-win-text"></div>
+          <div style="margin-top:10px"><button class="btn btn-primary" onclick="backToLobby()">로비로</button></div>
         </div>
       </div>
 
       <!-- 끝말잇기 -->
       <div id="view-word" class="view">
         <div class="ghdr">
-          <div><div class="vtitle">🔤 끝말잇기</div><div class="vsub">30초 제한 · 단어 길이만큼 점수</div></div>
-          <button class="btn btn-secondary" style="font-size:9px;padding:5px 10px" onclick="backToLobby()">← 나가기</button>
+          <div><div class="vtitle">🔤 끝말잇기</div><div class="vsub">30초 제한 · 단어 길이 = 점수</div></div>
+          <button class="btn btn-secondary" style="font-size:9px;padding:5px 9px" onclick="backToLobby()">← 나가기</button>
         </div>
         <div id="word-turn" class="turn-ind wait" style="margin-bottom:10px">대기 중</div>
-        <div class="wchain-display">
+        <div class="wchain">
           <div class="cword" id="cword">- - -</div>
           <div class="nchar" id="nchar"></div>
           <div class="wbar" id="wbar" style="width:100%"></div>
         </div>
-        <div class="winput-area" id="winput-area" style="display:none">
-          <input type="text" class="winput" id="winput" placeholder="단어 입력..." maxlength="15" autocomplete="off">
+        <div id="winput-area" class="ginput-row" style="display:none">
+          <input type="text" class="ginput" id="winput" placeholder="단어 입력..." maxlength="15" autocomplete="off">
           <button class="btn btn-primary" onclick="submitWord()">입력</button>
         </div>
-        <div class="sb-ttl" style="padding:0;margin-bottom:5px;margin-top:4px">사용된 단어</div>
+        <div class="sb-ttl" style="padding:0;margin-bottom:5px">단어 목록</div>
         <div class="whist" id="whist"></div>
-        <div class="wscores" id="wscores"></div>
+        <div class="scoreboard" id="word-scores" style="margin-top:10px"></div>
         <div id="word-win" class="winner-banner" style="display:none">
-          <div class="trophy">🏆</div>
-          <div class="wtext" id="word-win-text"></div>
-          <div style="margin-top:12px"><button class="btn btn-primary" onclick="backToLobby()">로비로</button></div>
+          <div class="trophy">🏆</div><div class="wtext" id="word-win-text"></div>
+          <div style="margin-top:10px"><button class="btn btn-primary" onclick="backToLobby()">로비로</button></div>
+        </div>
+      </div>
+
+      <!-- 초성게임 -->
+      <div id="view-chosung" class="view">
+        <div class="ghdr">
+          <div><div class="vtitle">🅰️ 초성게임</div><div class="vsub">초성 보고 단어 맞히기 · 1등 5pt</div></div>
+          <button class="btn btn-secondary" style="font-size:9px;padding:5px 9px" onclick="backToLobby()">← 나가기</button>
+        </div>
+        <div class="scoreboard" id="cho-scores"></div>
+        <div class="cho-display" id="cho-display">
+          <div class="cho-hint" id="cho-hint">힌트</div>
+          <div class="cho-chars" id="cho-chars">? ? ?</div>
+          <div class="cho-round" id="cho-round">라운드 1 / 8</div>
+          <div id="cho-timer" style="font-size:22px;font-weight:bold;color:var(--accent);margin-top:6px">15</div>
+        </div>
+        <div id="cho-order" class="cho-order"></div>
+        <div id="cho-input-area" class="ginput-row">
+          <input type="text" class="ginput" id="cho-input" placeholder="정답 입력..." maxlength="15" autocomplete="off">
+          <button class="btn btn-primary" onclick="submitChosung()">제출</button>
+        </div>
+        <div id="cho-feedback" style="font-size:12px;color:var(--red);min-height:18px"></div>
+        <div id="cho-win" class="winner-banner" style="display:none">
+          <div class="trophy">🏆</div><div class="wtext" id="cho-win-text"></div>
+          <div style="margin-top:10px"><button class="btn btn-primary" onclick="backToLobby()">로비로</button></div>
+        </div>
+      </div>
+
+      <!-- 숫자야구 -->
+      <div id="view-baseball" class="view">
+        <div class="ghdr">
+          <div><div class="vtitle">⚾ 숫자야구</div><div class="vsub">3자리 숫자 맞히기 · 먼저 3스트라이크 +10pt</div></div>
+          <button class="btn btn-secondary" style="font-size:9px;padding:5px 9px" onclick="backToLobby()">← 나가기</button>
+        </div>
+        <div id="bb-turn" class="turn-ind wait" style="margin-bottom:10px">대기 중</div>
+        <div class="bb-input-area" id="bb-input-area">
+          <input type="number" class="bb-num" id="bb-d1" min="1" max="9" placeholder="?">
+          <input type="number" class="bb-num" id="bb-d2" min="1" max="9" placeholder="?">
+          <input type="number" class="bb-num" id="bb-d3" min="1" max="9" placeholder="?">
+          <button class="btn btn-primary" onclick="submitBaseball()">⚾ 던지기</button>
+        </div>
+        <div style="font-size:9px;color:var(--muted);margin-bottom:8px">1~9 중 서로 다른 3자리</div>
+        <div class="bb-history" id="bb-history"></div>
+        <div id="bb-win" class="winner-banner" style="display:none">
+          <div class="trophy">🏆</div><div class="wtext" id="bb-win-text"></div>
+          <div style="margin-top:10px"><button class="btn btn-primary" onclick="backToLobby()">로비로</button></div>
+        </div>
+      </div>
+
+      <!-- 텔레파시 -->
+      <div id="view-telepathy" class="view">
+        <div class="ghdr">
+          <div><div class="vtitle">🔮 텔레파시</div><div class="vsub">같은 걸 고를수록 고득점 · 5라운드</div></div>
+          <button class="btn btn-secondary" style="font-size:9px;padding:5px 9px" onclick="backToLobby()">← 나가기</button>
+        </div>
+        <div class="scoreboard" id="tp-scores"></div>
+        <div class="tp-category">
+          <div class="tp-cat-label" id="tp-cat-label">카테고리</div>
+          <div class="tp-cat-name" id="tp-cat-name">?</div>
+          <div class="tp-timer" id="tp-timer">20</div>
+        </div>
+        <div class="tp-options" id="tp-options"></div>
+        <div id="tp-reveal-area" style="display:none">
+          <div class="sb-ttl" style="padding:0;margin-bottom:6px">모두의 선택</div>
+          <div class="tp-reveal" id="tp-reveal"></div>
+        </div>
+        <div id="tp-win" class="winner-banner" style="display:none">
+          <div class="trophy">🔮</div><div class="wtext" id="tp-win-text"></div>
+          <div style="margin-top:10px"><button class="btn btn-primary" onclick="backToLobby()">로비로</button></div>
+        </div>
+      </div>
+
+      <!-- 가위바위보 -->
+      <div id="view-rps" class="view">
+        <div class="ghdr">
+          <div><div class="vtitle">✊ 가위바위보</div><div class="vsub">동시 선택 · 5라운드 · 최다승 우승</div></div>
+          <button class="btn btn-secondary" style="font-size:9px;padding:5px 9px" onclick="backToLobby()">← 나가기</button>
+        </div>
+        <div class="scoreboard" id="rps-scores"></div>
+        <div id="rps-round-info" style="text-align:center;font-size:12px;color:var(--muted);margin-bottom:6px"></div>
+        <div class="rps-btns" id="rps-btns">
+          <div class="rps-btn" onclick="pickRPS('rock')">✊</div>
+          <div class="rps-btn" onclick="pickRPS('scissors')">✌️</div>
+          <div class="rps-btn" onclick="pickRPS('paper')">🖐️</div>
+        </div>
+        <div id="rps-status" style="text-align:center;font-size:11px;color:var(--muted);margin-bottom:8px"></div>
+        <div class="rps-results" id="rps-results"></div>
+        <div id="rps-win" class="winner-banner" style="display:none">
+          <div class="trophy">🏆</div><div class="wtext" id="rps-win-text"></div>
+          <div style="margin-top:10px"><button class="btn btn-primary" onclick="backToLobby()">로비로</button></div>
+        </div>
+      </div>
+
+      <!-- 타이핑 경주 -->
+      <div id="view-typing" class="view">
+        <div class="ghdr">
+          <div><div class="vtitle">⌨️ 타이핑 경주</div><div class="vsub">빠르게 입력 · 1등 5pt · 5라운드</div></div>
+          <button class="btn btn-secondary" style="font-size:9px;padding:5px 9px" onclick="backToLobby()">← 나가기</button>
+        </div>
+        <div class="scoreboard" id="typing-scores"></div>
+        <div class="typing-display">
+          <div class="typing-round" id="typing-round">라운드 1 / 5</div>
+          <div class="typing-text" id="typing-text">잠시 후 시작...</div>
+          <div id="typing-timer" style="font-size:20px;font-weight:bold;color:var(--accent);margin-top:6px">--</div>
+        </div>
+        <div id="typing-input-area" class="ginput-row" style="display:none">
+          <input type="text" class="ginput" id="typing-input" placeholder="위 텍스트를 그대로 입력..." autocomplete="off">
+          <button class="btn btn-primary" onclick="submitTyping()">완료</button>
+        </div>
+        <div class="typing-order" id="typing-order"></div>
+        <div id="typing-win" class="winner-banner" style="display:none">
+          <div class="trophy">🏆</div><div class="wtext" id="typing-win-text"></div>
+          <div style="margin-top:10px"><button class="btn btn-primary" onclick="backToLobby()">로비로</button></div>
+        </div>
+      </div>
+
+      <!-- OX 퀴즈 -->
+      <div id="view-ox" class="view">
+        <div class="ghdr">
+          <div><div class="vtitle">⭕ OX 퀴즈</div><div class="vsub">틀리면 탈락 · 최후 생존자 +10pt</div></div>
+          <button class="btn btn-secondary" style="font-size:9px;padding:5px 9px" onclick="backToLobby()">← 나가기</button>
+        </div>
+        <div id="ox-status" class="ox-status"></div>
+        <div class="ox-question">
+          <div class="ox-qnum" id="ox-qnum">Q1 / 10</div>
+          <div class="ox-qtxt" id="ox-qtxt">문제 로딩 중...</div>
+          <div class="ox-timer" id="ox-timer">10</div>
+        </div>
+        <div class="ox-btns">
+          <div class="ox-btn" id="ox-o" onclick="answerOX('O')">⭕</div>
+          <div class="ox-btn" id="ox-x" onclick="answerOX('X')">❌</div>
+        </div>
+        <div id="ox-result" style="font-size:12px;text-align:center;min-height:18px;margin-bottom:6px"></div>
+        <div id="ox-win" class="winner-banner" style="display:none">
+          <div class="trophy">🏆</div><div class="wtext" id="ox-win-text"></div>
+          <div style="margin-top:10px"><button class="btn btn-primary" onclick="backToLobby()">로비로</button></div>
         </div>
       </div>
 
     </div><!-- /main -->
 
-    <!-- Chat -->
+    <!-- CHAT -->
     <div id="chatpanel">
       <div class="chdr">
         <span>💬 채팅</span>
-        <button onclick="toggleChat()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;display:none" id="chat-close">✕</button>
+        <button id="chat-close" onclick="toggleChat()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px;display:none">✕</button>
       </div>
       <div id="chatmsgs"></div>
       <div class="cinput">
@@ -429,60 +546,102 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
 // ══════════════════════════════════════════
 // FIREBASE
 // ══════════════════════════════════════════
-const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyCe86yGc4w3drLnI-QJNInPYHgE9F2PoiM",
-  authDomain: "github-game-72a82.firebaseapp.com",
-  databaseURL: "https://github-game-72a82-default-rtdb.firebaseio.com",
-  projectId: "github-game-72a82",
-  storageBucket: "github-game-72a82.firebasestorage.app",
-  messagingSenderId: "198879092518",
-  appId: "1:198879092518:web:7d71057e3da04baeca6be7"
-};
-firebase.initializeApp(FIREBASE_CONFIG);
+firebase.initializeApp({
+  apiKey:"AIzaSyCe86yGc4w3drLnI-QJNInPYHgE9F2PoiM",
+  authDomain:"github-game-72a82.firebaseapp.com",
+  databaseURL:"https://github-game-72a82-default-rtdb.firebaseio.com",
+  projectId:"github-game-72a82",
+  storageBucket:"github-game-72a82.firebasestorage.app",
+  messagingSenderId:"198879092518",
+  appId:"1:198879092518:web:7d71057e3da04baeca6be7"
+});
 const db = firebase.database();
 
 // ══════════════════════════════════════════
-// 플레이어 색상 시스템
+// CONSTANTS & COLORS
 // ══════════════════════════════════════════
 const PC = ['#38d9a9','#ffa94d','#9775fa','#4dabf7','#ff6b6b'];
-const STONE_EMOJI = ['⚫','⚪','🔴','🔵','🟡'];
-let _uidOrder = []; // 접속 순서 유지
+const STONES = ['⚫','⚪','🔴','🔵','🟡'];
+const CRUMBS = {lobby:'미니게임 플랫폼',omok:'오목',mine:'지뢰찾기',word:'끝말잇기',chosung:'초성게임',baseball:'숫자야구',telepathy:'텔레파시',rps:'가위바위보',typing:'타이핑 경주',ox:'OX 퀴즈'};
+const GAME_NAMES = {omok:'⚫ 오목',mine:'💣 지뢰찾기',word:'🔤 끝말잇기',chosung:'🅰️ 초성게임',baseball:'⚾ 숫자야구',telepathy:'🔮 텔레파시',rps:'✊ 가위바위보',typing:'⌨️ 타이핑 경주',ox:'⭕ OX 퀴즈'};
 
-function getPC(uid) {
-  let idx = _uidOrder.indexOf(uid);
-  if (idx < 0) { _uidOrder.push(uid); idx = _uidOrder.length - 1; }
-  return PC[idx % PC.length];
+// 초성 단어 DB
+const CHOSUNG_DB=[
+  {word:'사과',hint:'🍎 과일'},{word:'바나나',hint:'🍌 과일'},{word:'수박',hint:'🍉 과일'},{word:'포도',hint:'🍇 과일'},
+  {word:'딸기',hint:'🍓 과일'},{word:'강아지',hint:'🐶 동물'},{word:'고양이',hint:'🐱 동물'},{word:'토끼',hint:'🐰 동물'},
+  {word:'코끼리',hint:'🐘 동물'},{word:'사자',hint:'🦁 동물'},{word:'컴퓨터',hint:'💻 기기'},{word:'스마트폰',hint:'📱 기기'},
+  {word:'냉장고',hint:'🧊 가전'},{word:'텔레비전',hint:'📺 가전'},{word:'비행기',hint:'✈️ 교통'},{word:'자동차',hint:'🚗 교통'},
+  {word:'지하철',hint:'🚇 교통'},{word:'도서관',hint:'📚 장소'},{word:'편의점',hint:'🏪 장소'},{word:'수영장',hint:'🏊 장소'},
+  {word:'초콜릿',hint:'🍫 음식'},{word:'아이스크림',hint:'🍦 음식'},{word:'햄버거',hint:'🍔 음식'},{word:'떡볶이',hint:'🍢 음식'},
+  {word:'삼겹살',hint:'🥩 음식'},{word:'무지개',hint:'🌈 자연'},{word:'번개',hint:'⚡ 자연'},{word:'태풍',hint:'🌀 자연'},
+  {word:'도깨비',hint:'👺 캐릭터'},{word:'바람개비',hint:'🌬️ 사물'},{word:'놀이공원',hint:'🎡 장소'},{word:'피자',hint:'🍕 음식'},
+  {word:'라면',hint:'🍜 음식'},{word:'김치찌개',hint:'🥘 음식'},{word:'보름달',hint:'🌕 자연'},{word:'달팽이',hint:'🐌 동물'},
+  {word:'펭귄',hint:'🐧 동물'},{word:'기린',hint:'🦒 동물'},{word:'복숭아',hint:'🍑 과일'},{word:'체리',hint:'🍒 과일'}
+];
+function getChosung(word){
+  const CHO=['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+  return word.split('').map(ch=>{const c=ch.charCodeAt(0)-0xAC00;return(c>=0&&c<=11171)?CHO[Math.floor(c/588)]:ch;}).join(' ');
 }
-function getPidx(uid) {
-  let idx = _uidOrder.indexOf(uid);
-  if (idx < 0) { _uidOrder.push(uid); idx = _uidOrder.length - 1; }
-  return idx % PC.length;
-}
+
+// 텔레파시 카테고리
+const TP_CATS=[
+  {cat:'🍎 과일',opts:['사과','바나나','딸기','포도','수박','오렌지']},
+  {cat:'🐶 동물',opts:['강아지','고양이','토끼','사자','고릴라','펭귄']},
+  {cat:'🌍 나라',opts:['한국','미국','일본','중국','프랑스','독일']},
+  {cat:'🎨 색깔',opts:['빨강','파랑','초록','노랑','보라','주황']},
+  {cat:'🍕 음식',opts:['피자','라면','김치','치킨','떡볶이','초밥']},
+  {cat:'⚽ 스포츠',opts:['축구','야구','농구','테니스','수영','탁구']},
+  {cat:'🎬 장르',opts:['액션','로맨스','공포','코미디','SF','판타지']},
+  {cat:'🔢 숫자',opts:['1','2','3','4','5','6']}
+];
+
+// 타이핑 문장
+const TYPING_TEXTS=[
+  '오늘 회의는 세 시에 시작합니다','보고서는 내일까지 제출해주세요',
+  '이번 주 금요일에 팀 회식이 있어요','프로젝트 진행 상황을 공유해주세요',
+  '화상 회의 링크를 보내드렸습니다','업무 문의는 메일로 연락해주세요',
+  '점심 메뉴 투표가 시작되었습니다','다음 주 일정을 확인해주시기 바랍니다',
+  '회의실 예약은 미리 해주세요','오늘 야근 가능하신 분 계신가요'
+];
+
+// OX 퀴즈 문제
+const OX_QUESTIONS=[
+  {q:'대한민국의 수도는 서울이다',a:'O'},{q:'지구는 태양 주위를 돈다',a:'O'},
+  {q:'세계에서 가장 큰 나라는 중국이다',a:'X'},{q:'물은 100도에서 끓는다',a:'O'},
+  {q:'사람의 뼈는 총 300개이다',a:'X'},{q:'빛의 속도는 소리보다 빠르다',a:'O'},
+  {q:'펭귄은 날 수 있다',a:'X'},{q:'지구에서 가장 높은 산은 에베레스트이다',a:'O'},
+  {q:'바나나는 채소이다',a:'X'},{q:'한국의 국화는 무궁화이다',a:'O'},
+  {q:'달은 스스로 빛을 낸다',a:'X'},{q:'인간의 심장은 왼쪽에 있다',a:'O'},
+  {q:'가장 짧은 달은 2월이다',a:'O'},{q:'다이아몬드는 철보다 단단하다',a:'O'},
+  {q:'코알라의 주식은 대나무이다',a:'X'}
+];
 
 // ══════════════════════════════════════════
 // GLOBAL STATE
 // ══════════════════════════════════════════
-let myUid = 'u' + Math.random().toString(36).substr(2,8);
-let myName = '', roomId = '', isHost = false, players = {};
-let _selGame = null, _wTimer = null, _raf = null;
-let _shootState = null, _myX = 0.5, _myY = 0.85;
-let _bullets = [], _keys = new Set(), _lastPosSync = 0, _lastShot = 0;
-let _stars = [], _stageAdvancing = false, _starInit = false;
-let _flagMode = false, _lastHitCheck = 0;
+let myUid='u'+Math.random().toString(36).substr(2,8);
+let myName='',roomId='',isHost=false,players={},_uidOrder=[];
+let _participation={};
+let _selGame=null,_wTimer=null,_choTimer=null,_tpTimer=null,_oxTimer=null,_typingTimer=null;
+let _currentGame=null,_currentType=null;
+let _flagMode=false;
 
-const q = id => document.getElementById(id);
-const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const q=id=>document.getElementById(id);
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+function getPC(uid){let i=_uidOrder.indexOf(uid);if(i<0){_uidOrder.push(uid);i=_uidOrder.length-1;}return PC[i%PC.length];}
+function getPidx(uid){let i=_uidOrder.indexOf(uid);if(i<0){_uidOrder.push(uid);i=_uidOrder.length-1;}return i%PC.length;}
+function isActivePl(){return(_currentGame?.activePlayers||[]).includes(myUid);}
 
 // ══════════════════════════════════════════
-// 점수 시스템
+// SCORE
 // ══════════════════════════════════════════
-function addScore(uid, pts) {
-  if (!uid || !pts) return;
-  db.ref('rooms/'+roomId+'/players/'+uid+'/score').transaction(s => (s||0) + pts);
+function addScore(uid,pts){
+  if(!uid||!pts)return;
+  db.ref('rooms/'+roomId+'/players/'+uid+'/score').transaction(s=>(s||0)+pts);
 }
-function awardOnce(gameState, key, fn) {
-  // 점수가 이미 지급됐으면 무시
-  if (gameState[key]) return;
+function awardOnce(s,key,fn){
+  if(s[key])return;
   db.ref('rooms/'+roomId+'/game/state/'+key).set(true);
   fn();
 }
@@ -490,249 +649,245 @@ function awardOnce(gameState, key, fn) {
 // ══════════════════════════════════════════
 // ROOM
 // ══════════════════════════════════════════
-function createRoom() {
-  myName = q('inp-name').value.trim();
-  if (!myName) return showErr('이름을 입력하세요');
-  roomId = Math.random().toString(36).substr(2,6).toUpperCase();
-  isHost = true; enterRoom();
+function createRoom(){
+  myName=q('inp-name').value.trim();
+  if(!myName)return showErr('이름을 입력하세요');
+  roomId=Math.random().toString(36).substr(2,6).toUpperCase();
+  isHost=true;enterRoom();
 }
-function joinRoom() {
-  myName = q('inp-name').value.trim();
-  const code = q('inp-room').value.trim().toUpperCase();
-  if (!myName) return showErr('이름을 입력하세요');
-  if (!code) return showErr('세션 코드를 입력하세요');
-  roomId = code; isHost = false; enterRoom();
+function joinRoom(){
+  myName=q('inp-name').value.trim();
+  const code=q('inp-room').value.trim().toUpperCase();
+  if(!myName)return showErr('이름을 입력하세요');
+  if(!code)return showErr('방 코드를 입력하세요');
+  roomId=code;isHost=false;enterRoom();
 }
-function showErr(msg) {
-  const el = q('login-err');
-  el.textContent = msg;
-  el.style.cssText = 'display:block;margin-top:10px;font-size:11px;color:var(--red)';
-}
-function enterRoom() {
-  getPC(myUid); // 내 색상 먼저 등록
+function showErr(msg){const el=q('login-err');el.textContent=msg;el.style.cssText='display:block;margin-top:10px;font-size:11px;color:var(--red)';}
+function enterRoom(){
+  getPC(myUid);
   db.ref('rooms/'+roomId+'/players/'+myUid).set({name:myName,score:0,online:true,joined:Date.now()});
   db.ref('rooms/'+roomId+'/players/'+myUid).onDisconnect().update({online:false});
-  q('login-screen').style.display = 'none';
+  db.ref('rooms/'+roomId+'/participation/'+myUid).set(true);
+  q('login-screen').style.display='none';
   q('app').classList.add('on');
-  q('room-code').textContent = roomId;
+  q('room-code').textContent=roomId;
 
-  // 접속 순서 동기화
-  db.ref('rooms/'+roomId+'/players').on('value', snap => {
-    const raw = snap.val() || {};
-    players = raw;
-    // joined 시간순 정렬로 색상 일관성 유지
-    const sorted = Object.entries(raw).sort((a,b)=>(a[1].joined||0)-(b[1].joined||0));
-    _uidOrder = sorted.map(([uid])=>uid);
+  db.ref('rooms/'+roomId+'/players').on('value',snap=>{
+    const raw=snap.val()||{};players=raw;
+    const sorted=Object.entries(raw).sort((a,b)=>(a[1].joined||0)-(b[1].joined||0));
+    _uidOrder=sorted.map(([uid])=>uid);
     updatePlayerUI();
   });
-  db.ref('rooms/'+roomId+'/game').on('value', snap => {
-    const g = snap.val();
-    if (g && g.started && g.state) handleGameState(g);
+  db.ref('rooms/'+roomId+'/participation').on('value',snap=>{
+    _participation=snap.val()||{};
+    updatePlayerUI();
   });
-  db.ref('rooms/'+roomId+'/hostKick').on('value', snap => {
-    if (snap.val() && !isHost) {
-      stopAllLoops(); navTo('lobby');
-      appendChatLocal({uid:'sys',name:'',msg:'방장이 게임을 종료했습니다',t:0});
-    }
+  db.ref('rooms/'+roomId+'/game').on('value',snap=>{
+    const g=snap.val();
+    if(g&&g.started&&g.state)handleGameState(g);
+    else if(!g||!g.started){_currentGame=null;_currentType=null;q('spectator-banner').style.display='none';}
   });
-  db.ref('rooms/'+roomId+'/chat').limitToLast(80).on('child_added', snap => appendChat(snap.val()));
+  db.ref('rooms/'+roomId+'/hostKick').on('value',snap=>{
+    if(snap.val()&&!isHost){stopAll();navTo('lobby');addSysChatLocal('방장이 게임을 종료했습니다');}
+  });
+  db.ref('rooms/'+roomId+'/chat').limitToLast(80).on('child_added',snap=>appendChat(snap.val()));
   sysChat(myName+'님이 입장했습니다 👋');
-
-  // 모바일 감지 후 UI 조정
   setupMobile();
 }
-function leaveRoom() {
-  db.ref('rooms/'+roomId+'/players/'+myUid).update({online:false});
-  setTimeout(()=>location.reload(),200);
-}
+function leaveRoom(){db.ref('rooms/'+roomId+'/players/'+myUid).update({online:false});setTimeout(()=>location.reload(),200);}
 
-function updatePlayerUI() {
-  const sbEl=q('sb-players'), lobbyEl=q('lobby-plist'), hpEl=q('hplayers');
-  sbEl.innerHTML=''; lobbyEl.innerHTML=''; hpEl.innerHTML='';
-  _uidOrder.forEach(uid => {
-    const p = players[uid]; if (!p) return;
-    const color = getPC(uid);
+// ══════════════════════════════════════════
+// PLAYER UI + PARTICIPATION
+// ══════════════════════════════════════════
+function updatePlayerUI(){
+  const sbEl=q('sb-players'),lobbyEl=q('lobby-plist'),hpEl=q('hplayers');
+  if(!sbEl||!lobbyEl||!hpEl)return;
+  sbEl.innerHTML='';lobbyEl.innerHTML='';hpEl.innerHTML='';
+  let playCount=0;
+  _uidOrder.forEach(uid=>{
+    const p=players[uid];if(!p)return;
+    const color=getPC(uid);
+    const isPlaying=_participation[uid]!==false;
+    if(isPlaying&&p.online)playCount++;
+
     // 헤더 도트
     const dot=document.createElement('div');
     dot.style.cssText=`width:8px;height:8px;border-radius:50%;background:${p.online?color:'var(--muted)'}`;
-    dot.title=p.name; hpEl.appendChild(dot);
+    dot.title=p.name;hpEl.appendChild(dot);
+
     // 사이드바
-    const si=document.createElement('div');
-    si.className='pitem'+(uid===myUid?' me':'');
+    const si=document.createElement('div');si.className='pitem'+(uid===myUid?' me':'');
     si.innerHTML=`<div class="dot" style="background:${color}"></div><div class="pn">${esc(p.name)}${uid===myUid?' (나)':''}</div><div class="ps" style="color:${color}">${p.score||0}pt</div>`;
     sbEl.appendChild(si);
-    // 로비
+
+    // 로비 카드
     const lc=document.createElement('div');
-    lc.className='pready-card'+(p.online?' on':'');
-    lc.style.borderColor = p.online ? color : '';
+    lc.className='pready-card';
+    lc.style.borderColor=p.online?color+80:undefined;
     lc.innerHTML=`<div class="prn" style="color:${color}">${esc(p.name)}</div><div class="prs">${p.online?'● 온라인':'○ 오프라인'}</div><div style="font-size:10px;color:${color}">${p.score||0}pt</div>`;
-    lobbyEl.appendChild(lc);
+    const tb=document.createElement('button');
+    tb.className='part-btn'+(isPlaying?' playing':'');
+    tb.textContent=isPlaying?'✅ 참여 중':'👁️ 관전 중';
+    if(uid===myUid){tb.onclick=()=>toggleParticipation();}
+    else{tb.disabled=true;}
+    lc.appendChild(tb);lobbyEl.appendChild(lc);
   });
-  if (!isHost) { q('sel-label').textContent='호스트가 선택 중...'; q('start-btn').disabled=true; }
+
+  if(!isHost){q('sel-label').textContent='호스트가 선택 중...';q('start-btn').disabled=true;}
+  else{
+    const sl=q('sel-label');
+    if(_selGame&&sl)sl.textContent=(GAME_NAMES[_selGame]||'')+' 선택됨 ('+playCount+'명 참여)';
+    else if(sl)sl.textContent='게임을 선택하세요';
+    const sb2=q('start-btn');if(sb2)sb2.disabled=!_selGame;
+  }
+}
+
+function toggleParticipation(){
+  const cur=_participation[myUid]!==false;
+  db.ref('rooms/'+roomId+'/participation/'+myUid).set(!cur);
+}
+function requestJoinNext(){
+  db.ref('rooms/'+roomId+'/participation/'+myUid).set(true);
+  sysChat(myName+'님이 다음 판 참여를 신청했습니다 ✋');
+}
+
+// ══════════════════════════════════════════
+// COPY ROOM CODE
+// ══════════════════════════════════════════
+function copyRoomCode(){
+  const code=q('room-code').textContent;
+  navigator.clipboard?.writeText(code).then(()=>{
+    const badge=q('room-code').parentElement;
+    badge.style.borderColor='var(--accent)';
+    badge.style.color='var(--accent)';
+    badge.innerHTML='방 코드: <span style="color:var(--accent)">' +code+'</span> ✅ 복사됨';
+    setTimeout(()=>{badge.style.borderColor='';badge.style.color='';badge.innerHTML='방 코드: <span id="room-code">'+code+'</span> 📋';},1800);
+  }).catch(()=>{prompt('방 코드를 복사하세요:',code);});
 }
 
 // ══════════════════════════════════════════
 // NAV
 // ══════════════════════════════════════════
-const CRUMBS={lobby:'대시보드',omok:'오목',mine:'지뢰찾기',shoot:'슈팅게임',word:'끝말잇기'};
-function navTo(name) {
+function navTo(name){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  q('view-'+name).classList.add('active');
+  q('view-'+name)?.classList.add('active');
   document.querySelectorAll('.sb-item').forEach(i=>i.classList.toggle('active',i.dataset.view===name));
   q('hcrumb').textContent=CRUMBS[name]||'';
-  if(name==='shoot'&&_shootState) startShootLoop();
 }
-function stopAllLoops() {
-  clearInterval(_wTimer);
-  if(_raf){cancelAnimationFrame(_raf);_raf=null;}
-  _stageAdvancing=false; _flagMode=false;
+function stopAll(){
+  clearInterval(_wTimer);clearInterval(_choTimer);clearInterval(_tpTimer);clearInterval(_oxTimer);clearInterval(_typingTimer);
+  _wTimer=_choTimer=_tpTimer=_oxTimer=_typingTimer=null;
+  _flagMode=false;
+  const fb=q('flag-btn');if(fb)fb.classList.remove('on');
 }
-function backToLobby() {
-  stopAllLoops(); _selGame=null;
+function backToLobby(){
+  stopAll();_selGame=null;_currentGame=null;_currentType=null;
   document.querySelectorAll('.gcard').forEach(c=>c.classList.remove('sel'));
-  q('sel-label').textContent='게임을 선택하세요 (호스트만)';
-  q('start-btn').disabled=true; _shootState=null;
+  q('spectator-banner').style.display='none';
   if(isHost){
     db.ref('rooms/'+roomId+'/hostKick').set(Date.now());
-    setTimeout(()=>{
-      db.ref('rooms/'+roomId+'/game').remove();
-      db.ref('rooms/'+roomId+'/hostKick').remove();
-    },500);
+    setTimeout(()=>{db.ref('rooms/'+roomId+'/game').remove();db.ref('rooms/'+roomId+'/hostKick').remove();},500);
   }
-  navTo('lobby');
+  navTo('lobby');updatePlayerUI();
 }
 
 // ══════════════════════════════════════════
 // GAME START
 // ══════════════════════════════════════════
-function selectGame(game) {
-  if(!isHost) return;
-  _selGame=game;
+function selectGame(gm){
+  if(!isHost)return;
+  _selGame=gm;
   document.querySelectorAll('.gcard').forEach(c=>c.classList.remove('sel'));
-  q('gc-'+game).classList.add('sel');
-  const L={omok:'⚫ 오목',mine:'💣 지뢰찾기',shoot:'✈️ 슈팅',word:'🔤 끝말잇기'};
-  q('sel-label').textContent=L[game]+' 선택됨';
-  q('start-btn').disabled=false;
+  q('gc-'+gm)?.classList.add('sel');
+  updatePlayerUI();
 }
-function startGame() {
-  if(!isHost||!_selGame) return;
-  const order=_uidOrder.filter(uid=>players[uid]?.online);
-  if(order.length<1){alert('최소 1명이 필요합니다');return;}
-  const inits={omok:initOmok,mine:initMine,shoot:initShoot,word:initWord};
-  const state=inits[_selGame](order);
+function startGame(){
+  if(!isHost||!_selGame)return;
+  const active=_uidOrder.filter(uid=>players[uid]?.online&&_participation[uid]!==false);
+  if(active.length<1){alert('최소 1명이 참여해야 합니다');return;}
+  const inits={omok:initOmok,mine:initMine,word:initWord,chosung:initChosung,baseball:initBaseball,telepathy:initTelepathy,rps:initRPS,typing:initTyping,ox:initOX};
+  const state=inits[_selGame](active);
   db.ref('rooms/'+roomId+'/game').set({type:_selGame,started:true,state});
-  sysChat('🎮 게임 시작! '+_selGame);
+  sysChat('🎮 게임 시작! '+GAME_NAMES[_selGame]+' ('+active.length+'명)');
 }
-function handleGameState(g) {
+function handleGameState(g){
+  _currentType=g.type;_currentGame=g.state;
   navTo(g.type);
-  const R={omok:renderOmok,mine:renderMine,shoot:onShootState,word:renderWord};
-  if(R[g.type]) R[g.type](g.state);
+  const isActive=(g.state?.activePlayers||[]).includes(myUid);
+  q('spectator-banner').style.display=isActive?'none':'flex';
+  const R={omok:renderOmok,mine:renderMine,word:renderWord,chosung:renderChosung,baseball:renderBaseball,telepathy:renderTelepathy,rps:renderRPS,typing:renderTyping,ox:renderOX};
+  if(R[g.type])R[g.type](g.state);
 }
-function setGameState(s){db.ref('rooms/'+roomId+'/game/state').set(s);}
+function setGameState(s){_currentGame=s;db.ref('rooms/'+roomId+'/game/state').set(s);}
 
 // ══════════════════════════════════════════
 // CHAT
 // ══════════════════════════════════════════
-function sendChat() {
-  const inp=q('chat-inp'),msg=inp.value.trim(); if(!msg) return;
-  db.ref('rooms/'+roomId+'/chat').push({uid:myUid,name:myName,msg,t:Date.now()});
-  inp.value='';
-}
+function sendChat(){const inp=q('chat-inp'),msg=inp.value.trim();if(!msg)return;db.ref('rooms/'+roomId+'/chat').push({uid:myUid,name:myName,msg,t:Date.now()});inp.value='';}
 function sysChat(msg){db.ref('rooms/'+roomId+'/chat').push({uid:'sys',name:'',msg,t:Date.now()});}
-function appendChatLocal(data) {
+function addSysChatLocal(msg){const el=document.createElement('div');el.className='cmsg sys';el.innerHTML=`<div class="ctext">— ${esc(msg)}</div>`;const c=q('chatmsgs');c.appendChild(el);c.scrollTop=c.scrollHeight;}
+function appendChat(data){
   const el=document.createElement('div');
   el.className='cmsg'+(data.uid==='sys'?' sys':'');
-  if(data.uid==='sys'){
-    el.innerHTML=`<div class="ctext">— ${esc(data.msg)}</div>`;
-  } else {
-    const color=getPC(data.uid);
-    el.innerHTML=`<div class="csender" style="color:${color}">${esc(data.name)}</div><div class="ctext">${esc(data.msg)}</div>`;
-  }
-  const c=q('chatmsgs'); c.appendChild(el); c.scrollTop=c.scrollHeight;
-  // 채팅 아이콘 알림
-  if(data.uid!=='sys'&&data.uid!==myUid) q('chat-btn')?.classList.add('notify');
+  if(data.uid==='sys'){el.innerHTML=`<div class="ctext">— ${esc(data.msg)}</div>`;}
+  else{const color=getPC(data.uid);el.innerHTML=`<div class="csender" style="color:${color}">${esc(data.name)}</div><div class="ctext">${esc(data.msg)}</div>`;}
+  const c=q('chatmsgs');c.appendChild(el);c.scrollTop=c.scrollHeight;
+  if(data.uid!=='sys'&&data.uid!==myUid)q('chat-btn')?.classList.add('has-notif');
 }
-function appendChat(data){appendChatLocal(data);}
 
 // ══════════════════════════════════════════
 // MOBILE
 // ══════════════════════════════════════════
-function setupMobile() {
-  const isMobile=window.innerWidth<=768;
-  if(isMobile){
-    q('chat-close').style.display='block';
-    setupDpad();
-  }
+function setupMobile(){
+  const m=window.innerWidth<=768;
+  if(m){q('chat-close').style.display='block';}
 }
-function toggleSidebar() {
-  const sb=q('sb'),ov=q('overlay');
-  const open=sb.classList.toggle('open');
-  ov.classList.toggle('show',open);
-  if(open) q('chatpanel').classList.remove('open');
-}
-function toggleChat() {
-  const cp=q('chatpanel'),ov=q('overlay');
-  const open=cp.classList.toggle('open');
-  ov.classList.toggle('show',open);
-  if(open){ q('chat-btn').classList.remove('notify'); q('sb').classList.remove('open'); }
-}
-function closeAll(){
-  q('sb').classList.remove('open');
-  q('chatpanel').classList.remove('open');
-  q('overlay').classList.remove('show');
-}
-function setupDpad() {
-  const dirs={
-    'd-up':'ArrowUp','d-down':'ArrowDown','d-left':'ArrowLeft','d-right':'ArrowRight'
-  };
-  Object.entries(dirs).forEach(([id,key])=>{
-    const btn=q(id); if(!btn) return;
-    btn.addEventListener('touchstart',e=>{e.preventDefault();_keys.add(key);},{passive:false});
-    btn.addEventListener('touchend',e=>{e.preventDefault();_keys.delete(key);},{passive:false});
-    btn.addEventListener('mousedown',()=>_keys.add(key));
-    btn.addEventListener('mouseup',()=>_keys.delete(key));
-  });
+function toggleSb(){const s=q('sb'),o=q('overlay');const open=s.classList.toggle('open');o.classList.toggle('show',open);if(open)q('chatpanel').classList.remove('open');}
+function toggleChat(){const c=q('chatpanel'),o=q('overlay');const open=c.classList.toggle('open');o.classList.toggle('show',open);if(open){q('chat-btn')?.classList.remove('has-notif');q('sb').classList.remove('open');}}
+function closeAll(){q('sb').classList.remove('open');q('chatpanel').classList.remove('open');q('overlay').classList.remove('show');}
+
+// ══════════════════════════════════════════
+// SCORE DISPLAY HELPER
+// ══════════════════════════════════════════
+function renderScores(elId,playerOrder,scores){
+  const el=q(elId);if(!el)return;
+  el.innerHTML=(playerOrder||[]).map(uid=>{
+    const color=getPC(uid);
+    return`<div class="sc-card" style="border-color:${color}30"><div class="sc-val" style="color:${color}">${scores?.[uid]||0}</div><div class="sc-lbl">${esc(players[uid]?.name||uid)}</div></div>`;
+  }).join('');
 }
 
 // ══════════════════════════════════════════
 // ★ 게임 1: 오목
 // ══════════════════════════════════════════
 const BS=13;
-function initOmok(order){
-  return{board:Array(BS).fill(null).map(()=>Array(BS).fill(0)),playerOrder:order,curIdx:0,winner:null,scoreAwarded:false};
-}
+function initOmok(order){return{activePlayers:order,board:Array(BS).fill(null).map(()=>Array(BS).fill(0)),playerOrder:order,curIdx:0,winner:null,scoreAwarded:false};}
 function renderOmok(s){
-  const{board,playerOrder,curIdx,winner}=s;
-  const isMe=playerOrder[curIdx]===myUid;
-  q('olegend').innerHTML=playerOrder.map((uid,i)=>
-    `<span style="margin-right:10px;color:${getPC(uid)}">${STONE_EMOJI[i]||'●'} ${esc(players[uid]?.name||uid)}${uid===myUid?' (나)':''}</span>`
-  ).join('');
+  const{playerOrder,curIdx,winner}=s;
+  const isMe=playerOrder[curIdx]===myUid&&isActivePl();
+  q('olegend').innerHTML=playerOrder.map((uid,i)=>`<span style="color:${getPC(uid)};margin-right:8px">${STONES[i]||'●'} ${esc(players[uid]?.name||uid)}${uid===myUid?' (나)':''}</span>`).join('');
   const ti=q('omok-turn');
   if(winner){ti.textContent=(players[winner]?.name||winner)+' 승리!';ti.className='turn-ind';}
   else if(isMe){ti.textContent='내 차례 — 클릭!';ti.className='turn-ind';}
   else{ti.textContent=(players[playerOrder[curIdx]]?.name||'')+'의 차례...';ti.className='turn-ind wait';}
-  const bd=q('omok-board');
-  bd.style.gridTemplateColumns=`repeat(${BS},28px)`;bd.innerHTML='';
-  for(let r=0;r<BS;r++) for(let c=0;c<BS;c++){
+  const bd=q('omok-board');bd.style.gridTemplateColumns=`repeat(${BS},28px)`;bd.innerHTML='';
+  for(let r=0;r<BS;r++)for(let c=0;c<BS;c++){
     const cell=document.createElement('div');cell.className='ocell';
-    const v=board[r][c];
+    const v=s.board[r][c];
     if(v>0){const st=document.createElement('div');st.className='ostone os'+(v-1);cell.appendChild(st);}
-    else if(!winner&&isMe) cell.onclick=()=>placeOmok(r,c,s);
+    else if(!winner&&isMe)cell.onclick=()=>placeOmok(r,c,s);
     bd.appendChild(cell);
   }
-  if(winner){
-    q('omok-win').style.display='block';
-    q('omok-win-text').textContent='🏆 '+(players[winner]?.name||winner)+' 승리! (+10pt)';
-    // 점수 지급 (중복 방지)
-    if(isHost&&!s.scoreAwarded) awardOnce(s,'scoreAwarded',()=>addScore(winner,10));
-  } else q('omok-win').style.display='none';
+  if(winner){q('omok-win').style.display='block';q('omok-win-text').textContent='🏆 '+(players[winner]?.name||winner)+' 승리! +10pt';
+    if(isHost&&!s.scoreAwarded)awardOnce(s,'scoreAwarded',()=>addScore(winner,10));
+  }else q('omok-win').style.display='none';
 }
 function placeOmok(r,c,s){
-  if(s.board[r][c]!==0||s.winner||s.playerOrder[s.curIdx]!==myUid) return;
+  if(s.board[r][c]!==0||s.winner||s.playerOrder[s.curIdx]!==myUid||!isActivePl())return;
   const nb=s.board.map(row=>[...row]);const pv=s.curIdx+1;nb[r][c]=pv;
   const won=checkOmok(nb,r,c,pv);
   setGameState({...s,board:nb,curIdx:won?s.curIdx:(s.curIdx+1)%s.playerOrder.length,winner:won?myUid:null});
-  if(won)sysChat(myName+'님 오목 승리! 🏆 (+10pt)');
+  if(won)sysChat(myName+' 오목 승리! 🏆');
 }
 function checkOmok(b,r,c,v){
   for(const[dr,dc]of[[1,0],[0,1],[1,1],[1,-1]]){
@@ -740,8 +895,7 @@ function checkOmok(b,r,c,v){
     for(let i=1;i<5;i++){const nr=r+dr*i,nc=c+dc*i;if(nr>=0&&nr<BS&&nc>=0&&nc<BS&&b[nr][nc]===v)n++;else break;}
     for(let i=1;i<5;i++){const nr=r-dr*i,nc=c-dc*i;if(nr>=0&&nr<BS&&nc>=0&&nc<BS&&b[nr][nc]===v)n++;else break;}
     if(n>=5)return true;
-  }
-  return false;
+  }return false;
 }
 
 // ══════════════════════════════════════════
@@ -749,459 +903,622 @@ function checkOmok(b,r,c,v){
 // ══════════════════════════════════════════
 const MSIZE=10,MMINES=15;
 const NCOLORS=['','#4dabf7','#38d9a9','#ff6b6b','#1971c2','#b91c1c','#0097a7','#6d28d9','#9ca3af'];
-function toggleFlagMode(){
-  _flagMode=!_flagMode;
-  const btn=q('flag-toggle');
-  btn.classList.toggle('flag-mode-on',_flagMode);
-  btn.textContent=_flagMode?'🚩 깃발모드 ON':'🚩 깃발모드';
+function toggleFlag(){_flagMode=!_flagMode;const b=q('flag-btn');b.classList.toggle('on',_flagMode);b.textContent=_flagMode?'🚩 깃발 ON':'🚩 깃발';}
+function initMine(order){return{activePlayers:order,playerOrder:order,curIdx:0,board:null,gameOver:false,won:false,revealed:0,totalSafe:MSIZE*MSIZE-MMINES,scoreAwarded:false};}
+function generateMineBoard(sr,sc){
+  const b=Array(MSIZE).fill(null).map(()=>Array(MSIZE).fill(null).map(()=>({mine:false,revealed:false,flagged:false,adj:0})));
+  let p=0;
+  while(p<MMINES){const r=Math.floor(Math.random()*MSIZE),c=Math.floor(Math.random()*MSIZE);
+    if(b[r][c].mine||Math.abs(r-sr)<=1&&Math.abs(c-sc)<=1)continue;b[r][c].mine=true;p++;}
+  for(let r=0;r<MSIZE;r++)for(let c=0;c<MSIZE;c++){if(b[r][c].mine)continue;
+    let cnt=0;for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){const nr=r+dr,nc=c+dc;if(nr>=0&&nr<MSIZE&&nc>=0&&nc<MSIZE&&b[nr][nc].mine)cnt++;}b[r][c].adj=cnt;}
+  return b;
 }
-function initMine(order){
-  return{playerOrder:order,curIdx:0,board:null,gameOver:false,won:false,revealed:0,totalSafe:MSIZE*MSIZE-MMINES,scoreAwarded:false};
-}
-function generateBoard(safeR,safeC){
-  const board=Array(MSIZE).fill(null).map(()=>Array(MSIZE).fill(null).map(()=>({mine:false,revealed:false,flagged:false,adj:0})));
-  let placed=0;
-  while(placed<MMINES){
-    const r=Math.floor(Math.random()*MSIZE),c=Math.floor(Math.random()*MSIZE);
-    if(board[r][c].mine)continue;
-    if(Math.abs(r-safeR)<=1&&Math.abs(c-safeC)<=1)continue;
-    board[r][c].mine=true;placed++;
-  }
-  for(let r=0;r<MSIZE;r++)for(let c=0;c<MSIZE;c++){
-    if(board[r][c].mine)continue;
-    let cnt=0;
-    for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){
-      const nr=r+dr,nc=c+dc;
-      if(nr>=0&&nr<MSIZE&&nc>=0&&nc<MSIZE&&board[nr][nc].mine)cnt++;
-    }
-    board[r][c].adj=cnt;
-  }
-  return board;
-}
-function floodReveal(board,r,c){
+function floodReveal(b,r,c){
   if(r<0||r>=MSIZE||c<0||c>=MSIZE)return 0;
-  const cell=board[r][c];
-  if(cell.revealed||cell.mine||cell.flagged)return 0;
+  const cell=b[r][c];if(cell.revealed||cell.mine||cell.flagged)return 0;
   cell.revealed=true;let cnt=1;
-  if(cell.adj===0)for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++)if(dr!==0||dc!==0)cnt+=floodReveal(board,r+dr,c+dc);
+  if(cell.adj===0)for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++)if(dr||dc)cnt+=floodReveal(b,r+dr,c+dc);
   return cnt;
 }
 function renderMine(s){
   const{playerOrder,curIdx,board,gameOver,won,revealed}=s;
-  const isMe=playerOrder[curIdx]===myUid;
+  const isMe=playerOrder[curIdx]===myUid&&isActivePl();
   const ti=q('mine-turn');
   if(won){ti.textContent='전원 클리어! 🎉';ti.className='turn-ind';}
   else if(gameOver){ti.textContent='💥 지뢰 폭발!';ti.className='turn-ind';}
   else if(isMe){ti.textContent='내 차례 — 클릭!';ti.className='turn-ind';}
   else{ti.textContent=(players[playerOrder[curIdx]]?.name||'')+'의 차례...';ti.className='turn-ind wait';}
   q('mine-count').textContent=MMINES;q('mine-cleared').textContent=revealed||0;
-  let flags=0;if(board)board.flat().forEach(c=>{if(c.flagged)flags++;});
-  q('mine-flags').textContent=flags;
-  const bd=q('mine-board');
-  bd.style.gridTemplateColumns=`repeat(${MSIZE},32px)`;bd.innerHTML='';
+  let flags=0;if(board)board.flat().forEach(c=>{if(c.flagged)flags++;});q('mine-flags').textContent=flags;
+  const bd=q('mine-board');bd.style.gridTemplateColumns=`repeat(${MSIZE},32px)`;bd.innerHTML='';
   const canAct=isMe&&!gameOver&&!won;
-  if(!board){
-    for(let i=0;i<MSIZE*MSIZE;i++){
-      const cell=document.createElement('div');cell.className='mcell';
-      if(canAct){const r=Math.floor(i/MSIZE),c=i%MSIZE;cell.onclick=()=>clickMine(r,c,s);}
-      bd.appendChild(cell);
-    }
-    if(won||gameOver) showMineEnd(s);
-    return;
-  }
-  for(let r=0;r<MSIZE;r++)for(let c=0;c<MSIZE;c++){
+  const makeCell=(r,c,data)=>{
     const cell=document.createElement('div');cell.className='mcell';
-    const data=board[r][c];
-    if(data.revealed){
-      cell.classList.add('revealed');
-      if(data.mine){cell.classList.add('mmine');cell.textContent='💥';}
-      else if(data.adj>0){cell.textContent=data.adj;cell.style.color=NCOLORS[data.adj]||'#fff';}
-    } else if(data.flagged){
-      cell.classList.add('mflagged');cell.textContent='🚩';
-      if(canAct)cell.onclick=()=>flagMine(r,c,s);
-    } else {
-      if((gameOver)&&data.mine){cell.textContent='💣';cell.style.color='var(--red)';}
-      if(canAct){
-        cell.onclick=()=>_flagMode?flagMine(r,c,s):clickMine(r,c,s);
-        cell.oncontextmenu=e=>{e.preventDefault();flagMine(r,c,s);};
-      }
-    }
-    bd.appendChild(cell);
-  }
-  showMineEnd(s);
-}
-function showMineEnd(s){
-  const{won,gameOver,playerOrder,curIdx,revealed,scoreAwarded}=s;
-  const wn=q('mine-win');
-  if(won){
-    wn.style.display='block';
-    q('mine-win-icon').textContent='🎉';
-    q('mine-win-text').textContent='지뢰 제거 성공! 전원 +5pt!';
-    if(isHost&&!scoreAwarded) awardOnce(s,'scoreAwarded',()=>s.playerOrder.forEach(uid=>addScore(uid,5)));
-  } else if(gameOver){
-    wn.style.display='block';
-    q('mine-win-icon').textContent='💥';
-    q('mine-win-text').textContent=`${players[playerOrder[curIdx]]?.name||''}님이 지뢰를 밟음... 해제 ${revealed||0}칸`;
-  } else wn.style.display='none';
+    if(!data){if(canAct){cell.onclick=()=>clickMine(r,c,s);cell.oncontextmenu=e=>{e.preventDefault();flagMineCell(r,c,s);};}return cell;}
+    if(data.revealed){cell.classList.add('revealed');if(data.mine){cell.classList.add('mmine');cell.textContent='💥';}else if(data.adj>0){cell.textContent=data.adj;cell.style.color=NCOLORS[data.adj]||'#fff';}}
+    else if(data.flagged){cell.classList.add('mflagged');cell.textContent='🚩';if(canAct)cell.onclick=()=>flagMineCell(r,c,s);}
+    else{if(gameOver&&data.mine){cell.textContent='💣';cell.style.color='var(--red)';}
+      if(canAct){cell.onclick=()=>_flagMode?flagMineCell(r,c,s):clickMine(r,c,s);cell.oncontextmenu=e=>{e.preventDefault();flagMineCell(r,c,s);};}
+    }return cell;
+  };
+  for(let r=0;r<MSIZE;r++)for(let c=0;c<MSIZE;c++)bd.appendChild(makeCell(r,c,board?.[r]?.[c]||null));
+  if(won){q('mine-icon').textContent='🎉';q('mine-win-text').textContent='지뢰 제거 성공! 전원 +5pt!';q('mine-win').style.display='block';
+    if(isHost&&!s.scoreAwarded)awardOnce(s,'scoreAwarded',()=>s.playerOrder.forEach(uid=>addScore(uid,5)));
+  }else if(gameOver){q('mine-icon').textContent='💥';q('mine-win-text').textContent=(players[playerOrder[curIdx]]?.name||'')+'님이 지뢰를 밟음... '+( revealed||0)+'칸 해제';q('mine-win').style.display='block';}
+  else q('mine-win').style.display='none';
 }
 function clickMine(r,c,s){
-  if(s.gameOver||s.won||s.playerOrder[s.curIdx]!==myUid)return;
-  let board=s.board;let revealed=s.revealed||0;
-  if(!board)board=generateBoard(r,c);
-  const newBoard=board.map(row=>row.map(c=>({...c})));
-  const cell=newBoard[r][c];
-  if(cell.revealed||cell.flagged)return;
-  if(cell.mine){
-    cell.revealed=true;
-    setGameState({...s,board:newBoard,gameOver:true,curIdx:(s.curIdx+1)%s.playerOrder.length,revealed});
-    sysChat(myName+'님이 지뢰를 밟았습니다! 💥');return;
-  }
-  const cnt=floodReveal(newBoard,r,c);revealed+=cnt;
+  if(s.gameOver||s.won||s.playerOrder[s.curIdx]!==myUid||!isActivePl())return;
+  let board=s.board,revealed=s.revealed||0;
+  if(!board)board=generateMineBoard(r,c);
+  const nb=board.map(row=>row.map(c=>({...c})));
+  const cell=nb[r][c];if(cell.revealed||cell.flagged)return;
+  if(cell.mine){cell.revealed=true;setGameState({...s,board:nb,gameOver:true,curIdx:(s.curIdx+1)%s.playerOrder.length,revealed});sysChat(myName+'이 지뢰를 밟았습니다! 💥');return;}
+  const cnt=floodReveal(nb,r,c);revealed+=cnt;
   const won=revealed>=s.totalSafe;
-  setGameState({...s,board:newBoard,revealed,won,curIdx:(s.curIdx+1)%s.playerOrder.length,gameOver:false});
-  if(won)sysChat('🎉 지뢰 전부 해제! 전원 +5pt!');
+  setGameState({...s,board:nb,revealed,won,curIdx:(s.curIdx+1)%s.playerOrder.length});
+  if(won)sysChat('🎉 전원 클리어! +5pt!');
 }
-function flagMine(r,c,s){
-  if(s.gameOver||s.won||!s.board)return;
-  if(s.playerOrder[s.curIdx]!==myUid)return;
-  const newBoard=s.board.map(row=>row.map(c=>({...c})));
-  if(newBoard[r][c].revealed)return;
-  newBoard[r][c].flagged=!newBoard[r][c].flagged;
-  setGameState({...s,board:newBoard});
+function flagMineCell(r,c,s){
+  if(s.gameOver||s.won||!s.board||!isActivePl())return;
+  const nb=s.board.map(row=>row.map(c=>({...c})));
+  if(nb[r][c].revealed)return;nb[r][c].flagged=!nb[r][c].flagged;setGameState({...s,board:nb});
 }
 
 // ══════════════════════════════════════════
-// ★ 게임 3: 슈팅게임
-// ══════════════════════════════════════════
-const CW=480,CH=520;
-const P_COLORS=['#38d9a9','#ffa94d','#9775fa','#4dabf7','#ff6b6b'];
-
-function makeStage(stage){
-  const enemies=[],base=stage*0.0003+0.0005;
-  if(stage===1){for(let i=0;i<8;i++)enemies.push({id:`s1e${i}`,spawnTime:i*1400,x:0.1+i*0.1,type:'basic',hp:1,speed:base});}
-  else if(stage===2){
-    for(let i=0;i<5;i++)enemies.push({id:`s2b${i}`,spawnTime:i*1000,x:0.15+i*0.18,type:'basic',hp:1,speed:base});
-    for(let i=0;i<4;i++)enemies.push({id:`s2f${i}`,spawnTime:3500+i*900,x:0.1+i*0.25,type:'fast',hp:1,speed:base*1.7});
-  } else if(stage===3){
-    for(let i=0;i<4;i++)enemies.push({id:`s3b${i}`,spawnTime:i*1200,x:0.2+i*0.15,type:'basic',hp:1,speed:base});
-    for(let i=0;i<5;i++)enemies.push({id:`s3z${i}`,spawnTime:3000+i*800,x:0.1+i*0.2,type:'zigzag',hp:1,speed:base*0.9});
-  } else if(stage===4){
-    for(let i=0;i<3;i++)enemies.push({id:`s4f${i}`,spawnTime:i*700,x:0.15+i*0.35,type:'fast',hp:1,speed:base*1.8});
-    for(let i=0;i<4;i++)enemies.push({id:`s4z${i}`,spawnTime:2500+i*700,x:0.1+i*0.25,type:'zigzag',hp:1,speed:base*0.9});
-    for(let i=0;i<2;i++)enemies.push({id:`s4t${i}`,spawnTime:5000+i*2000,x:0.3+i*0.35,type:'tank',hp:3,speed:base*0.5});
-  } else {
-    for(let i=0;i<6;i++)enemies.push({id:`s5b${i}`,spawnTime:i*600,x:0.08+i*0.17,type:'fast',hp:1,speed:base*1.5});
-    enemies.push({id:'s5boss',spawnTime:5000,x:0.5,type:'boss',hp:20,speed:base*0.35});
-  }
-  return enemies;
-}
-function getEnemyPos(e,elapsed){
-  const t=elapsed-e.spawnTime;if(t<0)return null;
-  let x=e.x,y=t*e.speed;
-  if(e.type==='zigzag')x=Math.max(0.05,Math.min(0.95,e.x+Math.sin(t*0.003)*0.18));
-  if(e.type==='boss')x=0.5+Math.sin(t*0.001)*0.25;
-  return{x,y,visible:y<1.2};
-}
-function initShoot(order){
-  const lives={},playerPos={};
-  order.forEach((uid,i)=>{lives[uid]=2;playerPos[uid]={x:0.2+i*0.2,y:0.85};});
-  const enemies=makeStage(1),enemyHP={};
-  enemies.forEach(e=>{enemyHP[e.id]=e.hp;});
-  return{playerOrder:order,stage:1,stageStartTime:Date.now(),score:0,lives,playerPos,killedEnemies:{},enemyHP,gameOver:false,allWon:false,stageClearing:false,scoreAwarded:false};
-}
-function onShootState(s){
-  _shootState=s;
-  q('sh-stage').textContent=s.allWon?'완료!':(s.stage||1);
-  q('sh-score').textContent=s.score||0;
-  const la=q('sh-lives-area');
-  la.innerHTML='<div style="font-size:10px;color:var(--muted);margin-bottom:2px">목숨</div><div style="display:flex;gap:5px">'
-    +(s.playerOrder||[]).map((uid,i)=>{
-      const h='♥'.repeat(Math.max(0,s.lives?.[uid]||0))+'♡'.repeat(Math.max(0,2-(s.lives?.[uid]||0)));
-      return`<span style="color:${P_COLORS[i]};font-size:12px" title="${players[uid]?.name||uid}">${h}</span>`;
-    }).join('')+'</div>';
-  if(isHost&&!s.gameOver&&!s.allWon&&!s.stageClearing&&!_stageAdvancing){
-    const elapsed=Date.now()-s.stageStartTime;
-    const se=makeStage(s.stage);
-    if(se.every(e=>elapsed>=e.spawnTime+200)&&se.every(e=>(s.killedEnemies||{})[e.id]))advanceStage(s);
-    checkEnemyHit(s,elapsed,se);
-  }
-  if(s.allWon){
-    q('shoot-win').style.display='block';
-    q('shoot-win-text').textContent='🏆 전 스테이지 클리어! 전원 +'+Math.max(3,Math.floor((s.score||0)/5))+'pt!';
-    if(isHost&&!s.scoreAwarded) awardOnce(s,'scoreAwarded',()=>{
-      const pts=Math.max(3,Math.floor((s.score||0)/5));
-      (s.playerOrder||[]).forEach(uid=>{ if((s.lives?.[uid]||0)>0)addScore(uid,pts); });
-    });
-  } else q('shoot-win').style.display='none';
-  if(!_raf)startShootLoop();
-}
-function advanceStage(s){
-  _stageAdvancing=true;
-  db.ref('rooms/'+roomId+'/game/state/stageClearing').set(true);
-  sysChat(`✅ 스테이지 ${s.stage} 클리어!`);
-  setTimeout(()=>{
-    const next=s.stage+1;
-    if(next>5){db.ref('rooms/'+roomId+'/game/state').update({allWon:true,stageClearing:false});}
-    else{
-      const enemies=makeStage(next),enemyHP={};
-      enemies.forEach(e=>{enemyHP[e.id]=e.hp;});
-      const newLives={};
-      s.playerOrder.forEach(uid=>{newLives[uid]=Math.min(2,(s.lives?.[uid]||0)+1);});
-      db.ref('rooms/'+roomId+'/game/state').update({stage:next,stageStartTime:Date.now(),killedEnemies:{},enemyHP,lives:newLives,stageClearing:false});
-      _stageAdvancing=false;
-    }
-  },2500);
-}
-function checkEnemyHit(s,elapsed,se){
-  const now=Date.now();if(now-_lastHitCheck<500)return;_lastHitCheck=now;
-  se.forEach(e=>{
-    if((s.killedEnemies||{})[e.id])return;
-    const pos=getEnemyPos(e,elapsed);if(!pos||pos.y<0.65)return;
-    s.playerOrder.forEach(uid=>{
-      const pp=s.playerPos?.[uid];if(!pp||(s.lives?.[uid]||0)<=0)return;
-      const dx=Math.abs(pos.x-pp.x)*CW,dy=Math.abs(pos.y-pp.y)*CH;
-      const hr=e.type==='boss'?44:(e.type==='tank'?22:17);
-      if(dx<hr&&dy<hr){
-        const nl=Math.max(0,(s.lives?.[uid]||0)-1);
-        db.ref('rooms/'+roomId+'/game/state/lives/'+uid).set(nl);
-        db.ref('rooms/'+roomId+'/game/state/killedEnemies/'+e.id).set(true);
-        const allDead=s.playerOrder.every(u=>u===uid?(nl<=0):((s.lives?.[u]||0)<=0));
-        if(allDead)db.ref('rooms/'+roomId+'/game/state/gameOver').set(true);
-        sysChat((players[uid]?.name||uid)+' 피격! 목숨 '+(nl>0?nl+'개':'0 게임오버'));
-      }
-    });
-  });
-}
-
-// ── 슈팅 렌더링 ──
-function startShootLoop(){
-  if(_raf)cancelAnimationFrame(_raf);
-  if(!_starInit){_stars=Array.from({length:60},()=>({x:Math.random(),y:Math.random(),speed:0.0001+Math.random()*0.0003,sz:Math.random()<0.15?2:1}));_starInit=true;}
-  const s0=_shootState;
-  if(s0){const pp=s0.playerPos?.[myUid];if(pp){_myX=pp.x;_myY=pp.y;}}
-
-  function loop(ts){
-    _raf=requestAnimationFrame(loop);
-    const canvas=q('shoot-canvas');if(!canvas)return;
-    const ctx=canvas.getContext('2d');
-    const s=_shootState;if(!s){ctx.fillStyle='#000510';ctx.fillRect(0,0,CW,CH);return;}
-    const myL=(s.lives?.[myUid])||0;
-    if(myL>0){
-      const spd=0.0045;
-      if(_keys.has('ArrowLeft')||_keys.has('a'))_myX=Math.max(0.04,_myX-spd);
-      if(_keys.has('ArrowRight')||_keys.has('d'))_myX=Math.min(0.96,_myX+spd);
-      if(_keys.has('ArrowUp')||_keys.has('w'))_myY=Math.max(0.45,_myY-spd);
-      if(_keys.has('ArrowDown')||_keys.has('s'))_myY=Math.min(0.95,_myY+spd);
-      if(ts-_lastShot>280){_bullets.push({x:_myX,y:_myY-0.04,id:Math.random()});_lastShot=ts;}
-    }
-    _bullets=_bullets.filter(b=>b.y>-0.05);_bullets.forEach(b=>b.y-=0.009);
-    if(!s.gameOver&&!s.allWon&&s.stageStartTime){
-      const elapsed=Date.now()-s.stageStartTime;
-      const se=makeStage(s.stage||1);
-      _bullets=_bullets.filter(b=>{
-        for(const e of se){
-          if((s.killedEnemies||{})[e.id])continue;
-          const pos=getEnemyPos(e,elapsed);if(!pos||!pos.visible)continue;
-          const dx=Math.abs(b.x-pos.x)*CW,dy=Math.abs(b.y-pos.y)*CH;
-          const hr=e.type==='boss'?43:(e.type==='tank'?20:14);
-          if(dx<hr&&dy<hr){
-            db.ref('rooms/'+roomId+'/game/state/enemyHP/'+e.id).transaction(hp=>{
-              if(hp===null||hp===undefined)return null;
-              return Math.max(0,hp-1);
-            }).then(res=>{
-              if(res.committed&&(res.snapshot.val()||0)<=0&&!(s.killedEnemies||{})[e.id]){
-                db.ref('rooms/'+roomId+'/game/state/killedEnemies/'+e.id).set(true);
-                db.ref('rooms/'+roomId+'/game/state/score').transaction(sc=>(sc||0)+(10*(s.stage||1)));
-              }
-            });
-            return false;
-          }
-        }
-        return true;
-      });
-    }
-    if(Date.now()-_lastPosSync>150&&myL>0){
-      _lastPosSync=Date.now();
-      db.ref('rooms/'+roomId+'/game/state/playerPos/'+myUid).set({x:_myX,y:_myY});
-    }
-    _stars.forEach(st=>{st.y+=st.speed;if(st.y>1){st.y=0;st.x=Math.random();}});
-    drawShoot(ctx,s);
-  }
-  _raf=requestAnimationFrame(loop);
-}
-
-// 터치로 비행기 조종
-document.addEventListener('DOMContentLoaded',()=>{
-  const canvas=q('shoot-canvas');if(!canvas)return;
-  canvas.addEventListener('touchmove',e=>{
-    e.preventDefault();
-    const touch=e.touches[0],rect=canvas.getBoundingClientRect();
-    const sx=CW/rect.width,sy=CH/rect.height;
-    _myX=Math.max(0.04,Math.min(0.96,(touch.clientX-rect.left)*sx/CW));
-    _myY=Math.max(0.45,Math.min(0.95,(touch.clientY-rect.top)*sy/CH));
-  },{passive:false});
-  canvas.addEventListener('touchstart',e=>{
-    e.preventDefault();
-    const touch=e.touches[0],rect=canvas.getBoundingClientRect();
-    const sx=CW/rect.width,sy=CH/rect.height;
-    _myX=Math.max(0.04,Math.min(0.96,(touch.clientX-rect.left)*sx/CW));
-    _myY=Math.max(0.45,Math.min(0.95,(touch.clientY-rect.top)*sy/CH));
-  },{passive:false});
-  // 끝말잇기 엔터
-  const wi=q('winput');
-  if(wi)wi.addEventListener('keydown',e=>{if(e.key==='Enter')submitWord();});
-});
-
-function drawShoot(ctx,s){
-  ctx.fillStyle='#000510';ctx.fillRect(0,0,CW,CH);
-  ctx.fillStyle='rgba(255,255,255,0.65)';
-  _stars.forEach(st=>{ctx.fillRect(st.x*CW,st.y*CH,st.sz,st.sz);});
-  const elapsed=s.stageStartTime?Date.now()-s.stageStartTime:0;
-  if(s.stageClearing){
-    ctx.fillStyle='rgba(56,217,169,0.15)';ctx.fillRect(0,0,CW,CH);
-    ctx.fillStyle='#38d9a9';ctx.font='bold 34px Courier New';ctx.textAlign='center';
-    ctx.fillText('STAGE '+s.stage+' CLEAR!',CW/2,CH/2-16);
-    ctx.font='15px Courier New';ctx.fillStyle='#ffa94d';
-    ctx.fillText('목숨 1개 회복! 다음 스테이지 준비중...',CW/2,CH/2+16);
-    ctx.textAlign='left';return;
-  }
-  if(s.allWon){
-    ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(0,0,CW,CH);
-    ctx.fillStyle='#ffa94d';ctx.font='bold 36px Courier New';ctx.textAlign='center';
-    ctx.fillText('ALL CLEAR! 🏆',CW/2,CH/2);ctx.textAlign='left';return;
-  }
-  if(s.gameOver){
-    ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(0,0,CW,CH);
-    ctx.fillStyle='#ff6b6b';ctx.font='bold 38px Courier New';ctx.textAlign='center';
-    ctx.fillText('GAME OVER',CW/2,CH/2);ctx.textAlign='left';return;
-  }
-  const se=makeStage(s.stage||1);
-  se.forEach(e=>{
-    if((s.killedEnemies||{})[e.id])return;
-    const pos=getEnemyPos(e,elapsed);if(!pos||!pos.visible)return;
-    drawEnemy(ctx,e,pos,s.enemyHP);
-  });
-  (s.playerOrder||[]).forEach((uid,i)=>{
-    if(uid===myUid)return;
-    const pp=s.playerPos?.[uid];
-    if(!pp||(s.lives?.[uid]||0)<=0)return;
-    drawPlane(ctx,pp.x*CW,pp.y*CH,P_COLORS[i]||'#fff',false);
-  });
-  const mi=(s.playerOrder||[]).indexOf(myUid);
-  if((s.lives?.[myUid]||0)>0)drawPlane(ctx,_myX*CW,_myY*CH,P_COLORS[mi>=0?mi:0],true);
-  ctx.fillStyle='#fffa65';
-  _bullets.forEach(b=>{ctx.fillRect(b.x*CW-2,b.y*CH-10,4,12);});
-  ctx.fillStyle='rgba(0,0,0,0.4)';ctx.fillRect(0,0,CW,28);
-  ctx.fillStyle='#38d9a9';ctx.font='bold 12px Courier New';
-  ctx.fillText('STAGE '+(s.stage||1),10,18);
-  ctx.fillStyle='#ffa94d';ctx.textAlign='right';
-  ctx.fillText('SCORE: '+(s.score||0),CW-10,18);ctx.textAlign='left';
-}
-function drawPlane(ctx,x,y,color,isMe){
-  ctx.save();ctx.translate(x,y);ctx.fillStyle=color;
-  ctx.beginPath();ctx.moveTo(0,-16);ctx.lineTo(-11,10);ctx.lineTo(0,5);ctx.lineTo(11,10);ctx.closePath();ctx.fill();
-  ctx.fillStyle='#ff9f43';
-  ctx.beginPath();ctx.moveTo(-6,11);ctx.lineTo(0,16+Math.random()*6);ctx.lineTo(6,11);ctx.closePath();ctx.fill();
-  if(isMe){ctx.strokeStyle='rgba(255,255,255,0.25)';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(0,0,22,0,Math.PI*2);ctx.stroke();}
-  ctx.restore();
-}
-function drawEnemy(ctx,e,pos,enemyHP){
-  const EX=pos.x*CW,EY=pos.y*CH;
-  const colors={basic:'#ff6b6b',fast:'#ff9f43',zigzag:'#a29bfe',tank:'#636e72',boss:'#fd79a8'};
-  const sizes={basic:13,fast:11,zigzag:12,tank:18,boss:38};
-  const sz=sizes[e.type]||13;
-  ctx.save();ctx.translate(EX,EY);ctx.fillStyle=colors[e.type]||'#ff6b6b';
-  if(e.type==='boss'){ctx.fillRect(-sz,-sz*.5,sz*2,sz);ctx.fillStyle='#e17055';ctx.fillRect(-sz*.5,-sz*.9,sz,sz*.5);}
-  else if(e.type==='tank'){ctx.fillRect(-sz/2,-sz/2.5,sz,sz*.8);}
-  else if(e.type==='zigzag'){ctx.beginPath();ctx.arc(0,0,sz/2,0,Math.PI*2);ctx.fill();}
-  else{ctx.beginPath();ctx.moveTo(0,sz/2);ctx.lineTo(-sz/2,-sz/2);ctx.lineTo(sz/2,-sz/2);ctx.closePath();ctx.fill();}
-  if(e.hp>1&&enemyHP){
-    const curHP=enemyHP[e.id]??e.hp,bw=sz*1.8;
-    ctx.fillStyle='#2d3436';ctx.fillRect(-bw/2,-sz-10,bw,5);
-    ctx.fillStyle='#00b894';ctx.fillRect(-bw/2,-sz-10,bw*(curHP/e.hp),5);
-  }
-  ctx.restore();
-}
-
-// 키 이벤트
-document.addEventListener('keydown',e=>{
-  _keys.add(e.key);
-  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key))e.preventDefault();
-});
-document.addEventListener('keyup',e=>_keys.delete(e.key));
-
-// ══════════════════════════════════════════
-// ★ 게임 4: 끝말잇기
+// ★ 게임 3: 끝말잇기
 // ══════════════════════════════════════════
 function initWord(order){
   const scores={};order.forEach(uid=>scores[uid]=0);
   const sw=['사과','하늘','바다','구름','나무','기차','사랑','학교'][Math.floor(Math.random()*8)];
-  return{playerOrder:order,curIdx:0,scores,curWord:sw,lastChar:sw[sw.length-1],
-    used:[sw],hist:[{uid:'sys',word:sw,pidx:-1}],timerEnd:Date.now()+31000,gameOver:false,maxRounds:20,scoreAwarded:false};
+  return{activePlayers:order,playerOrder:order,curIdx:0,scores,curWord:sw,lastChar:sw[sw.length-1],used:[sw],hist:[{uid:'sys',word:sw,pidx:-1}],timerEnd:Date.now()+31000,gameOver:false,maxRounds:20,scoreAwarded:false};
 }
 function renderWord(s){
   clearInterval(_wTimer);
   const{playerOrder,curIdx,scores,curWord,lastChar,hist,timerEnd,gameOver}=s;
-  const isMe=playerOrder[curIdx]===myUid;
-  const ti=q('word-turn');
-  ti.textContent=isMe?'내 차례! 단어 입력!':(players[playerOrder[curIdx]]?.name||'')+'의 차례...';
-  ti.className='turn-ind'+(isMe?'':' wait');
-  q('cword').textContent=curWord;
-  q('nchar').textContent='"'+lastChar+'"(으)로 시작하는 단어';
-  const ia=q('winput-area');
-  ia.style.display=isMe&&!gameOver?'flex':'none';
-  if(isMe&&!gameOver)q('winput').focus();
+  const isMe=playerOrder[curIdx]===myUid&&isActivePl();
+  const ti=q('word-turn');ti.textContent=isMe?'내 차례! 단어 입력!':(players[playerOrder[curIdx]]?.name||'')+'의 차례...';ti.className='turn-ind'+(isMe?'':' wait');
+  q('cword').textContent=curWord;q('nchar').textContent='"'+lastChar+'"(으)로 시작하는 단어';
+  q('winput-area').style.display=isMe&&!gameOver?'flex':'none';if(isMe&&!gameOver)q('winput')?.focus();
   if(!gameOver){
     const rem=()=>Math.max(0,(timerEnd-Date.now())/31000);
     q('wbar').style.width=(rem()*100)+'%';
-    _wTimer=setInterval(()=>{
-      const r=rem();q('wbar').style.width=(r*100)+'%';
-      if(r===0){clearInterval(_wTimer);if(isHost)skipWordTurn(s);}
-    },600);
+    _wTimer=setInterval(()=>{const r=rem();q('wbar').style.width=(r*100)+'%';if(r===0){clearInterval(_wTimer);if(isHost)skipWord(s);}},600);
   }
   const wh=q('whist');wh.innerHTML='';
-  (hist||[]).forEach(item=>{
-    const chip=document.createElement('div');
-    const color=item.pidx<0?'var(--border)':getPC(playerOrder[item.pidx]);
-    chip.className='wchip';chip.style.borderColor=color;chip.style.color=color;
-    chip.textContent=item.word;wh.appendChild(chip);
-  });
+  (hist||[]).forEach(item=>{const chip=document.createElement('div');chip.className='wchip';
+    const color=item.pidx<0?'var(--border)':getPC(playerOrder[item.pidx]);chip.style.cssText=`border-color:${color};color:${color}`;chip.textContent=item.word;wh.appendChild(chip);});
   wh.scrollTop=wh.scrollHeight;
-  q('wscores').innerHTML=playerOrder.map((uid,i)=>{
-    const color=getPC(uid);
-    return`<div class="qscard" style="border-color:${color}20"><div class="qs" style="color:${color}">${scores[uid]||0}</div><div class="ql">${esc(players[uid]?.name||uid)}</div></div>`;
-  }).join('');
+  renderScores('word-scores',playerOrder,scores);
   if(gameOver){
-    const sorted=[...playerOrder].sort((a,b)=>(scores[b]||0)-(scores[a]||0));
-    const winner=sorted[0];
-    q('word-win').style.display='block';
-    q('word-win-text').textContent='🏆 '+(players[winner]?.name||winner)+' 우승! (+'+( scores[winner]||0)+'pt)';
-    if(isHost&&!s.scoreAwarded) awardOnce(s,'scoreAwarded',()=>addScore(winner,scores[winner]||0));
-  } else q('word-win').style.display='none';
+    const sorted=[...playerOrder].sort((a,b)=>(scores[b]||0)-(scores[a]||0));const winner=sorted[0];
+    q('word-win').style.display='block';q('word-win-text').textContent='🏆 '+(players[winner]?.name||winner)+' 우승!';
+    if(isHost&&!s.scoreAwarded)awardOnce(s,'scoreAwarded',()=>addScore(winner,scores[winner]||0));
+  }else q('word-win').style.display='none';
 }
 function submitWord(){
   const inp=q('winput');const word=inp.value.trim();if(!word)return;inp.value='';
   db.ref('rooms/'+roomId+'/game/state').once('value',snap=>{
-    const s=snap.val();if(!s)return;
-    if(s.playerOrder[s.curIdx]!==myUid){alert('내 차례가 아닙니다!');return;}
+    const s=snap.val();if(!s||s.playerOrder[s.curIdx]!==myUid||!isActivePl())return;
     if(word[0]!==s.lastChar){alert('"'+s.lastChar+'"(으)로 시작해야 합니다!');return;}
     if(s.used.includes(word)){alert('이미 사용된 단어입니다!');return;}
-    if(word.length<2){alert('2글자 이상 입력하세요!');return;}
+    if(word.length<2){alert('2글자 이상!');return;}
     const pidx=s.playerOrder.indexOf(myUid);
     const ns=Object.assign({},s.scores,{[myUid]:(s.scores[myUid]||0)+word.length});
     const nu=[...s.used,word],nh=[...(s.hist||[]),{uid:myUid,word,pidx}];
-    const nextIdx=(s.curIdx+1)%s.playerOrder.length;
-    setGameState({...s,curWord:word,lastChar:word[word.length-1],used:nu,hist:nh,scores:ns,curIdx:nextIdx,timerEnd:Date.now()+31000,gameOver:nu.length>=(s.maxRounds||20)});
+    setGameState({...s,curWord:word,lastChar:word[word.length-1],used:nu,hist:nh,scores:ns,curIdx:(s.curIdx+1)%s.playerOrder.length,timerEnd:Date.now()+31000,gameOver:nu.length>=(s.maxRounds||20)});
   });
 }
-function skipWordTurn(s){
+function skipWord(s){
   db.ref('rooms/'+roomId+'/game/state').once('value',snap=>{
-    const cur=snap.val()||s;
-    if(cur.curIdx!==s.curIdx||cur.timerEnd!==s.timerEnd||cur.gameOver)return;
+    const cur=snap.val()||s;if(cur.curIdx!==s.curIdx||cur.timerEnd!==s.timerEnd||cur.gameOver)return;
     sysChat((players[cur.playerOrder[cur.curIdx]]?.name||cur.playerOrder[cur.curIdx])+' 시간 초과! ⏰');
     setGameState({...cur,curIdx:(cur.curIdx+1)%cur.playerOrder.length,timerEnd:Date.now()+31000});
   });
 }
+
+// ══════════════════════════════════════════
+// ★ 게임 4: 초성게임
+// ══════════════════════════════════════════
+function initChosung(order){
+  const words=[...CHOSUNG_DB].sort(()=>Math.random()-.5).slice(0,8);
+  const scores={};order.forEach(uid=>scores[uid]=0);
+  return{activePlayers:order,playerOrder:order,curRound:0,words,phase:'guessing',correctOrder:[],scores,timerEnd:Date.now()+16000,ended:false};
+}
+let _lastChosungRound=-1;
+function renderChosung(s){
+  clearInterval(_choTimer);
+  const{playerOrder,curRound,words,phase,correctOrder,scores,ended}=s;
+  renderScores('cho-scores',playerOrder,scores);
+  if(ended){
+    const sorted=[...playerOrder].sort((a,b)=>(scores[b]||0)-(scores[a]||0));
+    q('cho-win').style.display='block';q('cho-win-text').textContent='🏆 '+(players[sorted[0]]?.name||sorted[0])+' 우승!';
+    q('cho-input-area').style.display='none';return;
+  }
+  q('cho-win').style.display='none';
+  const word=words[curRound];
+  q('cho-hint').textContent=word.hint;q('cho-chars').textContent=getChosung(word.word);
+  q('cho-round').textContent='라운드 '+(curRound+1)+' / '+words.length;
+  const isActive=isActivePl();
+  q('cho-input-area').style.display=phase==='guessing'&&isActive?'flex':'none';
+  q('cho-input').value='';q('cho-feedback').textContent='';
+
+  // 정답자 표시
+  const od=q('cho-order');od.innerHTML='';
+  const pts=[5,3,1];
+  (correctOrder||[]).forEach((uid,i)=>{
+    const span=document.createElement('div');span.className='cho-correct';
+    span.style.cssText=`background:${getPC(uid)}15;border-color:${getPC(uid)};color:${getPC(uid)}`;
+    span.textContent=(i+1)+'위 '+(players[uid]?.name||uid)+' (+'+(pts[i]||0)+'pt)';od.appendChild(span);
+  });
+
+  if(phase==='reveal'){
+    q('cho-timer').textContent='정답: '+word.word;q('cho-timer').style.color='var(--orange)';
+    if(isHost&&_lastChosungRound!==curRound+'reveal'){_lastChosungRound=curRound+'reveal';
+      setTimeout(()=>{
+        db.ref('rooms/'+roomId+'/game/state').once('value',snap=>{
+          const cur=snap.val();if(!cur||cur.phase!=='reveal'||cur.curRound!==curRound)return;
+          const next=curRound+1;
+          if(next>=cur.words.length){db.ref('rooms/'+roomId+'/game/state').update({ended:true});}
+          else{db.ref('rooms/'+roomId+'/game/state').update({curRound:next,phase:'guessing',correctOrder:[],timerEnd:Date.now()+16000});}
+        });
+      },2800);
+    }
+    return;
+  }
+  // 타이머
+  const tick=()=>{
+    const rem=Math.max(0,Math.ceil((s.timerEnd-Date.now())/1000));
+    q('cho-timer').textContent=rem;q('cho-timer').style.color=rem<=5?'var(--red)':'var(--accent)';
+    if(rem===0){clearInterval(_choTimer);if(isHost)advanceChosung(s);}
+  };
+  tick();_choTimer=setInterval(tick,600);
+}
+function advanceChosung(s){
+  db.ref('rooms/'+roomId+'/game/state').once('value',snap=>{
+    const cur=snap.val()||s;if(cur.phase!=='guessing')return;
+    const pts=[5,3,1];const ns=Object.assign({},cur.scores);
+    (cur.correctOrder||[]).forEach((uid,i)=>{ns[uid]=(ns[uid]||0)+(pts[i]||0);});
+    // 점수 지급 후 reveal
+    db.ref('rooms/'+roomId+'/game/state').update({phase:'reveal',scores:ns});
+    // Award to Firebase player scores
+    (cur.correctOrder||[]).forEach((uid,i)=>{if(pts[i])addScore(uid,pts[i]);});
+  });
+}
+function submitChosung(){
+  const inp=q('cho-input');const answer=inp.value.trim();if(!answer)return;
+  const s=_currentGame;if(!s||s.phase!=='guessing'||!isActivePl())return;
+  if((s.correctOrder||[]).includes(myUid)){inp.value='';return;}
+  const word=s.words[s.curRound].word;
+  if(answer.toLowerCase()!==word.toLowerCase()){
+    q('cho-feedback').textContent='❌ 틀렸습니다!';inp.value='';setTimeout(()=>{q('cho-feedback').textContent='';},900);return;
+  }
+  inp.value='';
+  db.ref('rooms/'+roomId+'/game/state/correctOrder').transaction(order=>{
+    if(!order)order=[];if(!order.includes(myUid))order.push(myUid);return order;
+  }).then(res=>{
+    if(res.committed){
+      const cur=res.snapshot.val();
+      const ap=(_currentGame?.activePlayers)||s.activePlayers||[];
+      if(isHost&&cur&&cur.length>=ap.length)advanceChosung(s);
+    }
+  });
+}
+
+// ══════════════════════════════════════════
+// ★ 게임 5: 숫자야구
+// ══════════════════════════════════════════
+function generateSecret(){
+  const d=[1,2,3,4,5,6,7,8,9];for(let i=d.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[d[i],d[j]]=[d[j],d[i]];}
+  return d.slice(0,3).join('');
+}
+function checkBB(secret,guess){
+  let s=0,b=0;
+  for(let i=0;i<3;i++){if(guess[i]===secret[i])s++;else if(secret.includes(guess[i]))b++;}
+  return{strikes:s,balls:b};
+}
+function initBaseball(order){
+  return{activePlayers:order,playerOrder:order,curIdx:0,secret:generateSecret(),guesses:[],winner:null,scoreAwarded:false};
+}
+function renderBaseball(s){
+  const{playerOrder,curIdx,guesses,winner}=s;
+  const isMe=playerOrder[curIdx]===myUid&&isActivePl();
+  const ti=q('bb-turn');
+  if(winner){ti.textContent=(players[winner]?.name||winner)+' 3스트라이크! 🎉';ti.className='turn-ind';}
+  else if(isMe){ti.textContent='내 차례 — 숫자 입력!';ti.className='turn-ind';}
+  else{ti.textContent=(players[playerOrder[curIdx]]?.name||'')+'의 차례...';ti.className='turn-ind wait';}
+  const ia=q('bb-input-area');
+  if(ia)['bb-d1','bb-d2','bb-d3'].forEach(id=>{const el=q(id);if(el)el.disabled=!isMe||!!winner;});
+  const hist=q('bb-history');hist.innerHTML='';
+  (guesses||[]).slice().reverse().forEach(g=>{
+    const row=document.createElement('div');row.className='bb-row'+(g.strikes===3?' winner':'');
+    const color=getPC(g.uid);
+    row.innerHTML=`<span class="bb-who" style="color:${color}">${esc(players[g.uid]?.name||g.uid)}</span><span class="bb-guess">${g.guess}</span><span class="bb-result">${g.strikes}S ${g.balls}B</span>`;
+    hist.appendChild(row);
+  });
+  if(winner){q('bb-win').style.display='block';q('bb-win-text').textContent='🏆 '+(players[winner]?.name||winner)+' 승리! +10pt';
+    if(isHost&&!s.scoreAwarded)awardOnce(s,'scoreAwarded',()=>addScore(winner,10));
+  }else q('bb-win').style.display='none';
+}
+function submitBaseball(){
+  const d1=q('bb-d1').value,d2=q('bb-d2').value,d3=q('bb-d3').value;
+  if(!d1||!d2||!d3){alert('세 자리를 모두 입력하세요');return;}
+  const guess=d1+d2+d3;
+  if([...new Set(guess)].length<3){alert('세 자리가 모두 달라야 합니다');return;}
+  if(guess.includes('0')){alert('0은 사용 불가');return;}
+  db.ref('rooms/'+roomId+'/game/state').once('value',snap=>{
+    const s=snap.val();if(!s||s.playerOrder[s.curIdx]!==myUid||!isActivePl())return;
+    const{strikes,balls}=checkBB(s.secret,guess);
+    const newGuesses=[...(s.guesses||[]),{uid:myUid,guess,strikes,balls}];
+    const winner=strikes===3?myUid:null;
+    setGameState({...s,guesses:newGuesses,curIdx:(s.curIdx+1)%s.playerOrder.length,winner});
+    ['bb-d1','bb-d2','bb-d3'].forEach(id=>{q(id).value='';});
+    if(winner)sysChat(myName+' 숫자야구 정답! 🎉 ('+guess+') +10pt');
+    else sysChat(myName+': '+guess+' → '+strikes+'S '+balls+'B');
+  });
+}
+
+// ══════════════════════════════════════════
+// ★ 게임 6: 텔레파시
+// ══════════════════════════════════════════
+function initTelepathy(order){
+  const cats=[...TP_CATS].sort(()=>Math.random()-.5).slice(0,5);
+  const scores={};order.forEach(uid=>scores[uid]=0);
+  return{activePlayers:order,playerOrder:order,curRound:0,cats,phase:'picking',picks:{},scores,timerEnd:Date.now()+21000,ended:false};
+}
+let _lastTpRound=-1;
+function renderTelepathy(s){
+  clearInterval(_tpTimer);
+  const{playerOrder,curRound,cats,phase,picks,scores,ended}=s;
+  renderScores('tp-scores',playerOrder,scores);
+  if(ended){
+    const sorted=[...playerOrder].sort((a,b)=>(scores[b]||0)-(scores[a]||0));
+    q('tp-win').style.display='block';q('tp-win-text').textContent='🔮 '+(players[sorted[0]]?.name||sorted[0])+' 텔레파시 우승!';return;
+  }
+  q('tp-win').style.display='none';
+  const cat=cats[curRound];
+  q('tp-cat-label').textContent='라운드 '+(curRound+1)+' / '+cats.length;q('tp-cat-name').textContent=cat.cat;
+  const isActive=isActivePl();const myPick=picks?.[myUid];
+
+  // 옵션 버튼
+  const optsEl=q('tp-options');optsEl.innerHTML='';
+  if(phase==='picking'){
+    cat.opts.forEach(opt=>{
+      const btn=document.createElement('div');btn.className='tp-opt'+(myPick===opt?' selected':'');
+      btn.textContent=opt;if(isActive&&!myPick)btn.onclick=()=>pickTelepathy(opt,s);
+      optsEl.appendChild(btn);
+    });
+  } else optsEl.innerHTML='';
+
+  // 공개
+  const ra=q('tp-reveal-area');
+  if(phase==='reveal'){
+    ra.style.display='block';
+    const rv=q('tp-reveal');rv.innerHTML='';
+    const pickCounts={};playerOrder.forEach(uid=>{const p=picks?.[uid];if(p)pickCounts[p]=(pickCounts[p]||0)+1;});
+    playerOrder.forEach(uid=>{
+      const p=picks?.[uid];const matched=(p&&pickCounts[p]>1);
+      const div=document.createElement('div');div.className='tp-pick'+(matched?' matched':'');
+      const color=getPC(uid);div.style.borderColor=matched?color:'';div.style.color=matched?color:'';
+      div.innerHTML=`<b>${esc(players[uid]?.name||uid)}</b>: ${p||'?'}${matched?' ✅':''}`;rv.appendChild(div);
+    });
+    if(isHost&&_lastTpRound!==curRound+'reveal'){_lastTpRound=curRound+'reveal';
+      setTimeout(()=>{
+        db.ref('rooms/'+roomId+'/game/state').once('value',snap=>{
+          const cur=snap.val();if(!cur||cur.phase!=='reveal'||cur.curRound!==curRound)return;
+          const next=curRound+1;
+          if(next>=cur.cats.length){db.ref('rooms/'+roomId+'/game/state').update({ended:true});}
+          else{db.ref('rooms/'+roomId+'/game/state').update({curRound:next,phase:'picking',picks:{},timerEnd:Date.now()+21000});}
+        });
+      },3000);
+    }
+  } else ra.style.display='none';
+
+  // 타이머
+  if(phase==='picking'){
+    const tick=()=>{
+      const rem=Math.max(0,Math.ceil((s.timerEnd-Date.now())/1000));
+      q('tp-timer').textContent=rem;q('tp-timer').style.color=rem<=5?'var(--red)':'var(--accent)';
+      if(rem===0){clearInterval(_tpTimer);if(isHost)revealTelepathy(s);}
+    };
+    tick();_tpTimer=setInterval(tick,600);
+  } else q('tp-timer').textContent='';
+}
+function pickTelepathy(opt,s){
+  if(!isActivePl()||(s.picks||{})[myUid])return;
+  db.ref('rooms/'+roomId+'/game/state/picks/'+myUid).set(opt);
+  // 모두 고르면 공개
+  if(isHost){
+    db.ref('rooms/'+roomId+'/game/state').once('value',snap=>{
+      const cur=snap.val();if(!cur)return;
+      const allPicked=cur.activePlayers.every(uid=>(cur.picks||{})[uid]);
+      if(allPicked)revealTelepathy(cur);
+    });
+  }
+}
+function revealTelepathy(s){
+  db.ref('rooms/'+roomId+'/game/state').once('value',snap=>{
+    const cur=snap.val()||s;if(cur.phase!=='picking')return;
+    const picks=cur.picks||{};const pickCounts={};
+    cur.playerOrder.forEach(uid=>{const p=picks[uid];if(p)pickCounts[p]=(pickCounts[p]||0)+1;});
+    const ns=Object.assign({},cur.scores);
+    cur.playerOrder.forEach(uid=>{const p=picks[uid];if(p&&pickCounts[p]>1){const pts=pickCounts[p]-1;ns[uid]=(ns[uid]||0)+pts;addScore(uid,pts);}});
+    db.ref('rooms/'+roomId+'/game/state').update({phase:'reveal',scores:ns});
+  });
+}
+
+// ══════════════════════════════════════════
+// ★ 게임 7: 가위바위보
+// ══════════════════════════════════════════
+const RPS_EMOJI={rock:'✊',scissors:'✌️',paper:'🖐️'};
+const RPS_KO={rock:'바위',scissors:'가위',paper:'보'};
+function rpsWin(a,b){if(a===b)return 0;if((a==='rock'&&b==='scissors')||(a==='scissors'&&b==='paper')||(a==='paper'&&b==='rock'))return 1;return-1;}
+function initRPS(order){
+  const scores={};order.forEach(uid=>scores[uid]=0);
+  return{activePlayers:order,playerOrder:order,curRound:1,totalRounds:5,phase:'picking',picks:{},scores,ended:false};
+}
+function renderRPS(s){
+  const{playerOrder,curRound,totalRounds,phase,picks,scores,ended}=s;
+  renderScores('rps-scores',playerOrder,scores);
+  if(ended){
+    const sorted=[...playerOrder].sort((a,b)=>(scores[b]||0)-(scores[a]||0));
+    q('rps-win').style.display='block';q('rps-win-text').textContent='🏆 '+(players[sorted[0]]?.name||sorted[0])+' 우승! +10pt';
+    if(isHost&&!s.scoreAwarded)awardOnce(s,'scoreAwarded',()=>addScore(sorted[0],10));return;
+  }
+  q('rps-win').style.display='none';
+  q('rps-round-info').textContent='라운드 '+curRound+' / '+totalRounds+(phase==='reveal'?' — 결과 공개':'');
+  const isActive=isActivePl();const myPick=picks?.[myUid];
+  // 선택 버튼
+  const btns=q('rps-btns');
+  ['rock','scissors','paper'].forEach((choice,i)=>{
+    const b=btns.children[i];if(!b)return;
+    b.classList.toggle('selected',myPick===choice);
+    b.style.opacity=(phase==='picking'&&isActive&&!myPick)?'1':'0.6';
+    b.onclick=phase==='picking'&&isActive&&!myPick?()=>pickRPS(choice):null;
+  });
+
+  const statusEl=q('rps-status');
+  if(phase==='picking'){statusEl.textContent=myPick?'제출 완료! 다른 플레이어 대기 중...':'선택하세요!';}
+
+  const rv=q('rps-results');rv.innerHTML='';
+  if(phase==='reveal'){
+    statusEl.textContent='';
+    playerOrder.forEach(uid=>{
+      const p=picks?.[uid];let wins=0;
+      playerOrder.forEach(uid2=>{if(uid!==uid2&&rpsWin(p,picks?.[uid2])===1)wins++;});
+      const div=document.createElement('div');div.className='rps-card';
+      const color=getPC(uid);div.style.borderColor=color;
+      div.innerHTML=`<div class="ri">${p?RPS_EMOJI[p]:'?'}</div><div class="rn" style="color:${color}">${esc(players[uid]?.name||uid)}</div><div class="rs" style="color:${color}">${wins}승</div>`;
+      rv.appendChild(div);
+    });
+    if(isHost){
+      setTimeout(()=>{
+        db.ref('rooms/'+roomId+'/game/state').once('value',snap=>{
+          const cur=snap.val();if(!cur||cur.phase!=='reveal'||cur.curRound!==curRound)return;
+          const next=curRound+1;
+          if(next>totalRounds){db.ref('rooms/'+roomId+'/game/state').update({ended:true});}
+          else{db.ref('rooms/'+roomId+'/game/state').update({curRound:next,phase:'picking',picks:{}});}
+        });
+      },2500);
+    }
+  }
+}
+function pickRPS(choice){
+  if(!isActivePl())return;
+  db.ref('rooms/'+roomId+'/game/state/picks/'+myUid).set(choice);
+  if(isHost){
+    db.ref('rooms/'+roomId+'/game/state').once('value',snap=>{
+      const cur=snap.val();if(!cur)return;
+      const allPicked=cur.activePlayers.every(uid=>(cur.picks||{})[uid]);
+      if(allPicked)revealRPS(cur);
+    });
+  }
+}
+function revealRPS(s){
+  db.ref('rooms/'+roomId+'/game/state').once('value',snap=>{
+    const cur=snap.val()||s;if(cur.phase!=='picking')return;
+    const picks=cur.picks||{};const ns=Object.assign({},cur.scores);
+    cur.playerOrder.forEach(uid=>{
+      const p=picks[uid];let wins=0;
+      cur.playerOrder.forEach(uid2=>{if(uid!==uid2&&rpsWin(p,picks[uid2])===1)wins++;});
+      ns[uid]=(ns[uid]||0)+wins;if(wins>0)addScore(uid,wins);
+    });
+    db.ref('rooms/'+roomId+'/game/state').update({phase:'reveal',scores:ns});
+  });
+}
+
+// ══════════════════════════════════════════
+// ★ 게임 8: 타이핑 경주
+// ══════════════════════════════════════════
+function initTyping(order){
+  const texts=[...TYPING_TEXTS].sort(()=>Math.random()-.5).slice(0,5);
+  const scores={};order.forEach(uid=>scores[uid]=0);
+  return{activePlayers:order,playerOrder:order,curRound:1,totalRounds:5,texts,phase:'typing',submissions:[],scores,timerEnd:Date.now()+26000,ended:false};
+}
+let _lastTypingRound=-1;
+function renderTyping(s){
+  clearInterval(_typingTimer);
+  const{playerOrder,curRound,totalRounds,texts,phase,submissions,scores,ended}=s;
+  renderScores('typing-scores',playerOrder,scores);
+  if(ended){
+    const sorted=[...playerOrder].sort((a,b)=>(scores[b]||0)-(scores[a]||0));
+    q('typing-win').style.display='block';q('typing-win-text').textContent='🏆 '+(players[sorted[0]]?.name||sorted[0])+' 우승!';
+    q('typing-input-area').style.display='none';return;
+  }
+  q('typing-win').style.display='none';
+  q('typing-round').textContent='라운드 '+curRound+' / '+totalRounds;
+  q('typing-text').textContent=texts[curRound-1];
+  const isActive=isActivePl();const alreadySubmitted=(submissions||[]).some(s=>s.uid===myUid);
+  q('typing-input-area').style.display=isActive&&!alreadySubmitted&&phase==='typing'?'flex':'none';
+  if(isActive&&!alreadySubmitted&&phase==='typing')q('typing-input')?.focus();
+
+  const ord=q('typing-order');ord.innerHTML='';
+  (submissions||[]).forEach((sub,i)=>{
+    const div=document.createElement('div');div.className='typing-entry';
+    const color=getPC(sub.uid);
+    div.innerHTML=`<span style="color:${color};font-weight:bold">${i+1}위</span><span style="color:${color}">${esc(players[sub.uid]?.name||sub.uid)}</span>`;
+    ord.appendChild(div);
+  });
+
+  if(phase==='reveal'&&isHost&&_lastTypingRound!==curRound+'reveal'){
+    _lastTypingRound=curRound+'reveal';
+    setTimeout(()=>{
+      db.ref('rooms/'+roomId+'/game/state').once('value',snap=>{
+        const cur=snap.val();if(!cur||cur.phase!=='reveal'||cur.curRound!==curRound)return;
+        const next=curRound+1;
+        if(next>totalRounds){db.ref('rooms/'+roomId+'/game/state').update({ended:true});}
+        else{db.ref('rooms/'+roomId+'/game/state').update({curRound:next,phase:'typing',submissions:[],timerEnd:Date.now()+26000});}
+      });
+    },3000);
+  }
+
+  if(phase==='typing'){
+    const tick=()=>{
+      const rem=Math.max(0,Math.ceil((s.timerEnd-Date.now())/1000));
+      q('typing-timer').textContent=rem;q('typing-timer').style.color=rem<=5?'var(--red)':'var(--accent)';
+      if(rem===0){clearInterval(_typingTimer);if(isHost)endTypingRound(s);}
+    };
+    tick();_typingTimer=setInterval(tick,600);
+  } else q('typing-timer').textContent='결과 확인 중...';
+}
+function submitTyping(){
+  const inp=q('typing-input');const text=inp.value;if(!text)return;
+  const s=_currentGame;if(!s||s.phase!=='typing'||!isActivePl())return;
+  const target=s.texts[s.curRound-1];
+  if(text!==target){q('typing-input').select();alert('정확하게 입력해주세요! 다시 시도하세요.');return;}
+  inp.value='';
+  db.ref('rooms/'+roomId+'/game/state/submissions').transaction(subs=>{
+    if(!subs)subs=[];if(!subs.some(s=>s.uid===myUid))subs.push({uid:myUid,t:Date.now()});return subs;
+  }).then(res=>{
+    if(res.committed&&isHost){
+      const cur=_currentGame;
+      if(cur&&(res.snapshot.val()||[]).length>=(cur.activePlayers||[]).length)endTypingRound(cur);
+    }
+  });
+}
+function endTypingRound(s){
+  db.ref('rooms/'+roomId+'/game/state').once('value',snap=>{
+    const cur=snap.val()||s;if(cur.phase!=='typing')return;
+    const pts=[5,3,1];const ns=Object.assign({},cur.scores);
+    (cur.submissions||[]).forEach((sub,i)=>{ns[sub.uid]=(ns[sub.uid]||0)+(pts[i]||0);if(pts[i])addScore(sub.uid,pts[i]);});
+    db.ref('rooms/'+roomId+'/game/state').update({phase:'reveal',scores:ns});
+  });
+}
+
+// ══════════════════════════════════════════
+// ★ 게임 9: OX 퀴즈
+// ══════════════════════════════════════════
+function initOX(order){
+  const qs=[...OX_QUESTIONS].sort(()=>Math.random()-.5).slice(0,10);
+  const alive={};order.forEach(uid=>alive[uid]=true);
+  return{activePlayers:order,playerOrder:order,curQ:0,questions:qs,phase:'answering',answers:{},alive,timerEnd:Date.now()+11000,ended:false,scoreAwarded:false};
+}
+let _lastOxQ=-1;
+function renderOX(s){
+  clearInterval(_oxTimer);
+  const{playerOrder,curQ,questions,phase,answers,alive,ended}=s;
+  if(ended){showOXEnd(s);return;}
+  q('ox-win').style.display='none';
+  const qdata=questions[curQ];
+  q('ox-qnum').textContent='Q'+(curQ+1)+' / '+questions.length;
+  q('ox-qtxt').textContent=qdata.q;
+  const isActive=isActivePl()&&alive[myUid];
+  const myAns=answers?.[myUid];
+  const oEl=q('ox-o'),xEl=q('ox-x');
+
+  if(phase==='answering'){
+    oEl.className='ox-btn'+(myAns==='O'?' picked':'');xEl.className='ox-btn'+(myAns==='X'?' picked':'');
+    oEl.onclick=isActive&&!myAns?()=>answerOX('O'):null;xEl.onclick=isActive&&!myAns?()=>answerOX('X'):null;
+    oEl.style.opacity=isActive?'1':'0.5';xEl.style.opacity=isActive?'1':'0.5';
+    q('ox-result').textContent='';
+  } else {
+    const correct=qdata.a;
+    oEl.className='ox-btn'+(correct==='O'?' correct':(myAns==='O'?' wrong':''));
+    xEl.className='ox-btn'+(correct==='X'?' correct':(myAns==='X'?' wrong':''));
+    oEl.onclick=null;xEl.onclick=null;
+    q('ox-result').textContent='정답: '+correct+(alive[myUid]?'':' — 탈락!');
+    q('ox-result').style.color=alive[myUid]?'var(--accent)':'var(--red)';
+  }
+
+  // 생존자 표시
+  const st=q('ox-status');st.innerHTML='';
+  playerOrder.forEach(uid=>{
+    const div=document.createElement('div');div.className='ox-pcard'+(alive[uid]?' alive':' dead');
+    const color=getPC(uid);div.style.borderColor=alive[uid]?color:'';div.style.color=alive[uid]?color:'';
+    div.textContent=(alive[uid]?'✅ ':'💀 ')+(players[uid]?.name||uid);st.appendChild(div);
+  });
+
+  if(phase==='reveal'){
+    if(isHost&&_lastOxQ!==curQ+'reveal'){_lastOxQ=curQ+'reveal';
+      setTimeout(()=>{
+        db.ref('rooms/'+roomId+'/game/state').once('value',snap=>{
+          const cur=snap.val();if(!cur||cur.phase!=='reveal')return;
+          const aliveCount=cur.playerOrder.filter(uid=>cur.alive[uid]).length;
+          const next=curQ+1;
+          if(aliveCount<=1||next>=cur.questions.length){db.ref('rooms/'+roomId+'/game/state').update({ended:true});}
+          else{db.ref('rooms/'+roomId+'/game/state').update({curQ:next,phase:'answering',answers:{},timerEnd:Date.now()+11000});}
+        });
+      },2800);
+    }
+    return;
+  }
+
+  // 타이머
+  const tick=()=>{
+    const rem=Math.max(0,Math.ceil((s.timerEnd-Date.now())/1000));
+    const tiEl=q('ox-timer');tiEl.textContent=rem;tiEl.className='ox-timer'+(rem<=3?' urgent':'');
+    if(rem===0){clearInterval(_oxTimer);if(isHost)revealOX(s);}
+  };
+  tick();_oxTimer=setInterval(tick,600);
+}
+function answerOX(choice){
+  if(!isActivePl())return;
+  db.ref('rooms/'+roomId+'/game/state/answers/'+myUid).set(choice);
+  if(isHost){
+    db.ref('rooms/'+roomId+'/game/state').once('value',snap=>{
+      const cur=snap.val();if(!cur)return;
+      const aliveUids=cur.activePlayers.filter(uid=>cur.alive[uid]);
+      const allAnswered=aliveUids.every(uid=>(cur.answers||{})[uid]);
+      if(allAnswered)revealOX(cur);
+    });
+  }
+}
+function revealOX(s){
+  db.ref('rooms/'+roomId+'/game/state').once('value',snap=>{
+    const cur=snap.val()||s;if(cur.phase!=='answering')return;
+    const correct=cur.questions[cur.curQ].a;const newAlive=Object.assign({},cur.alive);
+    cur.activePlayers.forEach(uid=>{
+      if(!cur.alive[uid])return;
+      if((cur.answers||{})[uid]!==correct)newAlive[uid]=false;
+    });
+    db.ref('rooms/'+roomId+'/game/state').update({phase:'reveal',alive:newAlive});
+  });
+}
+function showOXEnd(s){
+  const alive=s.playerOrder.filter(uid=>s.alive[uid]);
+  q('ox-win').style.display='block';
+  if(alive.length===1){
+    q('ox-win-text').textContent='🏆 '+(players[alive[0]]?.name||alive[0])+' 최후 생존! +10pt';
+    if(isHost&&!s.scoreAwarded)awardOnce(s,'scoreAwarded',()=>addScore(alive[0],10));
+  } else if(alive.length===0){
+    q('ox-win-text').textContent='모두 탈락! 무승부 😅';
+  } else {
+    q('ox-win-text').textContent='생존자: '+alive.map(uid=>players[uid]?.name||uid).join(', ');
+    if(isHost&&!s.scoreAwarded)awardOnce(s,'scoreAwarded',()=>alive.forEach(uid=>addScore(uid,5)));
+  }
+  q('ox-status').innerHTML='';q('ox-qtxt').textContent='게임 종료!';q('ox-timer').textContent='';
+}
+
+// ══════════════════════════════════════════
+// KEY EVENTS & INPUT ENTER
+// ══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  const setEnter=(id,fn)=>{const el=q(id);if(el)el.addEventListener('keydown',e=>{if(e.key==='Enter')fn();});};
+  setEnter('winput',submitWord);
+  setEnter('cho-input',submitChosung);
+  setEnter('typing-input',submitTyping);
+});
 </script>
 </body>
 </html>
