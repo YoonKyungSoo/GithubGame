@@ -340,6 +340,11 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
         <div class="olegend" id="olegend"></div>
         <div id="omok-turn" class="turn-ind wait" style="margin-bottom:10px">대기 중</div>
         <div style="overflow:auto"><div id="omok-board"></div></div>
+        <div id="omok-queue-panel" style="display:none;margin-top:10px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px">
+          <div style="font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:8px">⏳ 대기열</div>
+          <div id="omok-queue-list" style="display:flex;flex-direction:column;gap:4px;margin-bottom:6px"></div>
+          <button id="omok-next-btn" class="btn btn-primary" style="display:none;width:100%" onclick="startNextOmokRound()">▶ 다음 대국 시작</button>
+        </div>
         <div id="omok-win" class="winner-banner" style="display:none"><div class="wtext" id="omok-win-text"></div></div>
       </div>
 
@@ -478,6 +483,7 @@ let _leftCurrentGame=false;
 const TURN_MS=10000;
 let _timerAnim=null, _timeoutKey='';
 let _dinoRAF=null, _dinoJumpAt=0, _dinoEndKey='', _dinoHitCooldown=0;
+let _dinoCurrentState=null;
 
 // Constants / DB
 const CHOSUNG_DB=[
@@ -574,6 +580,12 @@ function enterRoom(){
   });
   db.ref(`rooms/${roomId}/chat`).limitToLast(50).on('child_added', snap=>appendChat(snap.val()));
   sysChat(`${myName}님이 참여했습니다.`);
+  // 공룡 달리기 키보드 점프 (스페이스바 / 위 화살표)
+  document.addEventListener('keydown', e=>{
+    if((e.code==='Space'||e.code==='ArrowUp')&&_currentType==='dino'){
+      e.preventDefault(); dinoJump();
+    }
+  });
   
   // Mobile setup
   if(window.innerWidth<=768){ q('chatpanel').classList.remove('open'); q('sb').classList.remove('open'); }
@@ -865,20 +877,24 @@ function renderScores(elId, order, scores) {
 // =========================================================
 // 1. OMOK (팀 교대 지원)
 // =========================================================
-function startOmokActual(forcePlayers){
+function startOmokActual(forcePlayers, forceQueue){
   const p = _omokPrep;
-  let s = { phase: 'playing', mode: p.mode||'solo', board:Array(13).fill(null).map(()=>Array(13).fill(0)), curIdx:0, winner:null, scores:{} };
-  if(s.mode === 'team') {
-    s.blackTeam = (p.teamBlack||[]).filter(u=>players[u]?.online); s.whiteTeam = (p.teamWhite||[]).filter(u=>players[u]?.online);
-    if(s.blackTeam.length<1||s.whiteTeam.length<1){ alert('흑팀/백팀에 각각 최소 1명씩 필요합니다.'); return; }
-    s.bIdx = 0; s.wIdx = 0; s.activePlayers = [...s.blackTeam, ...s.whiteTeam];
+  let s = { phase:'playing', mode:p.mode||'solo', board:Array(13).fill(null).map(()=>Array(13).fill(0)), curIdx:0, winner:null, scores:{}, draw:false };
+  if(s.mode==='team'){
+    s.blackTeam=(p.teamBlack||[]).filter(u=>players[u]?.online);
+    s.whiteTeam=(p.teamWhite||[]).filter(u=>players[u]?.online);
+    if(s.blackTeam.length<1||s.whiteTeam.length<1){alert('흑팀/백팀에 각각 최소 1명씩 필요합니다.');return;}
+    s.bIdx=0; s.wIdx=0; s.activePlayers=[...s.blackTeam,...s.whiteTeam];
+    s.queue=forceQueue!=null?forceQueue:(p.teamBench||[]).filter(u=>players[u]?.online);
   } else {
-    s.soloOrder = forcePlayers || (p.soloOrder||[]).filter(u=>players[u]?.online);
-    s.activePlayers = s.soloOrder.slice(0,2);
-    if(s.activePlayers.length!==2){ alert('개인전은 정확히 2명이 필요합니다.'); return; }
+    s.soloOrder=forcePlayers||(p.soloOrder||[]).filter(u=>players[u]?.online);
+    s.activePlayers=s.soloOrder.slice(0,2);
+    if(s.activePlayers.length!==2){alert('개인전은 정확히 2명이 필요합니다.');return;}
+    if(forceQueue!=null) s.queue=forceQueue;
+    else { const allOnline=_uidOrder.filter(u=>players[u]?.online); s.queue=allOnline.filter(u=>!s.activePlayers.includes(u)); }
   }
   s.activePlayers.forEach(u=>s.scores[u]=0);
-  db.ref(`rooms/${roomId}/game`).set({type:'omok', state:withTimer(s)});
+  db.ref(`rooms/${roomId}/game`).set({type:'omok',state:withTimer(s)});
 }
 function omokCanMove(s) {
   if(s.winner) return false;
@@ -892,19 +908,97 @@ function omokCanMove(s) {
 }
 function renderOmok(s){
   renderCommonTimer(s); renderControls(s); if(isEndedState(s)) addTotalsOnce(s);
+  renderOmokQueue(s);
   const isMe = omokCanMove(s);
   const ti = q('omok-turn');
-  if(s.winner) { ti.textContent = '🏆 승리!'; ti.className='turn-ind'; }
-  else if(isMe) { ti.textContent = '내 차례! 원하는 곳을 클릭하세요.'; ti.className='turn-ind'; }
-  else { ti.textContent = '상대 차례 대기중...'; ti.className='turn-ind wait'; }
+  if(s.draw){ ti.textContent='🤝 무승부!'; ti.className='turn-ind'; }
+  else if(s.winner){ ti.textContent='🏆 승리!'; ti.className='turn-ind'; }
+  else if(isMe){ ti.textContent='내 차례! 원하는 곳을 클릭하세요.'; ti.className='turn-ind'; }
+  else { ti.textContent='상대 차례 대기중...'; ti.className='turn-ind wait'; }
 
-  maybeScheduleTimeout(s, 'omok-'+s.curIdx, ()=>passOmokTurn());
-  const bd = q('omok-board'); bd.style.gridTemplateColumns=`repeat(13,32px)`; bd.innerHTML='';
+  // 흑/백 범례
+  const lg=q('olegend'); if(lg){
+    if(s.mode==='team'){
+      const bN=(s.blackTeam||[]).map(u=>players[u]?.name||'').join(', ');
+      const wN=(s.whiteTeam||[]).map(u=>players[u]?.name||'').join(', ');
+      lg.innerHTML=`<span style="color:var(--text)">⚫ 흑팀: ${esc(bN)}</span><span style="color:var(--muted)">⚪ 백팀: ${esc(wN)}</span>`;
+    } else {
+      const b=players[s.soloOrder?.[0]||s.activePlayers?.[0]]?.name||'';
+      const w=players[s.soloOrder?.[1]||s.activePlayers?.[1]]?.name||'';
+      lg.innerHTML=`<span style="color:var(--text)">⚫ 흑: ${esc(b)}</span><span style="color:var(--muted)">⚪ 백: ${esc(w)}</span>`;
+    }
+  }
+
+  // 승리/무승부 배너
+  const winEl=q('omok-win'), winTxt=q('omok-win-text');
+  if(winEl){
+    if(s.draw){ winEl.style.display='block'; winTxt.textContent='🤝 무승부! 169칸이 모두 찼습니다.'; }
+    else if(s.winner){
+      winEl.style.display='block';
+      const wIdx=s.winner-1;
+      const winTeam=s.mode==='team'?(s.winner===1?s.blackTeam:s.whiteTeam):[s.soloOrder?.[wIdx]||s.activePlayers?.[wIdx]];
+      const names=(winTeam||[]).map(u=>players[u]?.name||'').filter(Boolean).join(', ');
+      winTxt.textContent=`🏆 ${names} 승리!`;
+    } else winEl.style.display='none';
+  }
+
+  if(!s.winner&&!s.draw) maybeScheduleTimeout(s,'omok-'+s.curIdx,()=>passOmokTurn());
+  const bd=q('omok-board'); bd.style.gridTemplateColumns=`repeat(13,32px)`; bd.innerHTML='';
   for(let r=0;r<13;r++) for(let c=0;c<13;c++){
     const cell=document.createElement('div'); cell.className='ocell'+(r===0?' edge-top':'')+(r===12?' edge-bottom':'')+(c===0?' edge-left':'')+(c===12?' edge-right':'');
     if(s.board[r][c]>0) cell.innerHTML=`<div class="ostone os${s.board[r][c]-1}"></div>`;
-    else if(isMe) cell.onclick=()=>placeOmok(r,c);
+    else if(isMe&&!s.winner&&!s.draw) cell.onclick=()=>placeOmok(r,c);
     bd.appendChild(cell);
+  }
+}
+
+function renderOmokQueue(s){
+  const el=q('omok-queue-panel'); if(!el)return;
+  const queue=s.queue||[];
+  el.style.display=(queue.length>0||isEndedState(s))?'block':'none';
+  const listEl=q('omok-queue-list'); if(!listEl)return;
+  if(queue.length===0) listEl.innerHTML='<div style="font-size:11px;color:var(--muted)">대기 중인 플레이어 없음</div>';
+  else listEl.innerHTML=queue.map((u,i)=>`<div class="pitem"><div class="dot" style="background:${getPC(u)}"></div><span class="pn">${i+1}위. ${esc(players[u]?.name||'')}</span></div>`).join('');
+  const nb=q('omok-next-btn'); if(nb) nb.style.display=isHost&&isEndedState(s)?'block':'none';
+}
+
+function startNextOmokRound(){
+  if(!isHost||!_currentGame) return;
+  const s=_currentGame;
+  const queue=[...(s.queue||[])];
+  if(s.mode==='solo'){
+    const p0=s.soloOrder?.[0]||s.activePlayers?.[0];
+    const p1=s.soloOrder?.[1]||s.activePlayers?.[1];
+    if(s.draw){
+      // 무승부: p0 잔류, p1은 대기열 뒤로, 다음 대기자 투입
+      const next=queue.shift(); const newQ=[...queue,p1];
+      const newOrder=next?[p0,next]:[p1,p0];
+      startOmokActual(newOrder, next?newQ:[]);
+    } else {
+      const winner=s.winner===1?p0:p1;
+      const loser=s.winner===1?p1:p0;
+      const next=queue.shift(); const newQ=[...queue,loser];
+      // 승자 잔류, 패자 대기열 뒤로, 다음 대기자 투입
+      const newOrder=next?[winner,next]:[loser,winner];
+      startOmokActual(newOrder, next?newQ:[]);
+    }
+  } else {
+    // 팀전: 패팀 대기열로, 다음 팀 투입
+    const winTeam=[...(s.winner===1?s.blackTeam:s.whiteTeam)];
+    const loseTeam=[...(s.winner===1?s.whiteTeam:s.blackTeam)];
+    const nextTeam=queue.splice(0,loseTeam.length);
+    const newQ=[...queue,...loseTeam];
+    if(nextTeam.length>0){
+      const saved=_omokPrep;
+      _omokPrep={..._omokPrep, mode:'team', teamBlack:winTeam, teamWhite:nextTeam, teamBench:newQ};
+      startOmokActual(null, newQ);
+      _omokPrep=saved;
+    } else {
+      const saved=_omokPrep;
+      _omokPrep={..._omokPrep, mode:'team', teamBlack:loseTeam, teamWhite:winTeam, teamBench:[]};
+      startOmokActual(null, []);
+      _omokPrep=saved;
+    }
   }
 }
 function passOmokTurn(){
@@ -924,10 +1018,14 @@ function placeOmok(r,c) {
       if(n>=5) won=true;
     }
     
-    if(won) { s.winner = stone; s.ended=true; const winIds=s.mode==='team'?(stone===1?s.blackTeam:s.whiteTeam):[myUid]; winIds.forEach(u=>s.scores[u]=(s.scores[u]||0)+10); }
+    if(won){ s.winner=stone; s.ended=true; const winIds=s.mode==='team'?(stone===1?s.blackTeam:s.whiteTeam):[myUid]; winIds.forEach(u=>s.scores[u]=(s.scores[u]||0)+10); }
     else {
+      // 무승부 체크: 169칸 모두 채워졌는지 확인
+      let boardFull=true;
+      outerLoop: for(let rr=0;rr<13;rr++) for(let cc=0;cc<13;cc++) if(s.board[rr][cc]===0){boardFull=false;break outerLoop;}
+      if(boardFull){ s.draw=true; s.ended=true; s.deadline=null; return s; }
       s.curIdx++;
-      if(s.mode === 'team') { if(stone===1) s.bIdx++; else s.wIdx++; }
+      if(s.mode==='team'){ if(stone===1)s.bIdx++;else s.wIdx++; }
     }
     if(!won) resetTimerFields(s);
     return s;
@@ -1503,92 +1601,140 @@ function dinoMyY(){
   return Math.sin(Math.PI*p)*82;
 }
 function renderDino(s){
+  _dinoCurrentState=s;
   renderControls(s); if(isEndedState(s)) addTotalsOnce(s);
-  const info=q('dino-info'), runnersEl=q('dino-runners'), obsEl=q('dino-obstacles'), stage=q('dino-stage');
-  if(!info||!runnersEl||!obsEl||!stage) return;
-  obsEl.innerHTML='';
+  const stage=q('dino-stage'), runnersEl=q('dino-runners');
+  if(!stage||!runnersEl) return;
   const laneH=62;
-  stage.style.height = Math.max(190, 20 + laneH*(s.activePlayers||[]).length) + 'px';
-  if(s.ended || s.phase==='ended'){
+  const ap=s.activePlayers||[];
+  stage.style.height=Math.max(ap.length*laneH+40,190)+'px';
+
+  if(s.ended||s.phase==='ended'){
+    if(_dinoRAF){cancelAnimationFrame(_dinoRAF);_dinoRAF=null;}
     q('dino-win').style.display='block';
     const best=Object.entries(s.scores||{}).sort((a,b)=>(b[1]||0)-(a[1]||0))[0];
     q('dino-win-text').textContent=best?`🦖 ${players[best[0]]?.name||'플레이어'} 승리!`:'공룡 달리기 종료!';
-    renderScores('dino-scores', s.activePlayers, s.scores);
+    renderScores('dino-scores',ap,s.scores);
     return;
   }
   q('dino-win').style.display='none';
-  renderScores('dino-scores', s.activePlayers, s.scores);
-  if(_dinoRAF) cancelAnimationFrame(_dinoRAF);
+  renderScores('dino-scores',ap,s.scores);
+
+  // 레인 DOM 구조 생성/재생성 (플레이어 수 변경 시에만)
+  if(runnersEl.querySelectorAll('.dino-lane').length!==ap.length){
+    runnersEl.innerHTML=ap.map((u,idx)=>{
+      const top=10+idx*laneH;
+      return `<div class="dino-lane" id="dlane-${u}" style="top:${top}px">
+        <div class="dino-lane-name" style="color:${getPC(u)}">${esc(players[u]?.name||'')}</div>
+        <div id="dh-${u}" class="dino-hearts"></div>
+        <div class="dino-lane-ground"></div>
+        <div id="do-${u}" style="position:absolute;left:0;right:0;top:0;bottom:0;pointer-events:none"></div>
+        <div id="dr-${u}" class="dino-runner" style="left:42px;bottom:14px;color:${getPC(u)}">🦖</div>
+      </div>`;
+    }).join('');
+  }
+
+  // rAF 루프 — Firebase 업데이트마다 재시작 안 함, 한 번만 실행
+  if(!_dinoRAF){
+    _dinoJumpAt=0; _dinoHitCooldown=0; _dinoEndKey='';
+    _dinoStartLoop();
+  }
+}
+
+function _dinoStartLoop(){
   const draw=()=>{
+    const s=_dinoCurrentState;
+    if(!s||s.ended||s.phase==='ended'){_dinoRAF=null;return;}
     const now=Date.now();
     const elapsed=Math.max(0,(now-(s.startedAt||now))/1000);
-    const alive=(s.activePlayers||[]).filter(u=>s.runners?.[u]?.alive);
     const meRunner=s.runners?.[myUid]||{};
-    const hearts='❤️'.repeat(Math.max(0,meRunner.lives||0)) + '♡'.repeat(Math.max(0,2-(meRunner.lives||0)));
-    info.innerHTML=`<div class="dino-stat">${hearts}</div><div class="dino-stat">시간 ${elapsed.toFixed(1)}s</div><div class="dino-stat">속도 ${Math.round(dinoSpeed(elapsed))}</div><div class="dino-stat">점프: Space/터치</div>`;
 
-    const obs=dinoObstacles(s, elapsed).filter(o=>o.x>-100 && o.x<900);
-    runnersEl.innerHTML=(s.activePlayers||[]).map((u,idx)=>{
+    // 상단 정보 바
+    const info=q('dino-info');
+    if(info){
+      const h='❤️'.repeat(Math.max(0,meRunner.lives||0))+'♡'.repeat(Math.max(0,2-(meRunner.lives||0)));
+      info.innerHTML=`<div class="dino-stat">${h}</div><div class="dino-stat">시간 ${elapsed.toFixed(1)}s</div><div class="dino-stat">속도 ${Math.round(dinoSpeed(elapsed))}</div><div class="dino-stat">Space/↑/터치 점프</div>`;
+    }
+
+    const obs=dinoObstacles(s,elapsed).filter(o=>o.x>-100&&o.x<900);
+
+    (s.activePlayers||[]).forEach(u=>{
       const r=s.runners?.[u]||{};
       const isMe=u===myUid;
       const y=isMe&&r.alive?dinoMyY():0;
       const opacity=r.alive?1:.32;
-      const inv=r.invincibleUntil && now<r.invincibleUntil;
-      const blink=inv && Math.floor(now/120)%2===0 ? .35 : opacity;
-      const top=10 + idx*laneH;
-      const heartsLane='❤️'.repeat(Math.max(0,r.lives||0)) + '♡'.repeat(Math.max(0,2-(r.lives||0)));
-      const laneObs=obs.map(o=>`<div class="dino-ob" style="left:${o.x}px">${o.type}</div>`).join('');
-      return `<div class="dino-lane" style="top:${top}px">
-        <div class="dino-lane-name" style="color:${getPC(u)}">${esc(players[u]?.name||'')}</div>
-        <div class="dino-hearts">${heartsLane}</div>
-        <div class="dino-lane-ground"></div>
-        ${laneObs}
-        <div class="dino-runner" style="left:42px;bottom:${14+y}px;opacity:${blink};color:${getPC(u)}" title="${esc(players[u]?.name||'')}">🦖</div>
-      </div>`;
-    }).join('');
+      const inv=r.invincibleUntil&&now<r.invincibleUntil;
+      const blink=inv&&Math.floor(now/120)%2===0?.35:opacity;
 
-    const me=s.runners?.[myUid];
-    if(isActivePl() && me?.alive && elapsed>0 && now>_dinoHitCooldown && (!me.invincibleUntil || now>me.invincibleUntil)){
-      const y=dinoMyY();
-      const hit=obs.some(o=>o.x<82 && o.x>34 && y<34);
-      if(hit){
-        _dinoHitCooldown=now+900;
-        const passed=obs.filter(o=>o.x<34).length;
-        const score=Math.max(0, Math.floor(elapsed)) + passed*2;
-        db.ref(`rooms/${roomId}/game/state`).transaction(cur=>{
-          if(!cur || cur.phase!=='playing' || cur.ended) return cur;
-          const r=cur.runners?.[myUid];
-          if(!r || !r.alive || (r.invincibleUntil && Date.now()<r.invincibleUntil)) return cur;
-          const lives=Math.max(0,(r.lives||2)-1);
-          r.lives=lives; r.passed=passed; r.score=score; r.invincibleUntil=Date.now()+1200;
-          if(lives<=0){ r.alive=false; r.deadAt=Date.now(); }
-          cur.scores=cur.scores||{}; cur.scores[myUid]=score;
-          return cur;
+      // 주자 위치
+      const runnerEl=document.getElementById('dr-'+u);
+      if(runnerEl){runnerEl.style.bottom=(14+y)+'px';runnerEl.style.opacity=blink;}
+
+      // 하트 (변경 시만)
+      const hEl=document.getElementById('dh-'+u);
+      if(hEl){
+        const hs='❤️'.repeat(Math.max(0,r.lives||0))+'♡'.repeat(Math.max(0,2-(r.lives||0)));
+        if(hEl.textContent!==hs) hEl.textContent=hs;
+      }
+
+      // 장애물 (DOM 재사용으로 효율화)
+      const oEl=document.getElementById('do-'+u);
+      if(oEl){
+        while(oEl.children.length>obs.length) oEl.removeChild(oEl.lastChild);
+        while(oEl.children.length<obs.length){
+          const d=document.createElement('div');d.className='dino-ob';oEl.appendChild(d);
+        }
+        obs.forEach((o,i)=>{
+          const el=oEl.children[i];
+          el.style.left=o.x+'px';
+          if(el.textContent!==o.type) el.textContent=o.type;
         });
       }
-    }
 
+      // 충돌 판정 (나만)
+      if(isMe&&isActivePl()&&r.alive&&elapsed>0&&now>_dinoHitCooldown&&(!r.invincibleUntil||now>r.invincibleUntil)){
+        const hit=obs.some(o=>o.x<82&&o.x>34&&y<34);
+        if(hit){
+          _dinoHitCooldown=now+900;
+          const passed=obs.filter(o=>o.x<34).length;
+          const score=Math.max(0,Math.floor(elapsed))+passed*2;
+          db.ref(`rooms/${roomId}/game/state`).transaction(cur=>{
+            if(!cur||cur.phase!=='playing'||cur.ended) return cur;
+            const r2=cur.runners?.[myUid];
+            if(!r2||!r2.alive||(r2.invincibleUntil&&Date.now()<r2.invincibleUntil)) return cur;
+            const lives=Math.max(0,(r2.lives||2)-1);
+            r2.lives=lives;r2.passed=passed;r2.score=score;r2.invincibleUntil=Date.now()+1200;
+            if(lives<=0){r2.alive=false;r2.deadAt=Date.now();}
+            cur.scores=cur.scores||{};cur.scores[myUid]=score;
+            return cur;
+          });
+        }
+      }
+    });
+
+    // 호스트: 게임 종료 조건 (1인 버그 수정 포함)
     if(isHost){
-      const live=(s.activePlayers||[]).filter(u=>s.runners?.[u]?.alive);
-      const shouldEnd=elapsed>0 && (s.activePlayers||[]).length>1 && live.length<=1;
-      const key=`${s.startedAt}:${live.join(',')}:${shouldEnd}`;
-      if(shouldEnd && _dinoEndKey!==key){
+      const ap=s.activePlayers||[];
+      const live=ap.filter(u=>s.runners?.[u]?.alive);
+      const shouldEnd=elapsed>0&&(
+        (ap.length===1&&live.length===0) ||   // 1인: 목숨 다 떨어지면 종료
+        (ap.length>1&&live.length<=1)          // 다인: 1명 이하 생존 시 종료
+      );
+      const key=s.startedAt+':'+live.join(',');
+      if(shouldEnd&&_dinoEndKey!==key){
         _dinoEndKey=key;
         db.ref(`rooms/${roomId}/game/state`).transaction(cur=>{
-          if(!cur || cur.ended || cur.phase==='ended') return cur;
-          const elapsed2=Math.max(0,(Date.now()-(cur.startedAt||Date.now()))/1000);
-          const ns=Object.assign({}, cur.scores||{});
-          (cur.activePlayers||[]).forEach(u=>{
-            const r=cur.runners?.[u];
-            if(r?.alive) ns[u]=Math.max(ns[u]||0, Math.floor(elapsed2)+10);
-          });
-          return {...cur, scores:ns, ended:true, phase:'ended'};
+          if(!cur||cur.ended||cur.phase==='ended') return cur;
+          const e2=Math.max(0,(Date.now()-(cur.startedAt||Date.now()))/1000);
+          const ns=Object.assign({},cur.scores||{});
+          (cur.activePlayers||[]).forEach(u=>{const r2=cur.runners?.[u];if(r2?.alive)ns[u]=Math.max(ns[u]||0,Math.floor(e2)+10);});
+          return{...cur,scores:ns,ended:true,phase:'ended'};
         });
       }
     }
     _dinoRAF=requestAnimationFrame(draw);
   };
-  draw();
+  _dinoRAF=requestAnimationFrame(draw);
 }
 
 // =========================================================
