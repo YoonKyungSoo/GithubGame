@@ -472,6 +472,7 @@ let _flagMode=false;
 let _leftCurrentGame=false;
 const TURN_MS=10000;
 let _timerAnim=null, _timeoutKey='';
+let _dinoRAF=null, _dinoJumpAt=0, _dinoEndKey='';
 
 // Constants / DB
 const CHOSUNG_DB=[
@@ -602,7 +603,7 @@ function navTo(name){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   q('view-'+name)?.classList.add('active');
 }
-function stopAllTimers(){ clearInterval(_timer); clearInterval(_wTimer); clearInterval(_choTimer); clearInterval(_tpTimer); clearInterval(_oxTimer); clearInterval(_typingTimer); }
+function stopAllTimers(){ clearInterval(_timer); clearInterval(_wTimer); clearInterval(_choTimer); clearInterval(_tpTimer); clearInterval(_oxTimer); clearInterval(_typingTimer); if(_dinoRAF){cancelAnimationFrame(_dinoRAF); _dinoRAF=null;} }
 function backToLobby(){
   stopAllTimers(); hideCommonTimer(); renderControls(null);
   _leftCurrentGame=true;
@@ -1455,8 +1456,117 @@ function submitTyping(){
 }
 
 
+
+
 // =========================================================
-// 9. OX QUIZ (무한 생존, 전체 라운드)
+// 9. DINO RUNNER (공룡 달리기)
+// =========================================================
+function initDino(ap){
+  const scores={}, runners={};
+  ap.forEach(u=>{ scores[u]=0; runners[u]={alive:true, deadAt:null, passed:0, score:0}; });
+  const now=Date.now();
+  return {phase:'playing', activePlayers:ap, startedAt:now+1200, deadline:now+61200, durationMs:60000, seed:Math.floor(Math.random()*999999), runners, scores, ended:false};
+}
+function dinoRand(seed, i){
+  const x=Math.sin((seed||1)*999 + i*77.7)*10000;
+  return x-Math.floor(x);
+}
+function dinoObstacles(s, elapsed){
+  const obs=[];
+  let dist=360;
+  for(let i=0;i<40;i++){
+    const gap=190 + Math.floor(dinoRand(s.seed, i)*110);
+    dist += gap;
+    const type=dinoRand(s.seed, i+200)>0.72?'🌵🌵':'🌵';
+    obs.push({i, x:dist - dinoSpeed(elapsed)*elapsed, type});
+  }
+  return obs;
+}
+function dinoSpeed(t){ return 170 + Math.min(180, Math.max(0,t)*7); }
+function dinoJump(){
+  if(_currentType!=='dino' || !_currentGame || _currentGame.phase!=='playing' || !isActivePl()) return;
+  const me=_currentGame.runners?.[myUid];
+  if(!me || !me.alive) return;
+  const now=Date.now();
+  const p=(now-_dinoJumpAt)/680;
+  if(!_dinoJumpAt || p>=1) _dinoJumpAt=now;
+}
+function dinoMyY(){
+  if(!_dinoJumpAt) return 0;
+  const p=(Date.now()-_dinoJumpAt)/680;
+  if(p>=1) return 0;
+  return Math.sin(Math.PI*p)*82;
+}
+function renderDino(s){
+  renderCommonTimer(s,'제한 시간'); renderControls(s); if(isEndedState(s)) addTotalsOnce(s);
+  const info=q('dino-info'), runnersEl=q('dino-runners'), obsEl=q('dino-obstacles');
+  if(!info||!runnersEl||!obsEl) return;
+  if(s.ended || s.phase==='ended'){
+    q('dino-win').style.display='block';
+    const best=Object.entries(s.scores||{}).sort((a,b)=>(b[1]||0)-(a[1]||0))[0];
+    q('dino-win-text').textContent=best?`🦖 ${players[best[0]]?.name||'플레이어'} 승리!`:'공룡 달리기 종료!';
+    renderScores('dino-scores', s.activePlayers, s.scores);
+    return;
+  }
+  q('dino-win').style.display='none';
+  renderScores('dino-scores', s.activePlayers, s.scores);
+  if(_dinoRAF) cancelAnimationFrame(_dinoRAF);
+  const draw=()=>{
+    const now=Date.now();
+    const elapsed=Math.max(0,(now-(s.startedAt||now))/1000);
+    const left=Math.max(0, Math.ceil(((s.deadline||now)-now)/1000));
+    const alive=(s.activePlayers||[]).filter(u=>s.runners?.[u]?.alive);
+    info.innerHTML=`<div class="dino-stat">생존 ${alive.length}/${(s.activePlayers||[]).length}</div><div class="dino-stat">남은 시간 ${left}s</div><div class="dino-stat">속도 ${Math.round(dinoSpeed(elapsed))}</div><div class="dino-stat">점프: Space/터치</div>`;
+
+    const obs=dinoObstacles(s, elapsed).filter(o=>o.x>-80 && o.x<760);
+    obsEl.innerHTML=obs.map(o=>`<div class="dino-ob" style="left:${o.x}px">${o.type}</div>`).join('');
+
+    runnersEl.innerHTML=(s.activePlayers||[]).map((u,idx)=>{
+      const me=u===myUid;
+      const r=s.runners?.[u]||{};
+      const y=me&&r.alive?dinoMyY():0;
+      const opacity=r.alive?1:.35;
+      const bottom=43 + idx*3 + y;
+      return `<div class="dino-runner" style="left:${42+idx*18}px;bottom:${bottom}px;opacity:${opacity};color:${getPC(u)}" title="${esc(players[u]?.name||'')}">🦖</div>`;
+    }).join('');
+
+    const me=s.runners?.[myUid];
+    if(isActivePl() && me?.alive && elapsed>0){
+      const y=dinoMyY();
+      const hit=obs.some(o=>o.x<82 && o.x>34 && y<34);
+      if(hit){
+        const passed=obs.filter(o=>o.x<34).length;
+        const score=Math.max(0, Math.floor(elapsed)) + passed*2;
+        db.ref(`rooms/${roomId}/game/state/runners/${myUid}`).update({alive:false, deadAt:Date.now(), passed, score});
+        db.ref(`rooms/${roomId}/game/state/scores/${myUid}`).set(score);
+      }
+    }
+
+    if(isHost){
+      const live=(s.activePlayers||[]).filter(u=>s.runners?.[u]?.alive);
+      const shouldEnd=(elapsed>0 && live.length<=1) || now >= (s.deadline||0);
+      const key=`${s.startedAt}:${live.join(',')}:${shouldEnd}`;
+      if(shouldEnd && _dinoEndKey!==key){
+        _dinoEndKey=key;
+        db.ref(`rooms/${roomId}/game/state`).transaction(cur=>{
+          if(!cur || cur.ended || cur.phase==='ended') return cur;
+          const elapsed2=Math.max(0,(Date.now()-(cur.startedAt||Date.now()))/1000);
+          const ns=Object.assign({}, cur.scores||{});
+          (cur.activePlayers||[]).forEach(u=>{
+            const r=cur.runners?.[u];
+            if(r?.alive) ns[u]=Math.max(ns[u]||0, Math.floor(elapsed2)+10);
+          });
+          return {...cur, scores:ns, ended:true, phase:'ended', deadline:null};
+        });
+      }
+    }
+    _dinoRAF=requestAnimationFrame(draw);
+  };
+  draw();
+}
+
+// =========================================================
+// 10. OX QUIZ (무한 생존, 전체 라운드)
 // =========================================================
 function initOX(ap){
   const scores={}; ap.forEach(u=>scores[u]=0);
