@@ -618,7 +618,7 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
         <div style="display:flex;margin-bottom:4px">
           <div class="b-col-hdr">B</div><div class="b-col-hdr">I</div><div class="b-col-hdr">N</div><div class="b-col-hdr">G</div><div class="b-col-hdr">O</div>
         </div>
-        <div id="bingo-setup-grid" style="display:grid;grid-template-columns:repeat(5,52px);gap:4px;margin-bottom:12px"></div>
+        <div id="bingo-setup-grid" style="display:grid;gap:4px;margin-bottom:12px"></div>
         <div id="bingo-setup-numpad" style="display:grid;grid-template-columns:repeat(5,38px);gap:3px;margin-bottom:12px"></div>
         <div style="display:flex;gap:8px;margin-bottom:10px">
           <button class="btn btn-secondary" onclick="bingoSetupReset()">초기화</button>
@@ -1131,6 +1131,8 @@ function handleGameState() {
     return;
   }
   closeEntryOverlay();
+  // 게임 진행 중일 때(아직 안 끝났을 때)마다 모달 플래그 초기화 → replay 후에도 정상 작동
+  if(!isEndedState(g)) _winnerShown = false;
   // 모바일에서 게임 시작 시 채팅 자동 닫기
   if(window.innerWidth<=768){ q('chatpanel').classList.remove('open'); q('overlay').classList.remove('show'); }
   
@@ -2016,9 +2018,14 @@ function bingoSetupReset(){
   _bingoSetupLocal=new Array(25).fill(0); renderBingoSetupLocal();
 }
 function renderBingoSetupLocal(){
+  const isMobile = window.innerWidth <= 768;
+  const cellSize = isMobile ? 44 : 52;
   const grid=q('bingo-setup-grid'); if(!grid) return;
+  grid.style.gridTemplateColumns=`repeat(5,${cellSize}px)`;
   grid.innerHTML=_bingoSetupLocal.map((n,i)=>`<div class="bsetup-cell ${n>0?'filled':'empty'}" onclick="bingoSetupClickCell(${i})">${n>0?n:''}</div>`).join('');
   const numpad=q('bingo-setup-numpad'); if(!numpad) return;
+  const numSize = isMobile ? 34 : 38;
+  numpad.style.gridTemplateColumns=`repeat(5,${numSize}px)`;
   numpad.innerHTML=Array.from({length:25},(_,i)=>i+1).map(n=>{
     const used=_bingoSetupLocal.includes(n);
     return `<div class="bsetup-num ${used?'used':''}" onclick="${used?'':'bingoSetupClickNum('+n+')'}">${n}</div>`;
