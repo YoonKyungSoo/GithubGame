@@ -1,0 +1,656 @@
+
+<h2 class="sr-only">부루마블 전체 보드 에셋 — 40칸 구성, 22개 나라 카드 및 만원권 화폐</h2>
+<style>
+.sec-title{font-size:12px;font-weight:500;color:var(--color-text-secondary);letter-spacing:.07em;text-transform:uppercase;margin:0 0 10px;padding-left:10px;border-left:3px solid var(--color-border-secondary);}
+.group-label{font-size:11px;font-weight:500;padding:3px 8px;border-radius:4px;display:inline-block;margin-bottom:8px;}
+.cards-wrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-bottom:6px;}
+.pcard{background:white;border-radius:10px;border:0.5px solid var(--color-border-tertiary);overflow:hidden;font-family:sans-serif;}
+.pcard-bar{height:8px;}
+.pcard-body{padding:8px 8px 10px;}
+.pcard-country{font-size:10px;color:#888;margin:0 0 2px;}
+.pcard-name{font-size:13px;font-weight:500;color:#1a1a1a;margin:0 0 5px;}
+.pcard-ills{margin:2px 0 6px;}
+.pcard-divider{border:none;border-top:0.5px solid #e8e8e8;margin:5px 0;}
+.pcard-row{display:flex;justify-content:space-between;font-size:10px;color:#888;margin:2px 0;}
+.pcard-val{font-weight:500;color:#1a1a1a;}
+.bill{background:white;border-radius:8px;overflow:hidden;border:0.5px solid var(--color-border-tertiary);}
+.section{margin-bottom:24px;}
+</style>
+
+<!-- 화폐 섹션 -->
+<div class="section">
+  <div class="sec-title">게임 화폐</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;">
+
+    <!-- 만원권 -->
+    <div class="bill">
+      <div style="background:#1d9e75;padding:8px 10px;">
+        <div style="font-size:9px;color:#9fe1cb;font-family:sans-serif;">REPUBLIC OF KOREA</div>
+        <div style="font-size:14px;font-weight:700;color:white;font-family:sans-serif;">₩10,000</div>
+      </div>
+      <div style="padding:8px 10px;">
+        <svg width="100%" height="34" viewBox="0 0 100 34">
+          <circle cx="18" cy="17" r="13" fill="#e1f5ee" stroke="#1d9e75" stroke-width="0.5"/>
+          <line x1="14" y1="17" x2="22" y2="17" stroke="#1d9e75" stroke-width="1.5"/>
+          <line x1="18" y1="13" x2="18" y2="21" stroke="#1d9e75" stroke-width="1.5"/>
+          <line x1="10" y1="24" x2="14" y2="10" stroke="#1d9e75" stroke-width="1"/>
+          <line x1="26" y1="24" x2="22" y2="10" stroke="#1d9e75" stroke-width="1"/>
+          <text x="40" y="11" font-size="7" fill="#5f5e5a" font-family="sans-serif">만원</text>
+          <text x="40" y="22" font-size="9" font-weight="700" fill="#0f6e56" font-family="sans-serif">10,000</text>
+          <text x="88" y="30" font-size="7" fill="#b4b2a9" font-family="sans-serif" text-anchor="end">만원</text>
+        </svg>
+        <div style="font-size:10px;color:#888;font-family:sans-serif;text-align:center;">만원권</div>
+      </div>
+    </div>
+
+    <!-- 5만원권 -->
+    <div class="bill">
+      <div style="background:#ba7517;padding:8px 10px;">
+        <div style="font-size:9px;color:#fac775;font-family:sans-serif;">REPUBLIC OF KOREA</div>
+        <div style="font-size:14px;font-weight:700;color:white;font-family:sans-serif;">₩50,000</div>
+      </div>
+      <div style="padding:8px 10px;">
+        <svg width="100%" height="34" viewBox="0 0 100 34">
+          <circle cx="18" cy="17" r="13" fill="#faeeda" stroke="#ef9f27" stroke-width="0.5"/>
+          <text x="18" y="21" text-anchor="middle" font-size="11" font-weight="700" fill="#854f0b" font-family="sans-serif">5</text>
+          <text x="40" y="11" font-size="7" fill="#5f5e5a" font-family="sans-serif">오만원</text>
+          <text x="40" y="22" font-size="9" font-weight="700" fill="#854f0b" font-family="sans-serif">50,000</text>
+          <text x="88" y="30" font-size="7" fill="#b4b2a9" font-family="sans-serif" text-anchor="end">오만원</text>
+        </svg>
+        <div style="font-size:10px;color:#888;font-family:sans-serif;text-align:center;">오만원권</div>
+      </div>
+    </div>
+
+    <!-- 10만원권 -->
+    <div class="bill">
+      <div style="background:#639922;padding:8px 10px;">
+        <div style="font-size:9px;color:#c0dd97;font-family:sans-serif;">GAME MONEY</div>
+        <div style="font-size:14px;font-weight:700;color:white;font-family:sans-serif;">₩100,000</div>
+      </div>
+      <div style="padding:8px 10px;">
+        <svg width="100%" height="34" viewBox="0 0 100 34">
+          <circle cx="18" cy="17" r="13" fill="#eaf3de" stroke="#639922" stroke-width="0.5"/>
+          <text x="18" y="21" text-anchor="middle" font-size="9" font-weight="700" fill="#3b6d11" font-family="sans-serif">10만</text>
+          <text x="40" y="11" font-size="7" fill="#5f5e5a" font-family="sans-serif">십만원</text>
+          <text x="40" y="22" font-size="9" font-weight="700" fill="#3b6d11" font-family="sans-serif">100,000</text>
+          <text x="88" y="30" font-size="7" fill="#b4b2a9" font-family="sans-serif" text-anchor="end">십만원</text>
+        </svg>
+        <div style="font-size:10px;color:#888;font-family:sans-serif;text-align:center;">십만원권</div>
+      </div>
+    </div>
+
+    <!-- 50만원권 -->
+    <div class="bill">
+      <div style="background:#7f77dd;padding:8px 10px;">
+        <div style="font-size:9px;color:#cecbf6;font-family:sans-serif;">GAME MONEY</div>
+        <div style="font-size:14px;font-weight:700;color:white;font-family:sans-serif;">₩500,000</div>
+      </div>
+      <div style="padding:8px 10px;">
+        <svg width="100%" height="34" viewBox="0 0 100 34">
+          <circle cx="18" cy="17" r="13" fill="#eeedfe" stroke="#7f77dd" stroke-width="0.5"/>
+          <text x="18" y="21" text-anchor="middle" font-size="9" font-weight="700" fill="#3c3489" font-family="sans-serif">50만</text>
+          <text x="40" y="11" font-size="7" fill="#5f5e5a" font-family="sans-serif">오십만원</text>
+          <text x="40" y="22" font-size="9" font-weight="700" fill="#3c3489" font-family="sans-serif">500,000</text>
+          <text x="88" y="30" font-size="7" fill="#b4b2a9" font-family="sans-serif" text-anchor="end">오십만원</text>
+        </svg>
+        <div style="font-size:10px;color:#888;font-family:sans-serif;text-align:center;">오십만원권</div>
+      </div>
+    </div>
+
+    <!-- 100만원권 -->
+    <div class="bill">
+      <div style="background:#e24b4a;padding:8px 10px;">
+        <div style="font-size:9px;color:#f7c1c1;font-family:sans-serif;">GAME MONEY</div>
+        <div style="font-size:14px;font-weight:700;color:white;font-family:sans-serif;">₩1,000,000</div>
+      </div>
+      <div style="padding:8px 10px;">
+        <svg width="100%" height="34" viewBox="0 0 100 34">
+          <circle cx="18" cy="17" r="13" fill="#fcebeb" stroke="#e24b4a" stroke-width="0.5"/>
+          <text x="18" y="21" text-anchor="middle" font-size="8" font-weight="700" fill="#791f1f" font-family="sans-serif">100만</text>
+          <text x="40" y="11" font-size="7" fill="#5f5e5a" font-family="sans-serif">백만원</text>
+          <text x="40" y="22" font-size="9" font-weight="700" fill="#791f1f" font-family="sans-serif">1,000,000</text>
+          <text x="88" y="30" font-size="7" fill="#b4b2a9" font-family="sans-serif" text-anchor="end">백만원</text>
+        </svg>
+        <div style="font-size:10px;color:#888;font-family:sans-serif;text-align:center;">백만원권</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- 나라 카드 섹션 -->
+<div class="section">
+  <div class="sec-title">나라 카드 — 전체 22개 (8 색상 그룹)</div>
+
+  <!-- 그룹 1: 갈색 — 국내 -->
+  <div style="margin-bottom:14px;">
+    <div class="group-label" style="background:#d3d1c7;color:#2c2c2a;">그룹 1 · 국내 — 저가</div>
+    <div class="cards-wrap">
+      <div class="pcard">
+        <div class="pcard-bar" style="background:#888780;"></div>
+        <div class="pcard-body">
+          <div class="pcard-country">한국</div>
+          <div class="pcard-name">제주도</div>
+          <div class="pcard-ills">
+            <svg width="100%" height="36" viewBox="0 0 110 36">
+              <ellipse cx="55" cy="28" rx="40" ry="7" fill="#5dcaa5"/>
+              <polygon points="55,4 44,28 66,28" fill="#888780"/>
+              <polygon points="55,4 49,18 61,18" fill="white" opacity="0.7"/>
+              <rect x="0" y="32" width="110" height="4" fill="#97c459" rx="1"/>
+            </svg>
+          </div>
+          <hr class="pcard-divider"/>
+          <div class="pcard-row"><span>구입가</span><span class="pcard-val">₩60,000</span></div>
+          <div class="pcard-row"><span>통행료</span><span class="pcard-val" style="color:#888780;">₩6,000</span></div>
+        </div>
+      </div>
+      <div class="pcard">
+        <div class="pcard-bar" style="background:#888780;"></div>
+        <div class="pcard-body">
+          <div class="pcard-country">한국</div>
+          <div class="pcard-name">부산</div>
+          <div class="pcard-ills">
+            <svg width="100%" height="36" viewBox="0 0 110 36">
+              <rect x="20" y="14" width="12" height="18" fill="#b4b2a9" rx="1"/>
+              <rect x="35" y="10" width="10" height="22" fill="#888780" rx="1"/>
+              <rect x="48" y="16" width="12" height="16" fill="#b4b2a9" rx="1"/>
+              <rect x="63" y="8" width="10" height="24" fill="#5f5e5a" rx="1"/>
+              <rect x="76" y="14" width="12" height="18" fill="#888780" rx="1"/>
+              <path d="M10,32 Q55,24 100,32" fill="#85b7eb" stroke="none"/>
+              <rect x="0" y="32" width="110" height="4" fill="#97c459" rx="1"/>
+            </svg>
+          </div>
+          <hr class="pcard-divider"/>
+          <div class="pcard-row"><span>구입가</span><span class="pcard-val">₩80,000</span></div>
+          <div class="pcard-row"><span>통행료</span><span class="pcard-val" style="color:#888780;">₩8,000</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 그룹 2: 하늘색 — 동아시아 -->
+  <div style="margin-bottom:14px;">
+    <div class="group-label" style="background:#b5d4f4;color:#0c447c;">그룹 2 · 동아시아</div>
+    <div class="cards-wrap">
+      <div class="pcard">
+        <div class="pcard-bar" style="background:#85b7eb;"></div>
+        <div class="pcard-body">
+          <div class="pcard-country">중국</div>
+          <div class="pcard-name">베이징</div>
+          <div class="pcard-ills">
+            <svg width="100%" height="36" viewBox="0 0 110 36">
+              <rect x="15" y="20" width="80" height="12" fill="#b4b2a9"/>
+              <rect x="25" y="14" width="60" height="8" fill="#888780"/>
+              <rect x="35" y="8" width="40" height="8" fill="#5f5e5a"/>
+              <rect x="48" y="2" width="14" height="8" fill="#444441"/>
+              <rect x="40" y="22" width="10" height="10" fill="#e24b4a"/>
+              <rect x="60" y="22" width="10" height="10" fill="#e24b4a"/>
+              <rect x="0" y="32" width="110" height="4" fill="#97c459" rx="1"/>
+            </svg>
+          </div>
+          <hr class="pcard-divider"/>
+          <div class="pcard-row"><span>구입가</span><span class="pcard-val">₩100,000</span></div>
+          <div class="pcard-row"><span>통행료</span><span class="pcard-val" style="color:#185fa5;">₩10,000</span></div>
+        </div>
+      </div>
+      <div class="pcard">
+        <div class="pcard-bar" style="background:#85b7eb;"></div>
+        <div class="pcard-body">
+          <div class="pcard-country">중국</div>
+          <div class="pcard-name">상하이</div>
+          <div class="pcard-ills">
+            <svg width="100%" height="36" viewBox="0 0 110 36">
+              <rect x="10" y="18" width="8" height="14" fill="#b4b2a9" rx="1"/>
+              <rect x="22" y="12" width="8" height="20" fill="#85b7eb" rx="1"/>
+              <rect x="34" y="6" width="10" height="26" fill="#378add" rx="1"/>
+              <rect x="48" y="2" width="6" height="30" fill="#185fa5" rx="1"/>
+              <rect x="56" y="10" width="8" height="22" fill="#378add" rx="1"/>
+              <rect x="68" y="16" width="10" height="16" fill="#85b7eb" rx="1"/>
+              <rect x="82" y="8" width="8" height="24" fill="#b4b2a9" rx="1"/>
+              <rect x="0" y="32" width="110" height="4" fill="#97c459" rx="1"/>
+            </svg>
+          </div>
+          <hr class="pcard-divider"/>
+          <div class="pcard-row"><span>구입가</span><span class="pcard-val">₩120,000</span></div>
+          <div class="pcard-row"><span>통행료</span><span class="pcard-val" style="color:#185fa5;">₩12,000</span></div>
+        </div>
+      </div>
+      <div class="pcard">
+        <div class="pcard-bar" style="background:#85b7eb;"></div>
+        <div class="pcard-body">
+          <div class="pcard-country">중국</div>
+          <div class="pcard-name">홍콩</div>
+          <div class="pcard-ills">
+            <svg width="100%" height="36" viewBox="0 0 110 36">
+              <path d="M5,32 Q55,18 105,32" fill="#85b7eb"/>
+              <rect x="18" y="14" width="8" height="18" fill="#378add" rx="1"/>
+              <rect x="30" y="10" width="8" height="22" fill="#185fa5" rx="1"/>
+              <rect x="42" y="8" width="10" height="24" fill="#378add" rx="1"/>
+              <rect x="56" y="12" width="8" height="20" fill="#185fa5" rx="1"/>
+              <rect x="68" y="6" width="8" height="26" fill="#0c447c" rx="1"/>
+              <rect x="80" y="14" width="8" height="18" fill="#378add" rx="1"/>
+              <rect x="0" y="32" width="110" height="4" fill="#97c459" rx="1"/>
+            </svg>
+          </div>
+          <hr class="pcard-divider"/>
+          <div class="pcard-row"><span>구입가</span><span class="pcard-val">₩140,000</span></div>
+          <div class="pcard-row"><span>통행료</span><span class="pcard-val" style="color:#185fa5;">₩14,000</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 그룹 3: 분홍 — 동남아시아 -->
+  <div style="margin-bottom:14px;">
+    <div class="group-label" style="background:#f4c0d1;color:#72243e;">그룹 3 · 동남아시아</div>
+    <div class="cards-wrap">
+      <div class="pcard">
+        <div class="pcard-bar" style="background:#ed93b1;"></div>
+        <div class="pcard-body">
+          <div class="pcard-country">태국</div>
+          <div class="pcard-name">방콕</div>
+          <div class="pcard-ills">
+            <svg width="100%" height="36" viewBox="0 0 110 36">
+              <rect x="30" y="18" width="50" height="14" fill="#d4537e"/>
+              <rect x="38" y="10" width="34" height="10" fill="#993556"/>
+              <polygon points="55,2 38,10 72,10" fill="#d4537e"/>
+              <rect x="22" y="22" width="12" height="10" fill="#ed93b1"/>
+              <rect x="76" y="22" width="12" height="10" fill="#ed93b1"/>
+              <rect x="0" y="32" width="110" height="4" fill="#97c459" rx="1"/>
+            </svg>
+          </div>
+          <hr class="pcard-divider"/>
+          <div class="pcard-row"><span>구입가</span><span class="pcard-val">₩160,000</span></div>
+          <div class="pcard-row"><span>통행료</span><span class="pcard-val" style="color:#993556;">₩16,000</span></div>
+        </div>
+      </div>
+      <div class="pcard">
+        <div class="pcard-bar" style="background:#ed93b1;"></div>
+        <div class="pcard-body">
+          <div class="pcard-country">싱가포르</div>
+          <div class="pcard-name">싱가포르</div>
+          <div class="pcard-ills">
+            <svg width="100%" height="36" viewBox="0 0 110 36">
+              <rect x="30" y="8" width="50" height="24" fill="#d3d1c7" rx="1"/>
+              <rect x="30" y="8" width="50" height="8" fill="#ed93b1" rx="1"/>
+              <rect x="26" y="24" width="58" height="8" fill="#b4b2a9"/>
+              <rect x="44" y="12" width="6" height="4" fill="white" rx="1"/>
+              <rect x="52" y="12" width="6" height="4" fill="white" rx="1"/>
+              <rect x="60" y="12" width="6" height="4" fill="white" rx="1"/>
+              <rect x="0" y="32" width="110" height="4" fill="#97c459" rx="1"/>
+            </svg>
+          </div>
+          <hr class="pcard-divider"/>
+          <div class="pcard-row"><span>구입가</span><span class="pcard-val">₩180,000</span></div>
+          <div class="pcard-row"><span>통행료</span><span class="pcard-val" style="color:#993556;">₩18,000</span></div>
+        </div>
+      </div>
+      <div class="pcard">
+        <div class="pcard-bar" style="background:#ed93b1;"></div>
+        <div class="pcard-body">
+          <div class="pcard-country">인도네시아</div>
+          <div class="pcard-name">발리</div>
+          <div class="pcard-ills">
+            <svg width="100%" height="36" viewBox="0 0 110 36">
+              <ellipse cx="55" cy="26" rx="38" ry="6" fill="#5dcaa5"/>
+              <rect x="50" y="18" width="4" height="14" fill="#854f0b"/>
+              <polygon points="54,18 54,8 68,14" fill="#97c459"/>
+              <polygon points="50,20 50,10 36,16" fill="#639922"/>
+              <circle cx="55" cy="10" r="4" fill="#ef9f27"/>
+              <rect x="0" y="32" width="110" height="4" fill="#97c459" rx="1"/>
+            </svg>
+          </div>
+          <hr class="pcard-divider"/>
+          <div class="pcard-row"><span>구입가</span><span class="pcard-val">₩200,000</span></div>
+          <div class="pcard-row"><span>통행료</span><span class="pcard-val" style="color:#993556;">₩20,000</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 그룹 4: 주황 — 아프리카/중동 -->
+  <div style="margin-bottom:14px;">
+    <div class="group-label" style="background:#f5c4b3;color:#712b13;">그룹 4 · 아프리카 · 중동</div>
+    <div class="cards-wrap">
+      <div class="pcard">
+        <div class="pcard-bar" style="background:#f0997b;"></div>
+        <div class="pcard-body">
+          <div class="pcard-country">이집트</div>
+          <div class="pcard-name">카이로</div>
+          <div class="pcard-ills">
+            <svg width="100%" height="36" viewBox="0 0 110 36">
+              <polygon points="30,30 55,4 80,30" fill="#ef9f27"/>
+              <polygon points="30,30 55,4 80,30" fill="#ba7517" opacity="0.2"/>
+              <polygon points="20,30 40,8 60,30" fill="#fac775" opacity="0.7"/>
+              <rect x="0" y="30" width="110" height="6" fill="#fac775"/>
+            </svg>
+          </div>
+          <hr class="pcard-divider"/>
+          <div class="pcard-row"><span>구입가</span><span class="pcard-val">₩220,000</span></div>
+          <div class="pcard-row"><span>통행료</span><span class="pcard-val" style="color:#993c1d;">₩22,000</span></div>
+        </div>
+      </div>
+      <div class="pcard">
+        <div class="pcard-bar" style="background:#f0997b;"></div>
+        <div class="pcard-body">
+          <div class="pcard-country">아랍에미리트</div>
+          <div class="pcard-name">두바이</div>
+          <div class="pcard-ills">
+            <svg width="100%" height="36" viewBox="0 0 110 36">
+              <rect x="48" y="2" width="8" height="30" fill="#d3d1c7" rx="2"/>
+              <polygon points="52,2 46,10 58,10" fill="#b4b2a9"/>
+              <rect x="30" y="14" width="12" height="18" fill="#d3d1c7" rx="1"/>
+              <rect x="68" y="16" width="12" height="16" fill="#d3d1c7" rx="1"/>
+              <rect x="20" y="20" width="10" height="12" fill="#b4b2a9" rx="1"/>
+              <rect x="80" y="18" width="10" height="14" fill="#b4b2a9" rx="1"/>
+              <rect x="0" y="32" width="110" height="4" fill="#fac775" rx="1"/>
+            </svg>
+          </div>
+          <hr class="pcard-divider"/>
+          <div class="pcard-row"><span>구입가</span><span class="pcard-val">₩260,000</span></div>
+          <div class="pcard-row"><span>통행료</span><span class="pcard-val" style="color:#993c1d;">₩26,000</span></div>
+        </div>
+      </div>
+      <div class="pcard">
+        <div class="pcard-bar" style="background:#f0997b;"></div>
+        <div class="pcard-body">
+          <div class="pcard-country">남아프리카</div>
+          <div class="pcard-name">케이프타운</div>
+          <div class="pcard-ills">
+            <svg width="100%" height="36" viewBox="0 0 110 36">
+              <polygon points="55,4 20,30 90,30" fill="#f0997b"/>
+              <rect x="42" y="22" width="26" height="10" fill="#d85a30"/>
+              <rect x="0" y="30" width="110" height="6" fill="#5dcaa5"/>
+              <circle cx="80" cy="18" r="5" fill="#ef9f27"/>
+            </svg>
+          </div>
+          <hr class="pcard-divider"/>
+          <div class="pcard-row"><span>구입가</span><span class="pcard-val">₩280,000</span></div>
+          <div class="pcard-row"><span>통행료</span><span class="pcard-val" style="color:#993c1d;">₩28,000</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 그룹 5: 빨강 — 유럽 -->
+  <div style="margin-bottom:14px;">
+    <div class="group-label" style="background:#f7c1c1;color:#791f1f;">그룹 5 · 유럽</div>
+    <div class="cards-wrap">
+      <div class="pcard">
+        <div class="pcard-bar" style="background:#e24b4a;"></div>
+        <div class="pcard-body">
+          <div class="pcard-country">영국</div>
+          <div class="pcard-name">런던</div>
+          <div class="pcard-ills">
+            <svg width="100%" height="36" viewBox="0 0 110 36">
+              <rect x="30" y="8" width="12" height="24" fill="#b4b2a9" rx="1"/>
+              <rect x="28" y="4" width="16" height="6" fill="#888780"/>
+              <rect x="34" y="14" width="4" height="4" fill="#ef9f27"/>
+              <rect x="50" y="16" width="40" height="16" fill="#d3d1c7" rx="1"/>
+              <rect x="52" y="14" width="36" height="4" fill="#b4b2a9"/>
+              <rect x="55" y="20" width="6" height="8" fill="#888780" rx="1"/>
+              <rect x="66" y="20" width="6" height="8" fill="#888780" rx="1"/>
+              <rect x="77" y="20" width="6" height="8" fill="#888780" rx="1"/>
+              <rect x="0" y="32" width="110" height="4" fill="#97c459" rx="1"/>
+            </svg>
+          </div>
+          <hr class="pcard-divider"/>
+          <div class="pcard-row"><span>구입가</span><span class="pcard-val">₩300,000</span></div>
+          <div class="pcard-row"><span>통행료</span><span class="pcard-val" style="color:#a32d2d;">₩30,000</span></div>
+        </div>
+      </div>
+      <div class="pcard">
+        <div class="pcard-bar" style="background:#e24b4a;"></div>
+        <div class="pcard-body">
+          <div class="pcard-country">프랑스</div>
+          <div class="pcard-name">파리</div>
+          <div class="pcard-ills">
+            <svg width="100%" height="36" viewBox="0 0 110 36">
+              <polygon points="55,3 45,32 65,32" fill="#888780" opacity="0.9"/>
+              <polygon points="55,3 50,18 60,18" fill="#b4b2a9"/>
+              <line x1="44" y1="24" x2="66" y2="24" stroke="#5f5e5a" stroke-width="2"/>
+              <line x1="46" y1="30" x2="64" y2="30" stroke="#5f5e5a" stroke-width="2"/>
+              <rect x="18" y="20" width="20" height="12" fill="#d3d1c7" rx="1"/>
+              <rect x="72" y="20" width="20" height="12" fill="#d3d1c7" rx="1"/>
+              <rect x="0" y="32" width="110" height="4" fill="#97c459" rx="1"/>
+            </svg>
+          </div>
+          <hr class="pcard-divider"/>
+          <div class="pcard-row"><span>구입가</span><span class="pcard-val">₩320,000</span></div>
+          <div class="pcard-row"><span>통행료</span><span class="pcard-val" style="color:#a32d2d;">₩32,000</span></div>
+        </div>
+      </div>
+      <div class="pcard">
+        <div class="pcard-bar" style="background:#e24b4a;"></div>
+        <div class="pcard-body">
+          <div class="pcard-country">이탈리아</div>
+          <div class="pcard-name">로마</div>
+          <div class="pcard-ills">
+            <svg width="100%" height="36" viewBox="0 0 110 36">
+              <rect x="28" y="16" width="54" height="16" fill="#d3d1c7" rx="1"/>
+              <path d="M28,16 Q55,4 82,16" fill="#b4b2a9"/>
+              <rect x="36" y="20" width="8" height="12" fill="#888780" rx="1"/>
+              <rect x="50" y="20" width="10" height="12" fill="#888780" rx="1"/>
+              <rect x="66" y="20" width="8" height="12" fill="#888780" rx="1"/>
+              <rect x="0" y="32" width="110" height="4" fill="#97c459" rx="1"/>
+            </svg>
+          </div>
+          <hr class="pcard-divider"/>
+          <div class="pcard-row"><span>구입가</span><span class="pcard-val">₩340,000</span></div>
+          <div class="pcard-row"><span>통행료</span><span class="pcard-val" style="color:#a32d2d;">₩34,000</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 그룹 6: 노랑 — 북미 -->
+  <div style="margin-bottom:14px;">
+    <div class="group-label" style="background:#fac775;color:#633806;">그룹 6 · 북미</div>
+    <div class="cards-wrap">
+      <div class="pcard">
+        <div class="pcard-bar" style="background:#ef9f27;"></div>
+        <div class="pcard-body">
+          <div class="pcard-country">미국</div>
+          <div class="pcard-name">뉴욕</div>
+          <div class="pcard-ills">
+            <svg width="100%" height="36" viewBox="0 0 110 36">
+              <rect x="10" y="14" width="8" height="18" fill="#888780" rx="1"/>
+              <rect x="22" y="8" width="10" height="24" fill="#b4b2a9" rx="1"/>
+              <rect x="36" y="4" width="10" height="28" fill="#5f5e5a" rx="1"/>
+              <rect x="50" y="10" width="8" height="22" fill="#b4b2a9" rx="1"/>
+              <rect x="62" y="2" width="10" height="30" fill="#444441" rx="1"/>
+              <rect x="76" y="8" width="8" height="24" fill="#888780" rx="1"/>
+              <rect x="88" y="16" width="8" height="16" fill="#b4b2a9" rx="1"/>
+              <rect x="0" y="32" width="110" height="4" fill="#97c459" rx="1"/>
+            </svg>
+          </div>
+          <hr class="pcard-divider"/>
+          <div class="pcard-row"><span>구입가</span><span class="pcard-val">₩360,000</span></div>
+          <div class="pcard-row"><span>통행료</span><span class="pcard-val" style="color:#854f0b;">₩36,000</span></div>
+        </div>
+      </div>
+      <div class="pcard">
+        <div class="pcard-bar" style="background:#ef9f27;"></div>
+        <div class="pcard-body">
+          <div class="pcard-country">미국</div>
+          <div class="pcard-name">워싱턴</div>
+          <div class="pcard-ills">
+            <svg width="100%" height="36" viewBox="0 0 110 36">
+              <rect x="35" y="14" width="40" height="18" fill="#d3d1c7" rx="1"/>
+              <rect x="25" y="20" width="60" height="12" fill="#b4b2a9"/>
+              <polygon points="55,4 35,14 75,14" fill="#d3d1c7"/>
+              <rect x="52" y="2" width="6" height="4" fill="#b4b2a9"/>
+              <rect x="0" y="32" width="110" height="4" fill="#97c459" rx="1"/>
+            </svg>
+          </div>
+          <hr class="pcard-divider"/>
+          <div class="pcard-row"><span>구입가</span><span class="pcard-val">₩380,000</span></div>
+          <div class="pcard-row"><span>통행료</span><span class="pcard-val" style="color:#854f0b;">₩38,000</span></div>
+        </div>
+      </div>
+      <div class="pcard">
+        <div class="pcard-bar" style="background:#ef9f27;"></div>
+        <div class="pcard-body">
+          <div class="pcard-country">캐나다</div>
+          <div class="pcard-name">밴쿠버</div>
+          <div class="pcard-ills">
+            <svg width="100%" height="36" viewBox="0 0 110 36">
+              <polygon points="30,30 55,8 80,30" fill="#b4b2a9"/>
+              <polygon points="22,30 45,12 68,30" fill="#d3d1c7"/>
+              <polygon points="14,30 38,16 62,30" fill="#e8e6e0" opacity="0.8"/>
+              <rect x="0" y="30" width="110" height="6" fill="#5dcaa5"/>
+              <circle cx="80" cy="14" r="5" fill="#e24b4a"/>
+            </svg>
+          </div>
+          <hr class="pcard-divider"/>
+          <div class="pcard-row"><span>구입가</span><span class="pcard-val">₩400,000</span></div>
+          <div class="pcard-row"><span>통행료</span><span class="pcard-val" style="color:#854f0b;">₩40,000</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 그룹 7: 초록 — 남미/오세아니아 -->
+  <div style="margin-bottom:14px;">
+    <div class="group-label" style="background:#c0dd97;color:#27500a;">그룹 7 · 남미 · 오세아니아</div>
+    <div class="cards-wrap">
+      <div class="pcard">
+        <div class="pcard-bar" style="background:#97c459;"></div>
+        <div class="pcard-body">
+          <div class="pcard-country">브라질</div>
+          <div class="pcard-name">리우</div>
+          <div class="pcard-ills">
+            <svg width="100%" height="36" viewBox="0 0 110 36">
+              <path d="M5,32 Q55,10 105,32" fill="#5dcaa5"/>
+              <circle cx="55" cy="16" r="8" fill="#ef9f27"/>
+              <path d="M48,16 Q55,22 62,16" fill="none" stroke="#185fa5" stroke-width="2"/>
+              <rect x="0" y="30" width="110" height="6" fill="#97c459"/>
+            </svg>
+          </div>
+          <hr class="pcard-divider"/>
+          <div class="pcard-row"><span>구입가</span><span class="pcard-val">₩420,000</span></div>
+          <div class="pcard-row"><span>통행료</span><span class="pcard-val" style="color:#3b6d11;">₩42,000</span></div>
+        </div>
+      </div>
+      <div class="pcard">
+        <div class="pcard-bar" style="background:#97c459;"></div>
+        <div class="pcard-body">
+          <div class="pcard-country">호주</div>
+          <div class="pcard-name">시드니</div>
+          <div class="pcard-ills">
+            <svg width="100%" height="36" viewBox="0 0 110 36">
+              <path d="M20,30 Q35,10 50,30" fill="none" stroke="#378add" stroke-width="3"/>
+              <path d="M60,30 Q75,10 90,30" fill="none" stroke="#378add" stroke-width="3"/>
+              <rect x="52" y="10" width="6" height="22" fill="#888780"/>
+              <rect x="0" y="30" width="110" height="6" fill="#85b7eb"/>
+            </svg>
+          </div>
+          <hr class="pcard-divider"/>
+          <div class="pcard-row"><span>구입가</span><span class="pcard-val">₩440,000</span></div>
+          <div class="pcard-row"><span>통행료</span><span class="pcard-val" style="color:#3b6d11;">₩44,000</span></div>
+        </div>
+      </div>
+      <div class="pcard">
+        <div class="pcard-bar" style="background:#97c459;"></div>
+        <div class="pcard-body">
+          <div class="pcard-country">멕시코</div>
+          <div class="pcard-name">멕시코시티</div>
+          <div class="pcard-ills">
+            <svg width="100%" height="36" viewBox="0 0 110 36">
+              <rect x="25" y="16" width="60" height="16" fill="#d3d1c7" rx="1"/>
+              <polygon points="55,4 30,16 80,16" fill="#b4b2a9"/>
+              <rect x="40" y="20" width="8" height="12" fill="#97c459" rx="1"/>
+              <rect x="52" y="20" width="6" height="12" fill="#e24b4a" rx="1"/>
+              <rect x="62" y="20" width="8" height="12" fill="#97c459" rx="1"/>
+              <rect x="0" y="32" width="110" height="4" fill="#97c459" rx="1"/>
+            </svg>
+          </div>
+          <hr class="pcard-divider"/>
+          <div class="pcard-row"><span>구입가</span><span class="pcard-val">₩460,000</span></div>
+          <div class="pcard-row"><span>통행료</span><span class="pcard-val" style="color:#3b6d11;">₩46,000</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 그룹 8: 남색 — 최고가 -->
+  <div style="margin-bottom:14px;">
+    <div class="group-label" style="background:#7f77dd;color:#eeedfe;">그룹 8 · 프리미엄 — 최고가</div>
+    <div class="cards-wrap">
+      <div class="pcard">
+        <div class="pcard-bar" style="background:#534ab7;"></div>
+        <div class="pcard-body">
+          <div class="pcard-country">러시아</div>
+          <div class="pcard-name">모스크바</div>
+          <div class="pcard-ills">
+            <svg width="100%" height="36" viewBox="0 0 110 36">
+              <rect x="30" y="18" width="50" height="14" fill="#afa9ec"/>
+              <rect x="38" y="10" width="34" height="10" fill="#7f77dd"/>
+              <polygon points="55,2 42,10 68,10" fill="#534ab7"/>
+              <circle cx="55" cy="2" r="3" fill="#ef9f27"/>
+              <rect x="22" y="22" width="10" height="10" fill="#cecbf6"/>
+              <rect x="78" y="22" width="10" height="10" fill="#cecbf6"/>
+              <rect x="0" y="32" width="110" height="4" fill="#97c459" rx="1"/>
+            </svg>
+          </div>
+          <hr class="pcard-divider"/>
+          <div class="pcard-row"><span>구입가</span><span class="pcard-val">₩500,000</span></div>
+          <div class="pcard-row"><span>통행료</span><span class="pcard-val" style="color:#534ab7;">₩50,000</span></div>
+        </div>
+      </div>
+      <div class="pcard" style="border:1.5px solid #534ab7;">
+        <div class="pcard-bar" style="background:#534ab7;"></div>
+        <div class="pcard-body">
+          <div class="pcard-country">미국</div>
+          <div class="pcard-name">하와이</div>
+          <div class="pcard-ills">
+            <svg width="100%" height="36" viewBox="0 0 110 36">
+              <path d="M5,26 Q55,10 105,26" fill="#85b7eb"/>
+              <ellipse cx="35" cy="26" rx="16" ry="6" fill="#5dcaa5"/>
+              <ellipse cx="70" cy="24" rx="20" ry="8" fill="#1d9e75"/>
+              <rect x="46" y="18" width="4" height="12" fill="#854f0b"/>
+              <polygon points="50,14 50,24 62,20" fill="#97c459"/>
+              <rect x="0" y="30" width="110" height="6" fill="#378add"/>
+            </svg>
+          </div>
+          <hr class="pcard-divider"/>
+          <div class="pcard-row"><span>구입가</span><span class="pcard-val">₩600,000</span></div>
+          <div class="pcard-row"><span>통행료</span><span class="pcard-val" style="color:#534ab7;">₩60,000</span></div>
+          <div style="margin-top:5px;text-align:center;"><span style="background:#eeedfe;color:#3c3489;font-size:9px;padding:2px 6px;border-radius:4px;font-family:sans-serif;">최고가</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 40칸 구성 요약 -->
+<div class="section">
+  <div class="sec-title">40칸 보드 구성 요약</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;">
+    <div style="background:var(--color-background-secondary);border-radius:8px;padding:10px 12px;">
+      <div style="font-size:20px;font-weight:500;color:var(--color-text-primary);">22</div>
+      <div style="font-size:12px;color:var(--color-text-secondary);">나라 카드 (8그룹)</div>
+    </div>
+    <div style="background:var(--color-background-secondary);border-radius:8px;padding:10px 12px;">
+      <div style="font-size:20px;font-weight:500;color:var(--color-text-primary);">4</div>
+      <div style="font-size:12px;color:var(--color-text-secondary);">코너 칸</div>
+    </div>
+    <div style="background:var(--color-background-secondary);border-radius:8px;padding:10px 12px;">
+      <div style="font-size:20px;font-weight:500;color:var(--color-text-primary);">6</div>
+      <div style="font-size:12px;color:var(--color-text-secondary);">이벤트 카드 칸</div>
+    </div>
+    <div style="background:var(--color-background-secondary);border-radius:8px;padding:10px 12px;">
+      <div style="font-size:20px;font-weight:500;color:var(--color-text-primary);">4</div>
+      <div style="font-size:12px;color:var(--color-text-secondary);">공항 칸</div>
+    </div>
+    <div style="background:var(--color-background-secondary);border-radius:8px;padding:10px 12px;">
+      <div style="font-size:20px;font-weight:500;color:var(--color-text-primary);">4</div>
+      <div style="font-size:12px;color:var(--color-text-secondary);">세금 · 기타</div>
+    </div>
+    <div style="background:#eeedfe;border-radius:8px;padding:10px 12px;">
+      <div style="font-size:20px;font-weight:500;color:#3c3489;">40</div>
+      <div style="font-size:12px;color:#534ab7;">총 칸 수</div>
+    </div>
+  </div>
+</div>

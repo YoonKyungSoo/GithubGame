@@ -1,0 +1,570 @@
+
+<h2 class="sr-only">부루마블 스타일 보드게임 에셋 모음</h2>
+
+<style>
+  body { margin: 0; padding: 0; }
+  .section { margin: 0 0 2rem; }
+  .section-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0 0 12px;
+    padding: 0 4px;
+    border-left: 3px solid var(--color-border-secondary);
+    padding-left: 10px;
+  }
+  .asset-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .asset-box {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .asset-label {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    text-align: center;
+  }
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+  }
+</style>
+
+<!-- ====== 1. 플레이어 토큰 ====== -->
+<div class="section">
+  <div class="section-title">플레이어 토큰</div>
+  <div class="asset-grid">
+
+    <!-- 빨강 -->
+    <div class="asset-box">
+      <svg width="60" height="80" viewBox="0 0 60 80">
+        <ellipse cx="30" cy="72" rx="18" ry="6" fill="#e24b4a" opacity="0.3"/>
+        <ellipse cx="30" cy="60" rx="14" ry="8" fill="#e24b4a"/>
+        <rect x="22" y="28" width="16" height="32" rx="4" fill="#e24b4a"/>
+        <circle cx="30" cy="22" r="14" fill="#e24b4a"/>
+        <circle cx="25" cy="20" r="3" fill="white" opacity="0.6"/>
+        <circle cx="35" cy="20" r="3" fill="white" opacity="0.6"/>
+        <path d="M24 26 Q30 30 36 26" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </svg>
+      <span class="asset-label">플레이어 1<br>#E24B4A</span>
+    </div>
+
+    <!-- 파랑 -->
+    <div class="asset-box">
+      <svg width="60" height="80" viewBox="0 0 60 80">
+        <ellipse cx="30" cy="72" rx="18" ry="6" fill="#378add" opacity="0.3"/>
+        <ellipse cx="30" cy="60" rx="14" ry="8" fill="#378add"/>
+        <rect x="22" y="28" width="16" height="32" rx="4" fill="#378add"/>
+        <circle cx="30" cy="22" r="14" fill="#378add"/>
+        <circle cx="25" cy="20" r="3" fill="white" opacity="0.6"/>
+        <circle cx="35" cy="20" r="3" fill="white" opacity="0.6"/>
+        <path d="M24 26 Q30 30 36 26" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </svg>
+      <span class="asset-label">플레이어 2<br>#378ADD</span>
+    </div>
+
+    <!-- 초록 -->
+    <div class="asset-box">
+      <svg width="60" height="80" viewBox="0 0 60 80">
+        <ellipse cx="30" cy="72" rx="18" ry="6" fill="#639922" opacity="0.3"/>
+        <ellipse cx="30" cy="60" rx="14" ry="8" fill="#639922"/>
+        <rect x="22" y="28" width="16" height="32" rx="4" fill="#639922"/>
+        <circle cx="30" cy="22" r="14" fill="#639922"/>
+        <circle cx="25" cy="20" r="3" fill="white" opacity="0.6"/>
+        <circle cx="35" cy="20" r="3" fill="white" opacity="0.6"/>
+        <path d="M24 26 Q30 30 36 26" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </svg>
+      <span class="asset-label">플레이어 3<br>#639922</span>
+    </div>
+
+    <!-- 노랑 -->
+    <div class="asset-box">
+      <svg width="60" height="80" viewBox="0 0 60 80">
+        <ellipse cx="30" cy="72" rx="18" ry="6" fill="#ef9f27" opacity="0.3"/>
+        <ellipse cx="30" cy="60" rx="14" ry="8" fill="#ef9f27"/>
+        <rect x="22" y="28" width="16" height="32" rx="4" fill="#ef9f27"/>
+        <circle cx="30" cy="22" r="14" fill="#ef9f27"/>
+        <circle cx="25" cy="20" r="3" fill="white" opacity="0.6"/>
+        <circle cx="35" cy="20" r="3" fill="white" opacity="0.6"/>
+        <path d="M24 26 Q30 30 36 26" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </svg>
+      <span class="asset-label">플레이어 4<br>#EF9F27</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- ====== 2. 주사위 ====== -->
+<div class="section">
+  <div class="section-title">주사위</div>
+  <div class="asset-grid">
+    <!-- 1 -->
+    <div class="asset-box">
+      <svg width="60" height="60" viewBox="0 0 60 60">
+        <rect x="2" y="2" width="56" height="56" rx="10" fill="white" stroke="#d3d1c7" stroke-width="1.5"/>
+        <circle cx="30" cy="30" r="5" fill="#2c2c2a"/>
+      </svg>
+      <span class="asset-label">1</span>
+    </div>
+    <!-- 2 -->
+    <div class="asset-box">
+      <svg width="60" height="60" viewBox="0 0 60 60">
+        <rect x="2" y="2" width="56" height="56" rx="10" fill="white" stroke="#d3d1c7" stroke-width="1.5"/>
+        <circle cx="18" cy="18" r="5" fill="#2c2c2a"/>
+        <circle cx="42" cy="42" r="5" fill="#2c2c2a"/>
+      </svg>
+      <span class="asset-label">2</span>
+    </div>
+    <!-- 3 -->
+    <div class="asset-box">
+      <svg width="60" height="60" viewBox="0 0 60 60">
+        <rect x="2" y="2" width="56" height="56" rx="10" fill="white" stroke="#d3d1c7" stroke-width="1.5"/>
+        <circle cx="18" cy="18" r="5" fill="#2c2c2a"/>
+        <circle cx="30" cy="30" r="5" fill="#2c2c2a"/>
+        <circle cx="42" cy="42" r="5" fill="#2c2c2a"/>
+      </svg>
+      <span class="asset-label">3</span>
+    </div>
+    <!-- 4 -->
+    <div class="asset-box">
+      <svg width="60" height="60" viewBox="0 0 60 60">
+        <rect x="2" y="2" width="56" height="56" rx="10" fill="white" stroke="#d3d1c7" stroke-width="1.5"/>
+        <circle cx="18" cy="18" r="5" fill="#2c2c2a"/>
+        <circle cx="42" cy="18" r="5" fill="#2c2c2a"/>
+        <circle cx="18" cy="42" r="5" fill="#2c2c2a"/>
+        <circle cx="42" cy="42" r="5" fill="#2c2c2a"/>
+      </svg>
+      <span class="asset-label">4</span>
+    </div>
+    <!-- 5 -->
+    <div class="asset-box">
+      <svg width="60" height="60" viewBox="0 0 60 60">
+        <rect x="2" y="2" width="56" height="56" rx="10" fill="white" stroke="#d3d1c7" stroke-width="1.5"/>
+        <circle cx="18" cy="18" r="5" fill="#2c2c2a"/>
+        <circle cx="42" cy="18" r="5" fill="#2c2c2a"/>
+        <circle cx="30" cy="30" r="5" fill="#2c2c2a"/>
+        <circle cx="18" cy="42" r="5" fill="#2c2c2a"/>
+        <circle cx="42" cy="42" r="5" fill="#2c2c2a"/>
+      </svg>
+      <span class="asset-label">5</span>
+    </div>
+    <!-- 6 -->
+    <div class="asset-box">
+      <svg width="60" height="60" viewBox="0 0 60 60">
+        <rect x="2" y="2" width="56" height="56" rx="10" fill="white" stroke="#d3d1c7" stroke-width="1.5"/>
+        <circle cx="18" cy="15" r="5" fill="#2c2c2a"/>
+        <circle cx="42" cy="15" r="5" fill="#2c2c2a"/>
+        <circle cx="18" cy="30" r="5" fill="#2c2c2a"/>
+        <circle cx="42" cy="30" r="5" fill="#2c2c2a"/>
+        <circle cx="18" cy="45" r="5" fill="#2c2c2a"/>
+        <circle cx="42" cy="45" r="5" fill="#2c2c2a"/>
+      </svg>
+      <span class="asset-label">6</span>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 3. 나라 카드 ====== -->
+<div class="section">
+  <div class="section-title">나라 카드 (부동산 타일)</div>
+  <div class="cards-grid">
+
+    <!-- 서울 -->
+    <div style="background:white; border-radius:var(--border-radius-lg); border:0.5px solid var(--color-border-tertiary); overflow:hidden; box-shadow:none;">
+      <div style="background:#e24b4a; height:10px;"></div>
+      <div style="padding:12px;">
+        <div style="font-size:11px; color:#888; margin-bottom:2px;">한국</div>
+        <div style="font-size:15px; font-weight:500; color:var(--color-text-primary); margin-bottom:8px;">서울</div>
+        <svg width="100%" height="50" viewBox="0 0 120 50">
+          <!-- 남산타워 -->
+          <rect x="50" y="10" width="6" height="30" fill="#d3d1c7"/>
+          <polygon points="53,2 47,10 59,10" fill="#888"/>
+          <circle cx="53" cy="30" r="6" fill="#b4b2a9"/>
+          <!-- 건물들 -->
+          <rect x="20" y="25" width="14" height="20" fill="#b4b2a9" rx="1"/>
+          <rect x="36" y="20" width="10" height="25" fill="#d3d1c7" rx="1"/>
+          <rect x="70" y="22" width="12" height="23" fill="#b4b2a9" rx="1"/>
+          <rect x="84" y="18" width="8" height="27" fill="#d3d1c7" rx="1"/>
+          <rect x="94" y="26" width="10" height="19" fill="#b4b2a9" rx="1"/>
+          <!-- 땅 -->
+          <rect x="0" y="44" width="120" height="6" fill="#97c459" rx="2"/>
+        </svg>
+        <div style="border-top:0.5px solid var(--color-border-tertiary); padding-top:8px; margin-top:4px;">
+          <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--color-text-secondary);">
+            <span>구입가</span><span style="font-weight:500; color:var(--color-text-primary);">₩500,000</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--color-text-secondary); margin-top:4px;">
+            <span>통행료</span><span style="font-weight:500; color:#e24b4a;">₩50,000</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 도쿄 -->
+    <div style="background:white; border-radius:var(--border-radius-lg); border:0.5px solid var(--color-border-tertiary); overflow:hidden;">
+      <div style="background:#378add; height:10px;"></div>
+      <div style="padding:12px;">
+        <div style="font-size:11px; color:#888; margin-bottom:2px;">일본</div>
+        <div style="font-size:15px; font-weight:500; color:var(--color-text-primary); margin-bottom:8px;">도쿄</div>
+        <svg width="100%" height="50" viewBox="0 0 120 50">
+          <!-- 후지산 -->
+          <polygon points="60,5 35,42 85,42" fill="#b4b2a9"/>
+          <polygon points="60,5 50,22 70,22" fill="white"/>
+          <!-- 건물들 -->
+          <rect x="10" y="28" width="16" height="17" fill="#d3d1c7" rx="1"/>
+          <rect x="28" y="24" width="6" height="21" fill="#b4b2a9" rx="1"/>
+          <rect x="88" y="26" width="14" height="19" fill="#d3d1c7" rx="1"/>
+          <rect x="104" y="22" width="8" height="23" fill="#b4b2a9" rx="1"/>
+          <rect x="0" y="44" width="120" height="6" fill="#97c459" rx="2"/>
+        </svg>
+        <div style="border-top:0.5px solid var(--color-border-tertiary); padding-top:8px; margin-top:4px;">
+          <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--color-text-secondary);">
+            <span>구입가</span><span style="font-weight:500; color:var(--color-text-primary);">₩700,000</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--color-text-secondary); margin-top:4px;">
+            <span>통행료</span><span style="font-weight:500; color:#378add;">₩70,000</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 파리 -->
+    <div style="background:white; border-radius:var(--border-radius-lg); border:0.5px solid var(--color-border-tertiary); overflow:hidden;">
+      <div style="background:#7f77dd; height:10px;"></div>
+      <div style="padding:12px;">
+        <div style="font-size:11px; color:#888; margin-bottom:2px;">프랑스</div>
+        <div style="font-size:15px; font-weight:500; color:var(--color-text-primary); margin-bottom:8px;">파리</div>
+        <svg width="100%" height="50" viewBox="0 0 120 50">
+          <!-- 에펠탑 -->
+          <polygon points="60,2 52,44 68,44" fill="#888" opacity="0.8"/>
+          <polygon points="60,2 55,22 65,22" fill="#b4b2a9"/>
+          <line x1="50" y1="28" x2="70" y2="28" stroke="#888" stroke-width="2"/>
+          <line x1="52" y1="36" x2="68" y2="36" stroke="#888" stroke-width="2"/>
+          <!-- 건물 -->
+          <rect x="12" y="26" width="26" height="19" fill="#d3d1c7" rx="1"/>
+          <rect x="18" y="22" width="14" height="23" fill="#b4b2a9" rx="1"/>
+          <rect x="82" y="24" width="26" height="21" fill="#d3d1c7" rx="1"/>
+          <rect x="88" y="20" width="14" height="25" fill="#b4b2a9" rx="1"/>
+          <rect x="0" y="44" width="120" height="6" fill="#97c459" rx="2"/>
+        </svg>
+        <div style="border-top:0.5px solid var(--color-border-tertiary); padding-top:8px; margin-top:4px;">
+          <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--color-text-secondary);">
+            <span>구입가</span><span style="font-weight:500; color:var(--color-text-primary);">₩900,000</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--color-text-secondary); margin-top:4px;">
+            <span>통행료</span><span style="font-weight:500; color:#7f77dd;">₩90,000</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 뉴욕 -->
+    <div style="background:white; border-radius:var(--border-radius-lg); border:0.5px solid var(--color-border-tertiary); overflow:hidden;">
+      <div style="background:#ef9f27; height:10px;"></div>
+      <div style="padding:12px;">
+        <div style="font-size:11px; color:#888; margin-bottom:2px;">미국</div>
+        <div style="font-size:15px; font-weight:500; color:var(--color-text-primary); margin-bottom:8px;">뉴욕</div>
+        <svg width="100%" height="50" viewBox="0 0 120 50">
+          <!-- 빌딩들 -->
+          <rect x="10" y="16" width="10" height="29" fill="#888" rx="1"/>
+          <rect x="22" y="10" width="12" height="35" fill="#b4b2a9" rx="1"/>
+          <rect x="36" y="20" width="8" height="25" fill="#d3d1c7" rx="1"/>
+          <rect x="46" y="8" width="14" height="37" fill="#888" rx="1"/>
+          <rect x="62" y="14" width="10" height="31" fill="#b4b2a9" rx="1"/>
+          <rect x="74" y="18" width="12" height="27" fill="#d3d1c7" rx="1"/>
+          <rect x="88" y="6" width="10" height="39" fill="#888" rx="1"/>
+          <rect x="100" y="20" width="10" height="25" fill="#b4b2a9" rx="1"/>
+          <!-- 창문 -->
+          <rect x="49" y="12" width="2" height="2" fill="white" opacity="0.7"/>
+          <rect x="53" y="12" width="2" height="2" fill="white" opacity="0.7"/>
+          <rect x="49" y="17" width="2" height="2" fill="white" opacity="0.7"/>
+          <rect x="53" y="17" width="2" height="2" fill="white" opacity="0.7"/>
+          <rect x="0" y="44" width="120" height="6" fill="#97c459" rx="2"/>
+        </svg>
+        <div style="border-top:0.5px solid var(--color-border-tertiary); padding-top:8px; margin-top:4px;">
+          <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--color-text-secondary);">
+            <span>구입가</span><span style="font-weight:500; color:var(--color-text-primary);">₩1,200,000</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--color-text-secondary); margin-top:4px;">
+            <span>통행료</span><span style="font-weight:500; color:#ef9f27;">₩120,000</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ====== 4. 이벤트 카드 ====== -->
+<div class="section">
+  <div class="section-title">이벤트 / 찬스 카드</div>
+  <div class="cards-grid">
+
+    <!-- 황금열쇠 (행운) -->
+    <div style="background:white; border-radius:var(--border-radius-lg); border:0.5px solid #fac775; overflow:hidden;">
+      <div style="background:#ef9f27; padding:10px 12px; text-align:center;">
+        <svg width="32" height="32" viewBox="0 0 32 32" style="margin:0 auto; display:block;">
+          <circle cx="10" cy="10" r="7" fill="none" stroke="white" stroke-width="2"/>
+          <circle cx="10" cy="10" r="3" fill="white"/>
+          <rect x="15" y="8" width="14" height="4" rx="2" fill="white"/>
+          <rect x="22" y="12" width="4" height="4" rx="1" fill="white"/>
+          <rect x="26" y="12" width="4" height="4" rx="1" fill="white"/>
+        </svg>
+        <div style="font-size:11px; font-weight:500; color:white; margin-top:4px;">황금 열쇠</div>
+      </div>
+      <div style="padding:12px; text-align:center;">
+        <div style="font-size:13px; font-weight:500; color:var(--color-text-primary); margin-bottom:6px;">보너스 획득!</div>
+        <div style="font-size:12px; color:var(--color-text-secondary); line-height:1.5;">복권 당첨!<br>₩200,000을 받으세요</div>
+        <div style="margin-top:10px; background:#faeeda; border-radius:6px; padding:6px; font-size:13px; font-weight:500; color:#854f0b;">+₩200,000</div>
+      </div>
+    </div>
+
+    <!-- 공공복리 (벌칙) -->
+    <div style="background:white; border-radius:var(--border-radius-lg); border:0.5px solid #f7c1c1; overflow:hidden;">
+      <div style="background:#e24b4a; padding:10px 12px; text-align:center;">
+        <svg width="32" height="32" viewBox="0 0 32 32" style="margin:0 auto; display:block;">
+          <polygon points="16,3 29,27 3,27" fill="none" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+          <line x1="16" y1="12" x2="16" y2="20" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="16" cy="24" r="1.5" fill="white"/>
+        </svg>
+        <div style="font-size:11px; font-weight:500; color:white; margin-top:4px;">공공복리</div>
+      </div>
+      <div style="padding:12px; text-align:center;">
+        <div style="font-size:13px; font-weight:500; color:var(--color-text-primary); margin-bottom:6px;">세금 납부!</div>
+        <div style="font-size:12px; color:var(--color-text-secondary); line-height:1.5;">소득세 고지서!<br>₩150,000을 내세요</div>
+        <div style="margin-top:10px; background:#fcebeb; border-radius:6px; padding:6px; font-size:13px; font-weight:500; color:#a32d2d;">-₩150,000</div>
+      </div>
+    </div>
+
+    <!-- 무인도 -->
+    <div style="background:white; border-radius:var(--border-radius-lg); border:0.5px solid #9fe1cb; overflow:hidden;">
+      <div style="background:#1d9e75; padding:10px 12px; text-align:center;">
+        <svg width="32" height="32" viewBox="0 0 32 32" style="margin:0 auto; display:block;">
+          <!-- 섬 -->
+          <ellipse cx="16" cy="24" rx="12" ry="5" fill="white" opacity="0.9"/>
+          <!-- 야자수 -->
+          <line x1="16" y1="24" x2="16" y2="10" stroke="white" stroke-width="2"/>
+          <ellipse cx="12" cy="12" rx="5" ry="3" fill="white" opacity="0.8" transform="rotate(-20,12,12)"/>
+          <ellipse cx="20" cy="11" rx="5" ry="3" fill="white" opacity="0.8" transform="rotate(20,20,11)"/>
+        </svg>
+        <div style="font-size:11px; font-weight:500; color:white; margin-top:4px;">무인도</div>
+      </div>
+      <div style="padding:12px; text-align:center;">
+        <div style="font-size:13px; font-weight:500; color:var(--color-text-primary); margin-bottom:6px;">무인도 표류!</div>
+        <div style="font-size:12px; color:var(--color-text-secondary); line-height:1.5;">3턴 동안<br>이동할 수 없습니다</div>
+        <div style="margin-top:10px; background:#e1f5ee; border-radius:6px; padding:6px; font-size:13px; font-weight:500; color:#0f6e56;">3턴 정지</div>
+      </div>
+    </div>
+
+    <!-- 출발 -->
+    <div style="background:white; border-radius:var(--border-radius-lg); border:0.5px solid #c0dd97; overflow:hidden;">
+      <div style="background:#639922; padding:10px 12px; text-align:center;">
+        <svg width="32" height="32" viewBox="0 0 32 32" style="margin:0 auto; display:block;">
+          <polygon points="8,5 28,16 8,27" fill="white"/>
+        </svg>
+        <div style="font-size:11px; font-weight:500; color:white; margin-top:4px;">출발</div>
+      </div>
+      <div style="padding:12px; text-align:center;">
+        <div style="font-size:13px; font-weight:500; color:var(--color-text-primary); margin-bottom:6px;">출발 통과!</div>
+        <div style="font-size:12px; color:var(--color-text-secondary); line-height:1.5;">출발점을 지나면<br>월급을 받습니다</div>
+        <div style="margin-top:10px; background:#eaf3de; border-radius:6px; padding:6px; font-size:13px; font-weight:500; color:#3b6d11;">+₩200,000</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ====== 5. 게임판 특수 타일 ====== -->
+<div class="section">
+  <div class="section-title">게임판 특수 타일</div>
+  <div class="asset-grid" style="flex-wrap:wrap;">
+
+    <!-- 출발 타일 -->
+    <div class="asset-box" style="width:90px;">
+      <svg width="80" height="80" viewBox="0 0 80 80">
+        <rect x="1" y="1" width="78" height="78" rx="6" fill="#eaf3de" stroke="#639922" stroke-width="1.5"/>
+        <polygon points="30,20 60,40 30,60" fill="#639922"/>
+        <text x="40" y="74" text-anchor="middle" font-size="10" font-weight="500" fill="#3b6d11" font-family="sans-serif">출발</text>
+      </svg>
+      <span class="asset-label">출발</span>
+    </div>
+
+    <!-- 무인도 타일 -->
+    <div class="asset-box" style="width:90px;">
+      <svg width="80" height="80" viewBox="0 0 80 80">
+        <rect x="1" y="1" width="78" height="78" rx="6" fill="#e1f5ee" stroke="#1d9e75" stroke-width="1.5"/>
+        <ellipse cx="40" cy="55" rx="22" ry="9" fill="#1d9e75"/>
+        <ellipse cx="40" cy="55" rx="22" ry="9" fill="#5dcaa5"/>
+        <line x1="40" y1="55" x2="40" y2="28" stroke="#7f5539" stroke-width="3"/>
+        <ellipse cx="32" cy="32" rx="9" ry="5" fill="#639922" transform="rotate(-20,32,32)"/>
+        <ellipse cx="48" cy="30" rx="9" ry="5" fill="#639922" transform="rotate(20,48,30)"/>
+        <text x="40" y="74" text-anchor="middle" font-size="10" font-weight="500" fill="#0f6e56" font-family="sans-serif">무인도</text>
+      </svg>
+      <span class="asset-label">무인도</span>
+    </div>
+
+    <!-- 황금열쇠 타일 -->
+    <div class="asset-box" style="width:90px;">
+      <svg width="80" height="80" viewBox="0 0 80 80">
+        <rect x="1" y="1" width="78" height="78" rx="6" fill="#faeeda" stroke="#ef9f27" stroke-width="1.5"/>
+        <circle cx="30" cy="35" r="12" fill="none" stroke="#ef9f27" stroke-width="3"/>
+        <circle cx="30" cy="35" r="5" fill="#ef9f27"/>
+        <rect x="40" y="32" width="22" height="6" rx="3" fill="#ef9f27"/>
+        <rect x="53" y="38" width="6" height="6" rx="2" fill="#ef9f27"/>
+        <rect x="60" y="38" width="6" height="6" rx="2" fill="#ef9f27"/>
+        <text x="40" y="74" text-anchor="middle" font-size="10" font-weight="500" fill="#854f0b" font-family="sans-serif">황금열쇠</text>
+      </svg>
+      <span class="asset-label">황금열쇠</span>
+    </div>
+
+    <!-- 공공복리 타일 -->
+    <div class="asset-box" style="width:90px;">
+      <svg width="80" height="80" viewBox="0 0 80 80">
+        <rect x="1" y="1" width="78" height="78" rx="6" fill="#fcebeb" stroke="#e24b4a" stroke-width="1.5"/>
+        <polygon points="40,16 65,58 15,58" fill="none" stroke="#e24b4a" stroke-width="3" stroke-linejoin="round"/>
+        <line x1="40" y1="30" x2="40" y2="46" stroke="#e24b4a" stroke-width="3.5" stroke-linecap="round"/>
+        <circle cx="40" cy="53" r="3" fill="#e24b4a"/>
+        <text x="40" y="74" text-anchor="middle" font-size="10" font-weight="500" fill="#a32d2d" font-family="sans-serif">공공복리</text>
+      </svg>
+      <span class="asset-label">공공복리</span>
+    </div>
+
+    <!-- 우주여행 타일 -->
+    <div class="asset-box" style="width:90px;">
+      <svg width="80" height="80" viewBox="0 0 80 80">
+        <rect x="1" y="1" width="78" height="78" rx="6" fill="#eeedfe" stroke="#7f77dd" stroke-width="1.5"/>
+        <ellipse cx="40" cy="35" rx="8" ry="18" fill="#7f77dd" transform="rotate(0,40,35)"/>
+        <ellipse cx="40" cy="35" rx="20" ry="8" fill="none" stroke="#afa9ec" stroke-width="2"/>
+        <circle cx="40" cy="35" r="6" fill="#eeedfe" stroke="#534ab7" stroke-width="1.5"/>
+        <!-- 별들 -->
+        <circle cx="18" cy="18" r="2" fill="#7f77dd"/>
+        <circle cx="62" cy="15" r="1.5" fill="#afa9ec"/>
+        <circle cx="55" cy="55" r="1.5" fill="#7f77dd"/>
+        <circle cx="20" cy="58" r="2" fill="#afa9ec"/>
+        <text x="40" y="74" text-anchor="middle" font-size="10" font-weight="500" fill="#3c3489" font-family="sans-serif">우주여행</text>
+      </svg>
+      <span class="asset-label">우주여행</span>
+    </div>
+
+    <!-- 세금 타일 -->
+    <div class="asset-box" style="width:90px;">
+      <svg width="80" height="80" viewBox="0 0 80 80">
+        <rect x="1" y="1" width="78" height="78" rx="6" fill="#f1efe8" stroke="#888780" stroke-width="1.5"/>
+        <rect x="22" y="20" width="36" height="44" rx="3" fill="white" stroke="#888780" stroke-width="1.5"/>
+        <line x1="28" y1="32" x2="52" y2="32" stroke="#b4b2a9" stroke-width="1.5"/>
+        <line x1="28" y1="39" x2="52" y2="39" stroke="#b4b2a9" stroke-width="1.5"/>
+        <line x1="28" y1="46" x2="44" y2="46" stroke="#b4b2a9" stroke-width="1.5"/>
+        <text x="40" y="28" text-anchor="middle" font-size="8" font-weight="500" fill="#5f5e5a" font-family="sans-serif">세금</text>
+        <text x="40" y="74" text-anchor="middle" font-size="10" font-weight="500" fill="#444441" font-family="sans-serif">세금</text>
+      </svg>
+      <span class="asset-label">세금</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- ====== 6. 건물 (집/호텔) ====== -->
+<div class="section">
+  <div class="section-title">건물 (집 · 호텔)</div>
+  <div class="asset-grid">
+    <!-- 집 1채 -->
+    <div class="asset-box">
+      <svg width="50" height="50" viewBox="0 0 50 50">
+        <polygon points="25,5 45,22 5,22" fill="#639922"/>
+        <rect x="12" y="22" width="26" height="20" fill="#97c459"/>
+        <rect x="20" y="30" width="10" height="12" fill="#7f5539"/>
+      </svg>
+      <span class="asset-label">집 1채</span>
+    </div>
+    <!-- 집 2채 -->
+    <div class="asset-box">
+      <svg width="70" height="50" viewBox="0 0 70 50">
+        <polygon points="18,5 35,20 1,20" fill="#639922"/>
+        <rect x="4" y="20" width="28" height="18" fill="#97c459"/>
+        <rect x="10" y="27" width="8" height="11" fill="#7f5539"/>
+        <polygon points="52,5 69,20 35,20" fill="#639922"/>
+        <rect x="38" y="20" width="28" height="18" fill="#97c459"/>
+        <rect x="44" y="27" width="8" height="11" fill="#7f5539"/>
+      </svg>
+      <span class="asset-label">집 2채</span>
+    </div>
+    <!-- 호텔 -->
+    <div class="asset-box">
+      <svg width="60" height="60" viewBox="0 0 60 60">
+        <rect x="8" y="20" width="44" height="34" fill="#e24b4a" rx="2"/>
+        <polygon points="30,4 52,20 8,20" fill="#a32d2d"/>
+        <!-- 창문 -->
+        <rect x="14" y="26" width="8" height="8" fill="white" opacity="0.7" rx="1"/>
+        <rect x="26" y="26" width="8" height="8" fill="white" opacity="0.7" rx="1"/>
+        <rect x="38" y="26" width="8" height="8" fill="white" opacity="0.7" rx="1"/>
+        <rect x="14" y="38" width="8" height="8" fill="white" opacity="0.7" rx="1"/>
+        <rect x="38" y="38" width="8" height="8" fill="white" opacity="0.7" rx="1"/>
+        <!-- 문 -->
+        <rect x="24" y="38" width="12" height="16" fill="#7f5539" rx="1"/>
+        <!-- H 표시 -->
+        <text x="30" y="56" text-anchor="middle" font-size="9" font-weight="700" fill="white" font-family="sans-serif">HOTEL</text>
+      </svg>
+      <span class="asset-label">호텔</span>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 7. 화폐 ====== -->
+<div class="section">
+  <div class="section-title">게임 화폐</div>
+  <div class="asset-grid">
+    <!-- 10만 -->
+    <div class="asset-box">
+      <svg width="90" height="52" viewBox="0 0 90 52">
+        <rect x="1" y="1" width="88" height="50" rx="5" fill="#eaf3de" stroke="#639922" stroke-width="1"/>
+        <rect x="6" y="6" width="78" height="40" rx="3" fill="none" stroke="#97c459" stroke-width="0.5"/>
+        <text x="45" y="22" text-anchor="middle" font-size="8" fill="#3b6d11" font-family="sans-serif" font-weight="500">₩100,000</text>
+        <circle cx="20" cy="34" r="8" fill="#97c459" opacity="0.5"/>
+        <text x="20" y="37" text-anchor="middle" font-size="7" fill="#27500a" font-family="sans-serif" font-weight="700">10만</text>
+        <circle cx="70" cy="34" r="8" fill="#97c459" opacity="0.5"/>
+        <text x="70" y="37" text-anchor="middle" font-size="7" fill="#27500a" font-family="sans-serif" font-weight="700">10만</text>
+      </svg>
+      <span class="asset-label">10만원권</span>
+    </div>
+    <!-- 50만 -->
+    <div class="asset-box">
+      <svg width="90" height="52" viewBox="0 0 90 52">
+        <rect x="1" y="1" width="88" height="50" rx="5" fill="#faeeda" stroke="#ef9f27" stroke-width="1"/>
+        <rect x="6" y="6" width="78" height="40" rx="3" fill="none" stroke="#fac775" stroke-width="0.5"/>
+        <text x="45" y="22" text-anchor="middle" font-size="8" fill="#854f0b" font-family="sans-serif" font-weight="500">₩500,000</text>
+        <circle cx="20" cy="34" r="8" fill="#fac775" opacity="0.6"/>
+        <text x="20" y="37" text-anchor="middle" font-size="7" fill="#633806" font-family="sans-serif" font-weight="700">50만</text>
+        <circle cx="70" cy="34" r="8" fill="#fac775" opacity="0.6"/>
+        <text x="70" y="37" text-anchor="middle" font-size="7" fill="#633806" font-family="sans-serif" font-weight="700">50만</text>
+      </svg>
+      <span class="asset-label">50만원권</span>
+    </div>
+    <!-- 100만 -->
+    <div class="asset-box">
+      <svg width="90" height="52" viewBox="0 0 90 52">
+        <rect x="1" y="1" width="88" height="50" rx="5" fill="#eeedfe" stroke="#7f77dd" stroke-width="1"/>
+        <rect x="6" y="6" width="78" height="40" rx="3" fill="none" stroke="#afa9ec" stroke-width="0.5"/>
+        <text x="45" y="22" text-anchor="middle" font-size="8" fill="#3c3489" font-family="sans-serif" font-weight="500">₩1,000,000</text>
+        <circle cx="20" cy="34" r="8" fill="#afa9ec" opacity="0.5"/>
+        <text x="20" y="37" text-anchor="middle" font-size="6.5" fill="#26215c" font-family="sans-serif" font-weight="700">100만</text>
+        <circle cx="70" cy="34" r="8" fill="#afa9ec" opacity="0.5"/>
+        <text x="70" y="37" text-anchor="middle" font-size="6.5" fill="#26215c" font-family="sans-serif" font-weight="700">100만</text>
+      </svg>
+      <span class="asset-label">100만원권</span>
+    </div>
+  </div>
+</div>
+
