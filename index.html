@@ -16,6 +16,30 @@
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
 
+/* WINNER MODAL */
+#winner-modal{position:fixed;inset:0;z-index:500;display:none;align-items:center;justify-content:center;background:rgba(8,13,23,.88);padding:20px}
+#winner-modal.show{display:flex}
+.wm-box{background:var(--panel);border:2px solid var(--accent);border-radius:16px;padding:36px 28px;text-align:center;max-width:380px;width:100%;animation:wbIn .55s cubic-bezier(.34,1.56,.64,1);box-shadow:0 0 60px rgba(56,217,169,.25)}
+.wm-icon{font-size:56px;margin-bottom:12px;animation:bounce 1s infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.wm-title{font-size:22px;font-weight:bold;color:var(--accent);margin-bottom:8px;letter-spacing:.5px}
+.wm-sub{font-size:12px;color:var(--muted);margin-bottom:22px;line-height:1.6}
+.wm-btns{display:flex;gap:10px;justify-content:center}
+
+/* TYPING INLINE ERROR */
+#typing-err{font-size:11px;color:var(--red);min-height:16px;margin-top:4px;text-align:center;animation:fadeIn .2s ease}
+
+/* BINGO SETUP */
+#bingo-setup-section{display:none}
+#bingo-setup-section.active{display:block}
+#bingo-game-section{display:none}
+#bingo-game-section.active{display:block}
+.bsetup-cell{width:52px;height:52px;display:flex;align-items:center;justify-content:center;background:var(--card);border:1px solid var(--border);border-radius:7px;font-size:15px;font-weight:bold;cursor:pointer;transition:all .15s;color:var(--muted)}
+.bsetup-cell.filled{border-color:var(--accent);color:var(--accent);background:rgba(56,217,169,.15);box-shadow:0 0 8px rgba(56,217,169,.2)}
+.bsetup-num{width:38px;height:38px;background:var(--card);border:1px solid var(--border);border-radius:5px;font-size:12px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text);transition:all .12s}
+.bsetup-num:hover:not(.used){border-color:var(--accent);color:var(--accent);transform:scale(1.08)}
+.bsetup-num.used{opacity:.22;cursor:default;text-decoration:line-through;color:var(--muted)}
+
 /* LOGIN */
 #login-screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg);z-index:200;padding:20px}
 .login-box{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:36px;width:100%;max-width:380px}
@@ -70,6 +94,7 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
 
 /* MAIN VIEWS */
 #main{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:0;position:relative}
+#main > .view{max-width:760px;width:100%;margin:0 auto;align-self:stretch}
 .view{display:none}
 .view.active{display:flex;flex-direction:column;flex:1}
 .vtitle{font-size:16px;font-weight:bold;margin-bottom:3px}
@@ -105,13 +130,13 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
 #spectator-banner button{padding:4px 12px;font-size:10px;background:var(--card);border:1px solid var(--accent);border-radius:4px;color:var(--accent);cursor:pointer;}
 
 /* LOBBY */
-.gcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:9px;margin-bottom:16px}
-.gcard{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px;cursor:pointer;transition:all .15s;position:relative;}
+.gcards{display:flex;overflow-x:auto;gap:9px;margin-bottom:16px;padding-bottom:8px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.gcards::-webkit-scrollbar{height:4px}.gcards::-webkit-scrollbar-track{background:var(--bg)}.gcards::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.gcard{flex-shrink:0;width:145px;scroll-snap-align:start;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px;cursor:pointer;transition:all .15s;position:relative}
 .gcard:hover,.gcard.sel{border-color:var(--accent);transform:translateY(-2px)}
 .gcard.sel{background:rgba(56,217,169,.05)}
 .gcard .gemo{font-size:22px;margin-bottom:6px}
 .gcard .gname{font-size:11px;font-weight:bold;margin-bottom:2px}
-.gcard .gdesc{font-size:9px;color:var(--muted);line-height:1.4}
 .part-btn{width:100%;padding:3px 0;font-size:9px;border-radius:3px;border:1px solid var(--border);background:var(--bg);color:var(--muted);cursor:pointer;margin-top:2px;}
 
 /* COMMON GAME UI */
@@ -226,6 +251,14 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
   .icon-btn{display:flex}
   .hcrumb{display:none}
   #mobile-chat-preview{display:flex}
+  .ocell{width:26px!important;height:26px!important}
+  .ostone{width:21px!important;height:21px!important}
+  .bcell{width:40px!important;height:40px!important;font-size:13px!important}
+  .b-col-hdr{width:40px!important;height:24px!important;font-size:13px!important}
+  #bingo-myboard{grid-template-columns:repeat(5,40px)!important;gap:3px!important}
+  .bnum-btn{width:32px!important;height:32px!important}
+  .bsetup-cell{width:44px!important;height:44px!important;font-size:13px!important}
+  .bsetup-num{width:34px!important;height:34px!important;font-size:11px!important}
 }
 
 /* ======= TRENDY UI OVERHAUL ======= */
@@ -320,6 +353,20 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
       <button class="btn btn-primary" onclick="createRoom()">새 방 만들기</button>
     </div>
     <div id="login-err"></div>
+  </div>
+</div>
+
+<!-- WINNER MODAL -->
+<div id="winner-modal">
+  <div class="wm-box">
+    <div class="wm-icon" id="wm-icon">🎉</div>
+    <div class="wm-title" id="wm-title">승리!</div>
+    <div class="wm-sub" id="wm-sub"></div>
+    <div class="wm-btns">
+      <button class="btn btn-secondary" onclick="closeWinnerModal()">닫기</button>
+      <button class="btn btn-primary" id="wm-replay-btn" onclick="replayFromModal()">🔄 다시하기</button>
+      <button class="btn btn-danger" onclick="endFromModal()">🏠 로비로</button>
+    </div>
   </div>
 </div>
 
@@ -418,6 +465,25 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
             <button class="opt-btn" id="mine-d-easy" onclick="setMineDifficulty('easy')">하 · 8x8 / 8개</button>
             <button class="opt-btn" id="mine-d-normal" onclick="setMineDifficulty('normal')">중 · 10x10 / 15개</button>
             <button class="opt-btn" id="mine-d-hard" onclick="setMineDifficulty('hard')">상 · 12x12 / 25개</button>
+          </div>
+        </div>
+
+        <div id="rps-lobby-box" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px">
+          <div class="sb-ttl" style="padding:0;margin-bottom:8px">✊ 가위바위보 라운드 수</div>
+          <div class="opt-grid">
+            <button class="opt-btn" id="rps-r-3" onclick="setRpsRounds(3)">3라운드</button>
+            <button class="opt-btn on" id="rps-r-5" onclick="setRpsRounds(5)">5라운드</button>
+            <button class="opt-btn" id="rps-r-7" onclick="setRpsRounds(7)">7라운드</button>
+          </div>
+        </div>
+
+        <div id="ox-lobby-box" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px">
+          <div class="sb-ttl" style="padding:0;margin-bottom:8px">⭕ OX 퀴즈 라운드 수</div>
+          <div class="opt-grid">
+            <button class="opt-btn" id="ox-r-3" onclick="setOxRounds(3)">3라운드</button>
+            <button class="opt-btn on" id="ox-r-5" onclick="setOxRounds(5)">5라운드</button>
+            <button class="opt-btn" id="ox-r-7" onclick="setOxRounds(7)">7라운드</button>
+            <button class="opt-btn" id="ox-r-10" onclick="setOxRounds(10)">10라운드</button>
           </div>
         </div>
 
@@ -521,6 +587,7 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
         <div id="typing-round" style="font-size:10px;color:var(--muted);text-align:center;margin-bottom:5px"></div>
         <div id="typing-text" style="font-size:18px;font-weight:bold;text-align:center;padding:20px;background:var(--card);margin-bottom:10px;border-radius:8px"></div>
         <div id="typing-input-area" class="ginput-row"><input type="text" class="ginput" id="typing-input" autocomplete="off" onkeydown="if(event.key==='Enter')submitTyping()"><button class="btn btn-primary" onclick="submitTyping()">완료</button></div>
+        <div id="typing-err"></div>
         <div id="typing-order" class="typing-order"></div>
         <div id="typing-scores" class="scoreboard"></div>
         <div id="typing-win" class="winner-banner" style="display:none"><div class="wtext" id="typing-win-text"></div></div>
@@ -542,28 +609,48 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
     </div>
 
     <div id="view-bingo" class="view">
-      <div class="ghdr"><div><div class="vtitle">🎯 빙고</div><div class="vsub">3줄 빙고 완성 시 승리! 내 차례에 1~25 중 하나를 선언하세요.</div></div><button class="btn btn-secondary" onclick="backToLobby()">나가기</button></div>
-      <div id="bingo-status" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;min-height:38px"></div>
-      <div id="bingo-turn" class="turn-ind wait" style="margin-bottom:10px">대기 중</div>
-      <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
-        <div>
-          <div style="font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-bottom:4px">내 빙고판</div>
-          <div style="display:flex;margin-bottom:3px"><div class="b-col-hdr">B</div><div class="b-col-hdr">I</div><div class="b-col-hdr">N</div><div class="b-col-hdr">G</div><div class="b-col-hdr">O</div></div>
-          <div id="bingo-myboard"></div>
-          <div id="bingo-counter" class="bingo-counter"></div>
+      <div class="ghdr"><div><div class="vtitle">🎯 빙고</div></div><button class="btn btn-secondary" onclick="backToLobby()">나가기</button></div>
+
+      <!-- SETUP PHASE -->
+      <div id="bingo-setup-section">
+        <div id="bingo-setup-status" style="text-align:center;padding:10px;background:rgba(56,217,169,.1);color:var(--accent);border-radius:6px;margin-bottom:10px;font-weight:bold;font-size:12px">나만의 빙고판을 완성하세요!</div>
+        <div style="font-size:11px;color:var(--muted);text-align:center;margin-bottom:10px">숫자를 클릭해 빙고판 채우기 · 채운 칸 다시 클릭하면 취소</div>
+        <div style="display:flex;margin-bottom:4px">
+          <div class="b-col-hdr">B</div><div class="b-col-hdr">I</div><div class="b-col-hdr">N</div><div class="b-col-hdr">G</div><div class="b-col-hdr">O</div>
         </div>
-        <div style="flex:1;min-width:180px">
-          <div style="font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-bottom:6px">선언된 숫자 (<span id="bingo-called-count">0</span>/25)</div>
-          <div id="bingo-called" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:14px;min-height:36px"></div>
-          <div id="bingo-call-area">
-            <div style="font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-bottom:6px">숫자 선언 (내 차례)</div>
-            <div id="bingo-numpad" style="display:grid;grid-template-columns:repeat(5,36px);gap:3px"></div>
+        <div id="bingo-setup-grid" style="display:grid;grid-template-columns:repeat(5,52px);gap:4px;margin-bottom:12px"></div>
+        <div id="bingo-setup-numpad" style="display:grid;grid-template-columns:repeat(5,38px);gap:3px;margin-bottom:12px"></div>
+        <div style="display:flex;gap:8px;margin-bottom:10px">
+          <button class="btn btn-secondary" onclick="bingoSetupReset()">초기화</button>
+          <button class="btn btn-primary" id="bingo-submit-btn" onclick="submitBingoSetup()" disabled style="flex:1">저장 완료</button>
+        </div>
+        <div id="bingo-setup-ready" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px"></div>
+      </div>
+
+      <!-- GAME PHASE -->
+      <div id="bingo-game-section">
+        <div id="bingo-status" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;min-height:38px"></div>
+        <div id="bingo-turn" class="turn-ind wait" style="margin-bottom:10px">대기 중</div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
+          <div>
+            <div style="font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-bottom:4px">내 빙고판</div>
+            <div style="display:flex;margin-bottom:3px"><div class="b-col-hdr">B</div><div class="b-col-hdr">I</div><div class="b-col-hdr">N</div><div class="b-col-hdr">G</div><div class="b-col-hdr">O</div></div>
+            <div id="bingo-myboard"></div>
+            <div id="bingo-counter" class="bingo-counter"></div>
+          </div>
+          <div style="flex:1;min-width:180px">
+            <div style="font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-bottom:6px">선언된 숫자 (<span id="bingo-called-count">0</span>/25)</div>
+            <div id="bingo-called" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:14px;min-height:36px"></div>
+            <div id="bingo-call-area">
+              <div style="font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-bottom:6px">숫자 선언 (내 차례)</div>
+              <div id="bingo-numpad" style="display:grid;grid-template-columns:repeat(5,36px);gap:3px"></div>
+            </div>
           </div>
         </div>
+        <div id="bingo-others" style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap"></div>
+        <div id="bingo-scores" class="scoreboard" style="margin-top:12px"></div>
+        <div id="bingo-win" class="winner-banner" style="display:none"><div class="wtext" id="bingo-win-text"></div></div>
       </div>
-      <div id="bingo-others" style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap"></div>
-      <div id="bingo-scores" class="scoreboard" style="margin-top:12px"></div>
-      <div id="bingo-win" class="winner-banner" style="display:none"><div class="wtext" id="bingo-win-text"></div></div>
     </div>
 
     <div id="chatpanel">
@@ -592,13 +679,36 @@ let myUid='u'+Math.random().toString(36).substr(2,8);
 let myName='', roomId='', isHost=false, hostUid='', players={}, _uidOrder=[];
 let _omokPrep={mode:'solo',soloOrder:[],teamBlack:[],teamWhite:[],teamBench:[]};
 let _minePrep={difficulty:'normal'};
+let _rpsPrep={rounds:5};
+let _oxPrep={rounds:5};
 let _totals={};
 let _currentGame=null, _currentType=null, _amInRound=false;
 let _timer=null, _wTimer=null, _choTimer=null, _tpTimer=null, _oxTimer=null, _typingTimer=null;
 let _flagMode=false;
 let _leftCurrentGame=false;
 const TURN_MS=10000;
+const OMOK_MS=30000;
+const TYPING_MS=30000;
+const BINGO_TURN_MS=30000;
+const BINGO_SETUP_MS=60000;
 let _timerAnim=null, _timeoutKey='';
+let _winnerShown=false;
+
+// =========================================================
+// WINNER MODAL
+// =========================================================
+function showWinnerModal(title, sub=''){
+  if(_winnerShown) return; _winnerShown=true;
+  q('wm-icon').textContent = title.includes('무승부')?'🤝':'🎉';
+  q('wm-title').textContent = title;
+  q('wm-sub').textContent = sub;
+  q('wm-replay-btn').style.display = isHost ? 'inline-flex':'none';
+  q('winner-modal').classList.add('show');
+  if(navigator.vibrate) navigator.vibrate([100,50,100,50,200]);
+}
+function closeWinnerModal(){ q('winner-modal').classList.remove('show'); }
+function replayFromModal(){ closeWinnerModal(); restartGame(); }
+function endFromModal(){ closeWinnerModal(); endGameToLobby(); }
 
 // Constants / DB
 const CHOSUNG_DB=[
@@ -685,6 +795,7 @@ function enterRoom(){
   db.ref(`rooms/${roomId}/hostUid`).on('value', snap=>{
     const h=snap.val(); hostUid=h||'';
     const wasHost=isHost; isHost=(h===myUid);
+    if(!wasHost && isHost){ _timeoutKey=''; } // 새 방장이 되면 타이머 즉시 이어받기
     if(wasHost!==isHost){ updatePlayerUI(); if(_currentGame) renderControls(_currentGame); }
     else updatePlayerUI();
   });
@@ -696,8 +807,8 @@ function enterRoom(){
       _currentType=g.type; _currentGame=g.state;
       handleGameState();
     } else {
-      _currentType=null; _currentGame=null; _leftCurrentGame=false;
-      closeEntryOverlay();
+      _currentType=null; _currentGame=null; _leftCurrentGame=false; _winnerShown=false;
+      closeEntryOverlay(); closeWinnerModal();
       navTo('lobby');
     }
   });
@@ -709,6 +820,7 @@ function enterRoom(){
   if(window.innerWidth<=768){ q('chatpanel').classList.remove('open'); q('sb').classList.remove('open'); }
 }
 function leaveRoom(){
+  if(!confirm('방에서 나가시겠습니까?')) return;
   if(isHost){
     const next=_uidOrder.find(u=>u!==myUid&&players[u]?.online);
     if(next){ db.ref(`rooms/${roomId}/hostUid`).set(next); sysChat(`👑 방장 권한이 ${players[next]?.name||''}님에게 자동 위임되었습니다.`); }
@@ -751,8 +863,11 @@ function navTo(name){
 }
 function stopAllTimers(){ clearInterval(_timer); clearInterval(_wTimer); clearInterval(_choTimer); clearInterval(_tpTimer); clearInterval(_oxTimer); clearInterval(_typingTimer); }
 function backToLobby(){
+  if(_currentGame && !isEndedState(_currentGame)){
+    if(!confirm('게임 중입니다. 정말 나가시겠습니까?')) return;
+  }
   stopAllTimers(); hideCommonTimer(); renderControls(null);
-  _leftCurrentGame=true;
+  _leftCurrentGame=true; closeWinnerModal();
   if(isHost && _currentGame && !isEndedState(_currentGame)){
     db.ref(`rooms/${roomId}/game`).remove();
   } else {
@@ -838,11 +953,13 @@ function updatePlayerUI(){
     q('mine-lobby-box').style.display = _currentType==='mine' ? 'block' : 'none';
     ['easy','normal','hard'].forEach(d=>q('mine-d-'+d)?.classList.toggle('on', (_minePrep.difficulty||'normal')===d));
   }
+  if(q('rps-lobby-box')) q('rps-lobby-box').style.display = _currentType==='rps' ? 'block' : 'none';
+  if(q('ox-lobby-box')) q('ox-lobby-box').style.display = _currentType==='ox' ? 'block' : 'none';
 }
 
 
-function withTimer(state){ return {...state, durationMs:TURN_MS, deadline:Date.now()+TURN_MS}; }
-function resetTimerFields(cur){ cur.durationMs=TURN_MS; cur.deadline=Date.now()+TURN_MS; return cur; }
+function withTimer(state, ms){ const dur=ms||TURN_MS; return {...state, durationMs:dur, deadline:Date.now()+dur}; }
+function resetTimerFields(cur){ const ms=cur.durationMs||TURN_MS; cur.durationMs=ms; cur.deadline=Date.now()+ms; return cur; }
 function applyPendingPlayers(cur){
   if(cur.pendingNextRound){ cur.activePlayers=[...new Set([...(cur.activePlayers||[]), ...Object.keys(cur.pendingNextRound)])]; cur.pendingNextRound=null; }
   return cur;
@@ -917,6 +1034,8 @@ function restartGame(){
   db.ref(`rooms/${roomId}/game/state`).set(inits[_currentType](ap));
 }
 function setMineDifficulty(d){ db.ref(`rooms/${roomId}/prep/mine`).set({difficulty:d}); }
+function setRpsRounds(n){ _rpsPrep={rounds:n}; ['3','5','7'].forEach(r=>q('rps-r-'+r)?.classList.toggle('on',parseInt(r)===n)); }
+function setOxRounds(n){ _oxPrep={rounds:n}; ['3','5','7','10'].forEach(r=>q('ox-r-'+r)?.classList.toggle('on',parseInt(r)===n)); }
 function mineCfg(d){ return {easy:{size:8,mines:8},normal:{size:10,mines:15},hard:{size:12,mines:25}}[d||'normal']; }
 function chooseOmokTeam(slot){
   let tb=(_omokPrep.teamBlack||[]).filter(u=>u!==myUid), tw=(_omokPrep.teamWhite||[]).filter(u=>u!==myUid), bx=(_omokPrep.teamBench||[]).filter(u=>u!==myUid);
@@ -1004,14 +1123,16 @@ function handleGameState() {
     _uidOrder.forEach(u => {
       if(!g.entries || !g.entries[u] || !players[u]?.online) return;
       const isPlay = g.entries[u] === 'play';
-      // JS 문법 오류 수정 (따옴표 추가)
       el.innerHTML += `<div class="entry-chip" style="color:${isPlay?'var(--accent)':'var(--muted)'};border-color:${isPlay?'var(--accent)':'var(--muted)'}">${esc(players[u]?.name)} (${isPlay?'참가':'관전'})</div>`;
     });
     q('entry-start-btn').style.display = isHost ? 'block' : 'none';
     q('spectator-banner').style.display = 'none'; hideCommonTimer(); renderControls(null);
+    _winnerShown = false;
     return;
   }
   closeEntryOverlay();
+  // 모바일에서 게임 시작 시 채팅 자동 닫기
+  if(window.innerWidth<=768){ q('chatpanel').classList.remove('open'); q('overlay').classList.remove('show'); }
   
   _amInRound = (g.activePlayers||[]).includes(myUid);
   updateSpectatorBanner(g);
@@ -1047,7 +1168,7 @@ function startOmokActual(forcePlayers, forceQueue){
     else { const allOnline=_uidOrder.filter(u=>players[u]?.online); s.queue=allOnline.filter(u=>!s.activePlayers.includes(u)); }
   }
   s.activePlayers.forEach(u=>s.scores[u]=0);
-  db.ref(`rooms/${roomId}/game`).set({type:'omok',state:withTimer(s)});
+  db.ref(`rooms/${roomId}/game`).set({type:'omok',state:withTimer(s, OMOK_MS)});
 }
 function omokCanMove(s) {
   if(s.winner) return false;
@@ -1068,7 +1189,6 @@ function renderOmok(s){
   else if(s.winner){ ti.textContent='🏆 승리!'; ti.className='turn-ind'; }
   else if(isMe){ ti.textContent='내 차례! 원하는 곳을 클릭하세요.'; ti.className='turn-ind'; }
   else { ti.textContent='상대 차례 대기중...'; ti.className='turn-ind wait'; }
-
   // 흑/백 범례
   const lg=q('olegend'); if(lg){
     if(s.mode==='team'){
@@ -1085,18 +1205,24 @@ function renderOmok(s){
   // 승리/무승부 배너
   const winEl=q('omok-win'), winTxt=q('omok-win-text');
   if(winEl){
-    if(s.draw){ winEl.style.display='block'; winTxt.textContent='🤝 무승부! 169칸이 모두 찼습니다.'; }
+    if(s.draw){
+      winEl.style.display='block'; winTxt.textContent='🤝 무승부! 169칸이 모두 찼습니다.';
+      showWinnerModal('무승부!', '169칸이 모두 찼습니다.');
+    }
     else if(s.winner){
       winEl.style.display='block';
       const wIdx=s.winner-1;
       const winTeam=s.mode==='team'?(s.winner===1?s.blackTeam:s.whiteTeam):[s.soloOrder?.[wIdx]||s.activePlayers?.[wIdx]];
       const names=(winTeam||[]).map(u=>players[u]?.name||'').filter(Boolean).join(', ');
       winTxt.textContent=`🏆 ${names} 승리!`;
+      showWinnerModal(`${names} 승리!`, '오목 3줄 완성');
     } else winEl.style.display='none';
   }
 
   if(!s.winner&&!s.draw) maybeScheduleTimeout(s,'omok-'+s.curIdx,()=>passOmokTurn());
-  const bd=q('omok-board'); bd.style.gridTemplateColumns=`repeat(13,32px)`; bd.innerHTML='';
+  const isMobile = window.innerWidth <= 768;
+  const cellSize = isMobile ? 26 : 32;
+  const bd=q('omok-board'); bd.style.gridTemplateColumns=`repeat(13,${cellSize}px)`; bd.innerHTML='';
   for(let r=0;r<13;r++) for(let c=0;c<13;c++){
     const cell=document.createElement('div'); cell.className='ocell'+(r===0?' edge-top':'')+(r===12?' edge-bottom':'')+(c===0?' edge-left':'')+(c===12?' edge-right':'');
     if(s.board[r][c]>0) cell.innerHTML=`<div class="ostone os${s.board[r][c]-1}"></div>`;
@@ -1158,6 +1284,7 @@ function passOmokTurn(){
   db.ref(`rooms/${roomId}/game/state`).transaction(s=>{ if(!s||s.winner)return s; s.curIdx++; if(s.mode==='team'){ const stone=((s.curIdx-1)%2===0)?1:2; if(stone===1)s.bIdx++; else s.wIdx++; } return resetTimerFields(s); });
 }
 function placeOmok(r,c) {
+  if(navigator.vibrate) navigator.vibrate(30);
   db.ref(`rooms/${roomId}/game/state`).transaction(s => {
     if(!s || s.winner || s.board[r][c]!==0) return s;
     const stone = (s.curIdx % 2 === 0) ? 1 : 2;
@@ -1208,13 +1335,15 @@ function renderMine(s){
   renderCommonTimer(s); renderControls(s); if(isEndedState(s)) addTotalsOnce(s);
   const isMe=s.activePlayers[s.curIdx]===myUid&&isActivePl();
   const ti=q('mine-turn');
-  if(s.won){ti.textContent='전원 클리어! 🎉';ti.className='turn-ind';}
-  else if(s.gameOver){ti.textContent='💥 지뢰 폭발!';ti.className='turn-ind';}
+  if(s.won){ti.textContent='전원 클리어! 🎉';ti.className='turn-ind'; showWinnerModal('지뢰 제거 성공!', '모든 칸을 안전하게 열었습니다 🎊');}
+  else if(s.gameOver){ti.textContent='💥 지뢰 폭발!';ti.className='turn-ind'; showWinnerModal('💥 지뢰 폭발!', '아쉽지만 지뢰를 밟았습니다.');}
   else if(isMe){ti.textContent='내 차례 — 한 번 열기!';ti.className='turn-ind';}
   else{ti.textContent=(players[s.activePlayers[s.curIdx]]?.name||'')+' 차례 대기중...';ti.className='turn-ind wait';}
   q('mine-count').textContent=s.mines||MMINES; q('mine-cleared').textContent=s.revealed||0;
   
-  const size=s.size||MSIZE; const bd=q('mine-board'); bd.style.gridTemplateColumns=`repeat(${size},32px)`; bd.innerHTML='';
+  const size=s.size||MSIZE; const bd=q('mine-board');
+  const mineCellSize = window.innerWidth<=768 ? Math.floor((window.innerWidth-80)/size) : 32;
+  bd.style.gridTemplateColumns=`repeat(${size},${Math.min(32,mineCellSize)}px)`; bd.innerHTML='';
   const canAct=isMe&&!s.gameOver&&!s.won;
   for(let r=0;r<size;r++)for(let c=0;c<size;c++){
     const cell=document.createElement('div'); cell.className='mcell'; const data=s.board?.[r]?.[c];
@@ -1272,7 +1401,11 @@ function renderWord(s){
   wh.scrollTop=wh.scrollHeight;
   renderScores('word-scores', s.activePlayers, s.scores);
   maybeScheduleTimeout(s, 'word-'+s.curIdx, ()=>passWordTurn());
-  if(s.gameOver){ q('word-win').style.display='block'; q('word-win-text').textContent='게임 종료!'; } else q('word-win').style.display='none';
+  if(s.gameOver){
+    q('word-win').style.display='block'; q('word-win-text').textContent='끝말잇기 종료!';
+    const topUid=(s.activePlayers||[]).reduce((a,b)=>(s.scores[b]||0)>(s.scores[a]||0)?b:a, s.activePlayers[0]);
+    showWinnerModal(`${players[topUid]?.name||''}님 우승!`, '끝말잇기 종료');
+  } else q('word-win').style.display='none';
 }
 function passWordTurn(){ db.ref(`rooms/${roomId}/game/state`).transaction(s=>{ if(!s||s.gameOver)return s; s.scores=s.scores||{}; const u=s.activePlayers[s.curIdx]; s.scores[u]=(s.scores[u]||0)-1; s.curIdx=nextTurnIndex(s); return resetTimerFields(s); }); }
 function submitWord(){
@@ -1301,7 +1434,12 @@ function initChosung(ap){
 function renderChosung(s){
   renderCommonTimer(s); renderControls(s); if(isEndedState(s)) addTotalsOnce(s);
   renderScores('cho-scores', s.activePlayers, s.scores);
-  if(s.ended){ q('cho-win').style.display='block'; q('cho-win-text').textContent='초성게임 종료!'; q('cho-input-area').style.display='none'; return; }
+  if(s.ended){
+    q('cho-win').style.display='block'; q('cho-win-text').textContent='초성게임 종료!';
+    const topUid=(s.activePlayers||[]).reduce((a,b)=>(s.scores[b]||0)>(s.scores[a]||0)?b:a, s.activePlayers[0]);
+    showWinnerModal(`${players[topUid]?.name||''}님 우승!`, '초성게임 종료');
+    q('cho-input-area').style.display='none'; return;
+  }
   
   const word = s.words[s.round];
   q('cho-hint').textContent = `[${s.round+1}/${s.words.length}] 힌트: ${word.hint}`;
@@ -1346,6 +1484,7 @@ function submitChosung(){
   if(answer!==s.words[s.round].word){ q('cho-feedback').style.color='var(--red)'; q('cho-feedback').textContent='❌ 틀렸습니다!'; inp.value=''; setTimeout(()=>{ if(q('cho-feedback').textContent==='❌ 틀렸습니다!') q('cho-feedback').textContent=''; },900); return; }
   q('cho-feedback').style.color='var(--accent)';
   q('cho-feedback').textContent=`✅ 정답입니다! 정답: ${s.words[s.round].word}`;
+  if(navigator.vibrate) navigator.vibrate([80,30,80]);
   inp.value='';
   db.ref(`rooms/${roomId}/game/state/correctOrder`).transaction(order=>{
     let ord = order||[]; if(!ord.includes(myUid)) ord=[...ord,myUid]; return ord;
@@ -1455,6 +1594,7 @@ function renderBaseball(s){
   if(s.winner){
     const near = (s.guesses||[]).some(g=>!g.timeout && g.strikes===3) ? '3스트라이크' : '9회 종료 · 최고 근접도';
     ti.textContent=`${players[s.winner]?.name||'승자'} 승리! (${near})`; ti.className='turn-ind';
+    showWinnerModal(`${players[s.winner]?.name||''}님 승리!`, `숫자야구 ${near}`);
   } else if(setup){
     const done=Object.keys(s.secrets||{}).length;
     ti.textContent=hasSecret?`내 번호 저장 완료 (${done}/${active.length})`:`나만의 번호 3개를 입력해주세요 (${done}/${active.length})`;
@@ -1557,10 +1697,19 @@ function renderTelepathy(s){
   renderCommonTimer(s); renderControls(s); if(isEndedState(s)) addTotalsOnce(s);
   renderScores('tp-scores', s.activePlayers, s.scores);
   q('tp-cat-name').textContent = '라운드 ' + s.round;
-  if(s.ended) { q('tp-win').style.display='block'; q('tp-win-text').textContent='텔레파시 종료!'; return; }
+  if(s.ended) {
+    const topUid=(s.activePlayers||[]).reduce((a,b)=>(s.scores[b]||0)>(s.scores[a]||0)?b:a, s.activePlayers[0]);
+    const topName=players[topUid]?.name||'';
+    q('tp-win').style.display='block'; q('tp-win-text').textContent=`🏆 ${topName} 우승! 텔레파시 종료!`;
+    showWinnerModal(`${topName} 우승!`, '텔레파시 게임 종료');
+    return;
+  }
 
   const baseName = players[s.baseUser]?.name || '누군가';
-  q('tp-base-info').textContent = `🎯 이번 라운드 기준 유저: ${baseName}`;
+  const isBase = s.baseUser === myUid;
+  q('tp-base-info').textContent = isBase ? '🎯 당신이 기준! 당신의 선택이 답이 됩니다!' : `🎯 이번 라운드 기준 유저: ${baseName}`;
+  q('tp-base-info').style.background = isBase ? 'rgba(255,169,77,.15)' : 'rgba(56,217,169,.1)';
+  q('tp-base-info').style.color = isBase ? 'var(--orange)' : 'var(--accent)';
 
   const optsEl = q('tp-options'); optsEl.innerHTML = '';
   const ra = q('tp-reveal-area'); ra.style.display = 'none';
@@ -1599,7 +1748,10 @@ function renderTelepathy(s){
           
           let nextAp = cur.activePlayers;
           if(cur.pendingNextRound) { nextAp = [...new Set([...nextAp, ...Object.keys(cur.pendingNextRound)])]; }
-          return resetTimerFields({ ...cur, phase:'picking', round: cur.round+1, activePlayers: nextAp, answers:{}, pendingNextRound:null, baseUser: nextAp[Math.floor(Math.random()*nextAp.length)] });
+          // 기준 유저 순서대로 순환
+          const nextBaseIdx = (nextAp.indexOf(cur.baseUser) + 1) % nextAp.length;
+          const nextBase = nextAp[nextBaseIdx] || nextAp[0];
+          return resetTimerFields({ ...cur, phase:'picking', round: cur.round+1, activePlayers: nextAp, answers:{}, pendingNextRound:null, baseUser: nextBase });
         });
       }, 3500);
     }
@@ -1628,14 +1780,21 @@ function checkTelepathyComplete(force=false){
 // =========================================================
 function initRPS(ap){
   const scores={}; ap.forEach(u=>scores[u]=0);
-  return withTimer({ phase:'picking', activePlayers:ap, round:1, scores, answers:{} });
+  return withTimer({ phase:'picking', activePlayers:ap, round:1, maxRounds:_rpsPrep.rounds||5, scores, answers:{} });
 }
 let _lastRpsRound=-1;
 function renderRPS(s){
   renderCommonTimer(s); renderControls(s); if(isEndedState(s)) addTotalsOnce(s);
   renderScores('rps-scores', s.activePlayers, s.scores);
-  q('rps-round').textContent = '라운드 ' + s.round;
-  if(s.ended) { q('rps-win').style.display='block'; q('rps-win-text').textContent='가위바위보 종료!'; return; }
+  const maxR = s.maxRounds||5;
+  q('rps-round').textContent = `라운드 ${s.round} / ${maxR}`;
+  if(s.ended){
+    const topUid=(s.activePlayers||[]).reduce((a,b)=>(s.scores[b]||0)>(s.scores[a]||0)?b:a, s.activePlayers[0]);
+    const topName=players[topUid]?.name||'';
+    q('rps-win').style.display='block'; q('rps-win-text').textContent=`🏆 ${topName} 우승! 가위바위보 종료!`;
+    showWinnerModal(`${topName} 우승!`, `가위바위보 ${maxR}라운드 종료`);
+    return;
+  }
   
   const rv = q('rps-reveal-area'); rv.innerHTML='';
 
@@ -1657,8 +1816,7 @@ function renderRPS(s){
       setTimeout(() => {
         db.ref(`rooms/${roomId}/game/state`).transaction(cur => {
           if(!cur || cur.phase !== 'reveal' || cur.round !== s.round) return cur;
-          if(cur.round >= 5) { return {...cur, phase: 'ended', ended:true}; }
-          
+          if(cur.round >= (cur.maxRounds||5)) { return {...cur, phase: 'ended', ended:true}; }
           let nextAp = cur.activePlayers;
           if(cur.pendingNextRound) nextAp = [...new Set([...nextAp, ...Object.keys(cur.pendingNextRound)])];
           return resetTimerFields({ ...cur, phase:'picking', round: cur.round+1, activePlayers: nextAp, answers:{}, pendingNextRound:null });
@@ -1690,14 +1848,21 @@ function pickRPS(c) {
 // =========================================================
 function initTyping(ap){
   const scores={}; ap.forEach(u=>scores[u]=0);
-  return withTimer({phase:'typing', activePlayers:ap, round:1, texts:TYPING_TEXTS, submissions:[], scores, ended:false});
+  return withTimer({phase:'typing', activePlayers:ap, round:1, texts:TYPING_TEXTS, submissions:[], scores, ended:false}, TYPING_MS);
 }
 function renderTyping(s){
   renderCommonTimer(s); renderControls(s); if(isEndedState(s)) addTotalsOnce(s);
   renderScores('typing-scores', s.activePlayers, s.scores);
-  if(s.ended){ q('typing-win').style.display='block'; q('typing-win-text').textContent='타이핑 종료!'; q('typing-input-area').style.display='none'; return; }
-  
-  q('typing-round').textContent='라운드 '+s.round+' / 5';
+  if(s.ended){
+    q('typing-win').style.display='block';
+    const topUid=(s.activePlayers||[]).reduce((a,b)=>(s.scores[b]||0)>(s.scores[a]||0)?b:a, s.activePlayers[0]);
+    const topName=players[topUid]?.name||'';
+    q('typing-win-text').textContent=`🏆 ${topName} 우승! 타이핑 종료!`;
+    showWinnerModal(`${topName} 우승!`, '타이핑 경주 종료');
+    q('typing-input-area').style.display='none'; return;
+  }
+  const maxRound = (s.texts||TYPING_TEXTS).length;
+  q('typing-round').textContent=`라운드 ${s.round} / ${Math.min(5,maxRound)}`;
   q('typing-text').textContent=s.texts[s.round-1];
   const alreadySub = (s.submissions||[]).some(x=>x.uid===myUid);
   const canType = isActivePl()&&!alreadySub&&s.phase==='typing';
@@ -1725,7 +1890,12 @@ function finishTypingRound(force=false){ db.ref(`rooms/${roomId}/game/state`).tr
 function submitTyping(){
   const inp=q('typing-input'); const text=inp.value; if(!text)return;
   const s=_currentGame; if(!s||s.phase!=='typing'||!isActivePl())return;
-  if(text!==s.texts[s.round-1]){q('typing-input').select();alert('정확하게 입력해주세요!');return;}
+  if(text!==s.texts[s.round-1]){
+    inp.select();
+    const errEl=q('typing-err');
+    if(errEl){ errEl.textContent='❌ 정확하게 입력해주세요!'; setTimeout(()=>{ if(errEl.textContent.startsWith('❌')) errEl.textContent=''; },1500); }
+    return;
+  }
   inp.value='';
   db.ref(`rooms/${roomId}/game/state/submissions`).transaction(subs=>{
     const list=subs?[...subs]:[]; if(list.some(x=>x.uid===myUid))return subs; return[...list,{uid:myUid,t:Date.now()}];
@@ -1745,16 +1915,22 @@ function submitTyping(){
 // =========================================================
 function initOX(ap){
   const scores={}; ap.forEach(u=>scores[u]=0);
-  return withTimer({ phase:'picking', activePlayers:ap, round:1, scores, answers:{} });
+  return withTimer({ phase:'picking', activePlayers:ap, round:1, maxRounds:_oxPrep.rounds||5, scores, answers:{} });
 }
 let _lastOxRound=-1;
 function renderOX(s){
   renderCommonTimer(s); renderControls(s); if(isEndedState(s)) addTotalsOnce(s);
   renderScores('ox-scores', s.activePlayers, s.scores);
-  if(s.ended) { q('ox-win').style.display='block'; q('ox-win-text').textContent='OX 퀴즈 종료!'; return; }
-  
+  const maxR = s.maxRounds||5;
+  if(s.ended){
+    const topUid=(s.activePlayers||[]).reduce((a,b)=>(s.scores[b]||0)>(s.scores[a]||0)?b:a, s.activePlayers[0]);
+    const topName=players[topUid]?.name||'';
+    q('ox-win').style.display='block'; q('ox-win-text').textContent=`🏆 ${topName} 우승! OX 퀴즈 종료!`;
+    showWinnerModal(`${topName} 우승!`, `OX 퀴즈 ${maxR}라운드 종료`);
+    return;
+  }
   const qdata = OX_Q[(s.round-1) % OX_Q.length];
-  q('ox-qtxt').textContent = `Q${s.round}. ${qdata.q}`;
+  q('ox-qtxt').textContent = `Q${s.round}/${maxR}. ${qdata.q}`;
   
   const rv = q('ox-reveal-area'); rv.innerHTML='';
   ['ox-o','ox-x'].forEach(id=>{q(id).className='ox-btn'; q(id).style.borderColor='var(--border)';});
@@ -1775,7 +1951,7 @@ function renderOX(s){
       setTimeout(() => {
         db.ref(`rooms/${roomId}/game/state`).transaction(cur => {
           if(!cur || cur.phase !== 'reveal' || cur.round !== s.round) return cur;
-          if(cur.round >= 5) { return {...cur, phase: 'ended', ended:true}; }
+          if(cur.round >= (cur.maxRounds||5)) { return {...cur, phase: 'ended', ended:true}; }
           
           let nextAp = cur.activePlayers;
           if(cur.pendingNextRound) nextAp = [...new Set([...nextAp, ...Object.keys(cur.pendingNextRound)])];
@@ -1795,8 +1971,10 @@ function answerOX(c) {
 
 
 // =========================================================
-// 11. BINGO (각자의 빙고판, 순서대로 숫자 선언, 3줄 빙고 승리)
+// 11. BINGO (직접 빙고판 작성 → 순서대로 숫자 선언 → 3줄 승리)
 // =========================================================
+let _bingoSetupLocal = new Array(25).fill(0);
+
 function _genBingoBoard(){
   const n=Array.from({length:25},(_,i)=>i+1);
   for(let i=24;i>0;i--){const j=Math.floor(Math.random()*(i+1));[n[i],n[j]]=[n[j],n[i]];}
@@ -1813,23 +1991,102 @@ function _getBingoLines(board,called){
   return lines;
 }
 function initBingo(ap){
-  const boards={},scores={},bingoCounts={};
-  ap.forEach(u=>{boards[u]=_genBingoBoard();scores[u]=0;bingoCounts[u]=0;});
-  return withTimer({phase:'playing',activePlayers:ap,curIdx:0,boards,called:[],bingoCounts,scores,winner:null,ended:false});
+  const scores={},bingoCounts={};
+  ap.forEach(u=>{scores[u]=0;bingoCounts[u]=0;});
+  _bingoSetupLocal = new Array(25).fill(0);
+  return {phase:'setup', activePlayers:ap, setupBoards:{}, called:[], bingoCounts, scores, winner:null, ended:false, durationMs:BINGO_SETUP_MS, deadline:Date.now()+BINGO_SETUP_MS};
 }
+
+// 빙고 로컬 판 설정 함수들
+function bingoSetupClickNum(n){
+  if(_bingoSetupLocal.includes(n)) return; // 이미 사용
+  const idx=_bingoSetupLocal.indexOf(0); if(idx<0) return;
+  _bingoSetupLocal[idx]=n; renderBingoSetupLocal();
+}
+function bingoSetupClickCell(idx){
+  if(_bingoSetupLocal[idx]===0) return;
+  _bingoSetupLocal[idx]=0;
+  // 빈 칸을 채운 칸들 뒤로 밀기
+  const filled=_bingoSetupLocal.filter(x=>x>0);
+  const empty=_bingoSetupLocal.filter(x=>x===0);
+  _bingoSetupLocal=[...filled,...empty];
+  renderBingoSetupLocal();
+}
+function bingoSetupReset(){
+  _bingoSetupLocal=new Array(25).fill(0); renderBingoSetupLocal();
+}
+function renderBingoSetupLocal(){
+  const grid=q('bingo-setup-grid'); if(!grid) return;
+  grid.innerHTML=_bingoSetupLocal.map((n,i)=>`<div class="bsetup-cell ${n>0?'filled':'empty'}" onclick="bingoSetupClickCell(${i})">${n>0?n:''}</div>`).join('');
+  const numpad=q('bingo-setup-numpad'); if(!numpad) return;
+  numpad.innerHTML=Array.from({length:25},(_,i)=>i+1).map(n=>{
+    const used=_bingoSetupLocal.includes(n);
+    return `<div class="bsetup-num ${used?'used':''}" onclick="${used?'':'bingoSetupClickNum('+n+')'}">${n}</div>`;
+  }).join('');
+  const full=!_bingoSetupLocal.includes(0);
+  const btn=q('bingo-submit-btn'); if(btn) btn.disabled=!full;
+}
+function submitBingoSetup(){
+  if(_bingoSetupLocal.includes(0)){ return; }
+  const board=[_bingoSetupLocal.slice(0,5),_bingoSetupLocal.slice(5,10),_bingoSetupLocal.slice(10,15),_bingoSetupLocal.slice(15,20),_bingoSetupLocal.slice(20,25)];
+  db.ref(`rooms/${roomId}/game/state/setupBoards/${myUid}`).set(board).then(()=>{
+    db.ref(`rooms/${roomId}/game/state`).transaction(cur=>{
+      if(!cur||cur.phase!=='setup') return cur;
+      if(!cur.setupBoards||!cur.activePlayers.every(u=>cur.setupBoards[u])) return cur;
+      const boards={};
+      cur.activePlayers.forEach(u=>boards[u]=cur.setupBoards[u]);
+      return {...cur, phase:'playing', boards, curIdx:0, called:[], bingoCounts:{...cur.bingoCounts}, durationMs:BINGO_TURN_MS, deadline:Date.now()+BINGO_TURN_MS};
+    });
+  });
+}
+
 function renderBingo(s){
   renderCommonTimer(s); renderControls(s); if(isEndedState(s)) addTotalsOnce(s);
+
+  if(s.phase==='setup'){
+    q('bingo-setup-section').classList.add('active');
+    q('bingo-game-section').classList.remove('active');
+    renderBingoSetupLocal();
+    const submittedMe=!!(s.setupBoards?.[myUid]);
+    const submitBtn=q('bingo-submit-btn');
+    if(submitBtn){ submitBtn.disabled=submittedMe||_bingoSetupLocal.includes(0); submitBtn.textContent=submittedMe?'저장 완료 ✅':'저장 완료'; }
+    // 제출 상황 보여주기
+    const readyEl=q('bingo-setup-ready'); if(readyEl){
+      readyEl.innerHTML=(s.activePlayers||[]).map(u=>{
+        const done=!!(s.setupBoards?.[u]);
+        return `<div style="padding:4px 12px;border-radius:20px;font-size:11px;border:1px solid ${done?'var(--accent)':'var(--border)'};color:${done?'var(--accent)':'var(--muted)'}">${esc(players[u]?.name?.slice(0,6)||'')} ${done?'✅':'⌛'}</div>`;
+      }).join('');
+    }
+    const statusEl=q('bingo-setup-status'); if(statusEl){
+      const cnt=Object.keys(s.setupBoards||{}).length;
+      statusEl.textContent=submittedMe?`저장 완료! 대기 중... (${cnt}/${s.activePlayers.length}명)`:'나만의 빙고판을 완성하세요!';
+    }
+    // 타임아웃: 시간 초과 시 미제출자 랜덤 배정
+    maybeScheduleTimeout(s,'bingo-setup',()=>{
+      db.ref(`rooms/${roomId}/game/state`).transaction(cur=>{
+        if(!cur||cur.phase!=='setup') return cur;
+        const boards=cur.setupBoards||{};
+        cur.activePlayers.forEach(u=>{ if(!boards[u]) boards[u]=_genBingoBoard(); });
+        return {...cur, phase:'playing', boards, curIdx:0, called:[], durationMs:BINGO_TURN_MS, deadline:Date.now()+BINGO_TURN_MS};
+      });
+    });
+    return;
+  }
+
+  q('bingo-setup-section').classList.remove('active');
+  q('bingo-game-section').classList.add('active');
+
   const called=s.called||[];
-  // 상단 플레이어 현황 패널
   const _bsp=q('bingo-status');
   if(_bsp) _bsp.innerHTML=(s.activePlayers||[]).map(u=>{
     const bd=s.boards?.[u]; const cnt=bd?_getBingoLines(bd,called).length:0; const isMe=u===myUid;
-    return `<div style="display:flex;align-items:center;gap:5px;padding:5px 11px;background:${isMe?'rgba(56,217,169,.12)':'var(--card)'};border:1px solid ${isMe?'var(--accent)':'var(--border)'};border-radius:20px;font-size:11px;transition:all .2s">
+    return `<div style="display:flex;align-items:center;gap:5px;padding:5px 11px;background:${isMe?'rgba(56,217,169,.12)':'var(--card)'};border:1px solid ${isMe?'var(--accent)':'var(--border)'};border-radius:20px;font-size:11px">
       <span style="color:${getPC(u)};font-weight:bold">${esc(players[u]?.name?.slice(0,5)||'')}</span>
       ${[0,1,2].map(i=>`<div class="bingo-dot${i<cnt?' won':''}"></div>`).join('')}
       <span style="color:var(--muted);font-size:10px">${cnt}/3</span>
     </div>`;
   }).join('');
+
   const isMyTurn=s.activePlayers[s.curIdx]===myUid&&isActivePl();
   const ti=q('bingo-turn');
   if(s.winner){ ti.textContent=`🎉 ${players[s.winner]?.name||''}님 3빙고!`; ti.className='turn-ind'; }
@@ -1837,8 +2094,6 @@ function renderBingo(s){
   else { ti.textContent=`${players[s.activePlayers[s.curIdx]]?.name||''} 차례...`; ti.className='turn-ind wait'; }
 
   const myBoard=s.boards?.[myUid];
-
-  // 내 빙고판
   if(myBoard){
     const lines=_getBingoLines(myBoard,called);
     const cnt=lines.length;
@@ -1852,12 +2107,10 @@ function renderBingo(s){
     }).join('')).join('');
   }
 
-  // 선언된 숫자들
   const calledEl=q('bingo-called');
   if(calledEl) calledEl.innerHTML=called.map(n=>`<div class="bcalled-chip">${n}</div>`).join('');
   const ccEl=q('bingo-called-count'); if(ccEl) ccEl.textContent=called.length;
 
-  // 숫자 선언 패드
   const np=q('bingo-numpad');
   if(np){
     np.style.display=(isMyTurn&&!s.winner)?'grid':'none';
@@ -1867,7 +2120,6 @@ function renderBingo(s){
     }).join('');
   }
 
-  // 게임 종료 시 다른 유저 빙고판 공개
   const othersEl=q('bingo-others');
   if(othersEl){
     if(isEndedState(s)){
@@ -1891,7 +2143,11 @@ function renderBingo(s){
   renderScores('bingo-scores',s.activePlayers,s.scores);
   const we=q('bingo-win');
   if(we){
-    if(s.winner){ we.style.display='block'; q('bingo-win-text').textContent=`🎉 ${players[s.winner]?.name||''}님 3줄 빙고! 승리!`; }
+    if(s.winner){
+      we.style.display='block'; q('bingo-win-text').textContent=`🎉 ${players[s.winner]?.name||''}님 3줄 빙고! 승리!`;
+      showWinnerModal(`${players[s.winner]?.name||''}님 빙고!`, '3줄 빙고 완성 승리! 🎯');
+      if(navigator.vibrate) navigator.vibrate([200,80,200,80,300]);
+    }
     else we.style.display='none';
   }
   maybeScheduleTimeout(s,'bingo-'+s.curIdx,()=>passBingoTurn());
@@ -1903,7 +2159,7 @@ function passBingoTurn(){
   });
 }
 function callBingo(num){
-  if(!isActivePl()||!_currentGame||_currentGame.phase!=='playing') return;
+  if(!isActivePl()||!_currentGame||(_currentGame.phase!=='playing'&&_currentGame.phase!=='setup')) return;
   if((_currentGame.called||[]).includes(num)) return;
   db.ref(`rooms/${roomId}/game/state`).transaction(cur=>{
     if(!cur||cur.ended||cur.activePlayers[cur.curIdx]!==myUid) return cur;
