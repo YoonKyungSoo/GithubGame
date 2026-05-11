@@ -1,0 +1,124 @@
+<!-- 부루마블 공항 타일 4개 — 인천/런던/JFK/도쿄 -->
+<style>
+  body{background:#f5f5f5;display:flex;gap:16px;padding:20px;flex-wrap:wrap;font-family:sans-serif}
+  .tile-wrap{display:flex;flex-direction:column;align-items:center;gap:6px}
+  .tile-label{font-size:12px;color:#666}
+</style>
+
+<!-- ===== 공항 타일 1: 인천국제공항 ===== -->
+<div class="tile-wrap">
+  <svg id="airport-incheon" width="90" height="90" viewBox="0 0 90 90">
+    <rect x="1" y="1" width="88" height="88" rx="8" fill="#e8f4fd" stroke="#378add" stroke-width="2"/>
+    <!-- 활주로 -->
+    <rect x="10" y="42" width="70" height="6" rx="3" fill="#b4b2a9"/>
+    <rect x="14" y="43" width="8" height="1.5" rx="1" fill="white"/>
+    <rect x="28" y="43" width="8" height="1.5" rx="1" fill="white"/>
+    <rect x="42" y="43" width="8" height="1.5" rx="1" fill="white"/>
+    <rect x="56" y="43" width="8" height="1.5" rx="1" fill="white"/>
+    <rect x="70" y="43" width="8" height="1.5" rx="1" fill="white"/>
+    <!-- 비행기 -->
+    <g transform="translate(20,16) scale(0.9)">
+      <ellipse cx="25" cy="12" rx="20" ry="6" fill="#378add"/>
+      <rect x="10" y="8" width="30" height="8" rx="4" fill="#185fa5"/>
+      <polygon points="0,16 8,10 8,22" fill="#378add"/>
+      <polygon points="50,16 42,10 42,22" fill="#378add"/>
+      <polygon points="20,22 30,22 25,30" fill="#378add"/>
+      <rect x="18" y="10" width="4" height="4" rx="1" fill="#85b7eb"/>
+      <rect x="24" y="10" width="4" height="4" rx="1" fill="#85b7eb"/>
+      <rect x="30" y="10" width="4" height="4" rx="1" fill="#85b7eb"/>
+    </g>
+    <!-- 공항명 -->
+    <text x="45" y="62" text-anchor="middle" font-size="7.5" font-weight="500" fill="#0c447c" font-family="sans-serif">인천국제공항</text>
+    <!-- 통행료 -->
+    <rect x="8" y="68" width="74" height="16" rx="4" fill="#378add"/>
+    <text x="45" y="78" text-anchor="middle" font-size="8" font-weight="700" fill="white" font-family="sans-serif">통행료 ₩50,000</text>
+  </svg>
+  <span class="tile-label">공항 1 — 인천</span>
+</div>
+
+<!-- ===== 공항 타일 2: 런던 히스로 ===== -->
+<div class="tile-wrap">
+  <svg id="airport-london" width="90" height="90" viewBox="0 0 90 90">
+    <rect x="1" y="1" width="88" height="88" rx="8" fill="#fdf0e8" stroke="#e24b4a" stroke-width="2"/>
+    <!-- 활주로 -->
+    <rect x="10" y="42" width="70" height="6" rx="3" fill="#b4b2a9"/>
+    <rect x="14" y="43" width="8" height="1.5" rx="1" fill="white"/>
+    <rect x="28" y="43" width="8" height="1.5" rx="1" fill="white"/>
+    <rect x="42" y="43" width="8" height="1.5" rx="1" fill="white"/>
+    <rect x="56" y="43" width="8" height="1.5" rx="1" fill="white"/>
+    <rect x="70" y="43" width="8" height="1.5" rx="1" fill="white"/>
+    <!-- 비행기 -->
+    <g transform="translate(20,16) scale(0.9)">
+      <ellipse cx="25" cy="12" rx="20" ry="6" fill="#e24b4a"/>
+      <rect x="10" y="8" width="30" height="8" rx="4" fill="#a32d2d"/>
+      <polygon points="0,16 8,10 8,22" fill="#e24b4a"/>
+      <polygon points="50,16 42,10 42,22" fill="#e24b4a"/>
+      <polygon points="20,22 30,22 25,30" fill="#e24b4a"/>
+      <rect x="18" y="10" width="4" height="4" rx="1" fill="#f7c1c1"/>
+      <rect x="24" y="10" width="4" height="4" rx="1" fill="#f7c1c1"/>
+      <rect x="30" y="10" width="4" height="4" rx="1" fill="#f7c1c1"/>
+    </g>
+    <text x="45" y="62" text-anchor="middle" font-size="7.5" font-weight="500" fill="#791f1f" font-family="sans-serif">런던 히스로</text>
+    <rect x="8" y="68" width="74" height="16" rx="4" fill="#e24b4a"/>
+    <text x="45" y="78" text-anchor="middle" font-size="8" font-weight="700" fill="white" font-family="sans-serif">통행료 ₩100,000</text>
+  </svg>
+  <span class="tile-label">공항 2 — 런던</span>
+</div>
+
+<!-- ===== 공항 타일 3: JFK 뉴욕 ===== -->
+<div class="tile-wrap">
+  <svg id="airport-jfk" width="90" height="90" viewBox="0 0 90 90">
+    <rect x="1" y="1" width="88" height="88" rx="8" fill="#fdf8ec" stroke="#ef9f27" stroke-width="2"/>
+    <!-- 활주로 -->
+    <rect x="10" y="42" width="70" height="6" rx="3" fill="#b4b2a9"/>
+    <rect x="14" y="43" width="8" height="1.5" rx="1" fill="white"/>
+    <rect x="28" y="43" width="8" height="1.5" rx="1" fill="white"/>
+    <rect x="42" y="43" width="8" height="1.5" rx="1" fill="white"/>
+    <rect x="56" y="43" width="8" height="1.5" rx="1" fill="white"/>
+    <rect x="70" y="43" width="8" height="1.5" rx="1" fill="white"/>
+    <!-- 비행기 -->
+    <g transform="translate(20,16) scale(0.9)">
+      <ellipse cx="25" cy="12" rx="20" ry="6" fill="#ef9f27"/>
+      <rect x="10" y="8" width="30" height="8" rx="4" fill="#ba7517"/>
+      <polygon points="0,16 8,10 8,22" fill="#ef9f27"/>
+      <polygon points="50,16 42,10 42,22" fill="#ef9f27"/>
+      <polygon points="20,22 30,22 25,30" fill="#ef9f27"/>
+      <rect x="18" y="10" width="4" height="4" rx="1" fill="#faeeda"/>
+      <rect x="24" y="10" width="4" height="4" rx="1" fill="#faeeda"/>
+      <rect x="30" y="10" width="4" height="4" rx="1" fill="#faeeda"/>
+    </g>
+    <text x="45" y="62" text-anchor="middle" font-size="7.5" font-weight="500" fill="#633806" font-family="sans-serif">JFK 뉴욕</text>
+    <rect x="8" y="68" width="74" height="16" rx="4" fill="#ef9f27"/>
+    <text x="45" y="78" text-anchor="middle" font-size="8" font-weight="700" fill="white" font-family="sans-serif">통행료 ₩150,000</text>
+  </svg>
+  <span class="tile-label">공항 3 — JFK</span>
+</div>
+
+<!-- ===== 공항 타일 4: 도쿄 나리타 ===== -->
+<div class="tile-wrap">
+  <svg id="airport-tokyo" width="90" height="90" viewBox="0 0 90 90">
+    <rect x="1" y="1" width="88" height="88" rx="8" fill="#eeedfe" stroke="#7f77dd" stroke-width="2"/>
+    <!-- 활주로 -->
+    <rect x="10" y="42" width="70" height="6" rx="3" fill="#b4b2a9"/>
+    <rect x="14" y="43" width="8" height="1.5" rx="1" fill="white"/>
+    <rect x="28" y="43" width="8" height="1.5" rx="1" fill="white"/>
+    <rect x="42" y="43" width="8" height="1.5" rx="1" fill="white"/>
+    <rect x="56" y="43" width="8" height="1.5" rx="1" fill="white"/>
+    <rect x="70" y="43" width="8" height="1.5" rx="1" fill="white"/>
+    <!-- 비행기 -->
+    <g transform="translate(20,16) scale(0.9)">
+      <ellipse cx="25" cy="12" rx="20" ry="6" fill="#7f77dd"/>
+      <rect x="10" y="8" width="30" height="8" rx="4" fill="#534ab7"/>
+      <polygon points="0,16 8,10 8,22" fill="#7f77dd"/>
+      <polygon points="50,16 42,10 42,22" fill="#7f77dd"/>
+      <polygon points="20,22 30,22 25,30" fill="#7f77dd"/>
+      <rect x="18" y="10" width="4" height="4" rx="1" fill="#cecbf6"/>
+      <rect x="24" y="10" width="4" height="4" rx="1" fill="#cecbf6"/>
+      <rect x="30" y="10" width="4" height="4" rx="1" fill="#cecbf6"/>
+    </g>
+    <text x="45" y="62" text-anchor="middle" font-size="7.5" font-weight="500" fill="#26215c" font-family="sans-serif">도쿄 나리타</text>
+    <rect x="8" y="68" width="74" height="16" rx="4" fill="#7f77dd"/>
+    <text x="45" y="78" text-anchor="middle" font-size="8" font-weight="700" fill="white" font-family="sans-serif">통행료 ₩200,000</text>
+  </svg>
+  <span class="tile-label">공항 4 — 도쿄</span>
+</div>
