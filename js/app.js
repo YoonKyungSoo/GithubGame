@@ -164,6 +164,11 @@ function sysChat(msg){db.ref(`rooms/${roomId}/chat`).push({uid:'sys', name:'', m
 function navTo(name){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   q('view-'+name)?.classList.add('active');
+  // 게임 중엔 사이드바 숨겨서 화면 최대화
+  const inGame = name !== 'lobby';
+  q('body')?.classList.toggle('game-mode', inGame);
+  const sb = q('sb');
+  if(sb) sb.classList.toggle('open', false); // 모바일 슬라이드 닫기
 }
 function stopAllTimers(){ clearInterval(_timer); clearInterval(_wTimer); clearInterval(_choTimer); clearInterval(_tpTimer); clearInterval(_oxTimer); clearInterval(_typingTimer); }
 function backToLobby(){
