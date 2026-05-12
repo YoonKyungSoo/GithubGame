@@ -259,6 +259,7 @@ function updatePlayerUI(){
   }
   if(q('rps-lobby-box')) q('rps-lobby-box').style.display = _currentType==='rps' ? 'block' : 'none';
   if(q('ox-lobby-box')) q('ox-lobby-box').style.display = _currentType==='ox' ? 'block' : 'none';
+  if(q('bboard-lobby-box')) q('bboard-lobby-box').style.display = _currentType==='board' ? 'block' : 'none';
 }
 
 
@@ -334,7 +335,7 @@ function restartGame(){
   let ap=[...new Set([...( _currentGame.activePlayers||[]), ...Object.keys(_currentGame.pendingNextRound||{})])].filter(u=>players[u]?.online);
   if(ap.length<1){alert('참가자가 없습니다.');return;}
   if(_currentType==='omok') return startOmokActual(ap);
-  const inits={mine:initMine, word:initWord, chosung:initChosung, baseball:initBaseball, telepathy:initTelepathy, rps:initRPS, typing:initTyping, ox:initOX, bingo:initBingo};
+  const inits={mine:initMine, word:initWord, chosung:initChosung, baseball:initBaseball, telepathy:initTelepathy, rps:initRPS, typing:initTyping, ox:initOX, bingo:initBingo, board:initBoard};
   db.ref(`rooms/${roomId}/game/state`).set(inits[_currentType](ap));
 }
 function setMineDifficulty(d){ db.ref(`rooms/${roomId}/prep/mine`).set({difficulty:d}); }
@@ -405,7 +406,7 @@ function hostStartActualGame() {
   if(activePlayers.length < 1) { alert("최소 1명의 참가자가 필요합니다."); return; }
   if(_currentType==='baseball' && activePlayers.length < 2) { alert("숫자야구는 최소 2명부터 가능합니다."); return; }
   
-  const inits = {mine:initMine, word:initWord, chosung:initChosung, baseball:initBaseball, telepathy:initTelepathy, rps:initRPS, typing:initTyping,  ox:initOX, bingo:initBingo};
+  const inits = {mine:initMine, word:initWord, chosung:initChosung, baseball:initBaseball, telepathy:initTelepathy, rps:initRPS, typing:initTyping, ox:initOX, bingo:initBingo, board:initBoard};
   const state = inits[_currentType](activePlayers);
   db.ref(`rooms/${roomId}/game/state`).set(state);
 }
@@ -446,7 +447,7 @@ function handleGameState() {
   updateSpectatorBanner(g);
   renderControls(g);
 
-  const R = {omok:renderOmok, mine:renderMine, word:renderWord, chosung:renderChosung, baseball:renderBaseball, telepathy:renderTelepathy, rps:renderRPS, typing:renderTyping, ox:renderOX, bingo:renderBingo};
+  const R = {omok:renderOmok, mine:renderMine, word:renderWord, chosung:renderChosung, baseball:renderBaseball, telepathy:renderTelepathy, rps:renderRPS, typing:renderTyping, ox:renderOX, bingo:renderBingo, board:renderBoard};
   if(R[_currentType]) R[_currentType](g);
 }
 
