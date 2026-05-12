@@ -2,6 +2,7 @@
 // 11. BINGO (직접 빙고판 작성 → 순서대로 숫자 선언 → 3줄 승리)
 // =========================================================
 let _bingoSetupLocal = new Array(25).fill(0);
+let _bingoLastCalled = []; // 이전 called 배열 추적용
 
 function _genBingoBoard(){
   const n=Array.from({length:25},(_,i)=>i+1);
@@ -22,6 +23,7 @@ function initBingo(ap){
   const scores={},bingoCounts={};
   ap.forEach(u=>{scores[u]=0;bingoCounts[u]=0;});
   _bingoSetupLocal = new Array(25).fill(0);
+  _bingoLastCalled = [];
   return {phase:'setup', activePlayers:ap, setupBoards:{}, called:[], bingoCounts, scores, winner:null, ended:false, durationMs:BINGO_SETUP_MS, deadline:Date.now()+BINGO_SETUP_MS};
 }
 
@@ -141,8 +143,12 @@ function renderBingo(s){
     }).join('')).join('');
   }
 
+  // 새로 선언된 번호 감지 → 플래시 애니메이션
+  const newNums = called.filter(n=>!_bingoLastCalled.includes(n));
+  _bingoLastCalled = [...called];
+
   const calledEl=q('bingo-called');
-  if(calledEl) calledEl.innerHTML=called.map(n=>`<div class="bcalled-chip">${n}</div>`).join('');
+  if(calledEl) calledEl.innerHTML=called.map(n=>`<div class="bcalled-chip${newNums.includes(n)?' bcalled-new':''}">${n}</div>`).join('');
   const ccEl=q('bingo-called-count'); if(ccEl) ccEl.textContent=called.length;
 
   const np=q('bingo-numpad');

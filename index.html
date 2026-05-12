@@ -14,8 +14,8 @@
   <div class="login-box">
     <div class="login-logo">🎮 TEAMGAME</div>
     <div class="login-sub">미니게임 플랫폼 · V2</div>
-    <div class="fgroup"><label>이름</label><input id="inp-name" type="text" placeholder="홍길동" maxlength="10" autocomplete="off"></div>
-    <div class="fgroup"><label>방 코드</label><input id="inp-room" type="text" placeholder="ABC123" maxlength="6" style="text-transform:uppercase" autocomplete="off"></div>
+    <div class="fgroup"><label>이름</label><input id="inp-name" type="text" placeholder="홍길동" maxlength="10" autocomplete="off" onkeydown="if(event.key==='Enter')q('inp-room').focus()"></div>
+    <div class="fgroup"><label>방 코드</label><input id="inp-room" type="text" placeholder="ABC123" maxlength="6" style="text-transform:uppercase" autocomplete="off" onkeydown="if(event.key==='Enter')joinRoom()"></div>
     <div class="btn-row">
       <button class="btn btn-secondary" onclick="joinRoom()">참여하기</button>
       <button class="btn btn-primary" onclick="createRoom()">새 방 만들기</button>
@@ -86,6 +86,9 @@
         <button id="spectator-join-btn" onclick="requestJoinNextRound()">다음 판부터 참여 신청</button>
         <button id="spectator-cancel-btn" onclick="cancelJoinNextRound()" style="display:none">신청 취소</button>
       </div>
+
+      <!-- 플레이어 연결 끊김 배너 -->
+      <div id="disconnect-banner" style="display:none;background:rgba(255,107,107,.15);border:1px solid #ff6b6b;border-radius:6px;padding:8px 14px;margin-bottom:8px;font-size:12px;color:#ff6b6b;text-align:center"></div>
 
       <div id="common-timer">
         <div class="timer-top"><span id="timer-label">남은 시간</span><span class="timer-num"><span id="timer-sec">10</span>초</span></div>
@@ -473,10 +476,12 @@
         <div id="bb-my-secret" class="bb-my-secret"></div>
         <div id="bb-input-area" class="ginput-row">
           <select id="bb-target" class="gselect" style="display:none"></select>
-          <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="bb-num" id="bb-d1"><input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="bb-num" id="bb-d2"><input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="bb-num" id="bb-d3">
+          <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="bb-num" id="bb-d1" onkeyup="if(this.value.length===1)q('bb-d2').focus()" onkeydown="if(event.key==='Enter')submitBaseball()"><input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="bb-num" id="bb-d2" onkeyup="if(this.value.length===1)q('bb-d3').focus()" onkeydown="if(event.key==='Backspace'&&!this.value)q('bb-d1').focus();if(event.key==='Enter')submitBaseball()"><input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="bb-num" id="bb-d3" onkeydown="if(event.key==='Backspace'&&!this.value)q('bb-d2').focus();if(event.key==='Enter')submitBaseball()">
           <button class="btn btn-primary" id="bb-submit-btn" onclick="submitBaseball()">확인</button>
         </div>
         <div id="bb-history" style="display:flex;flex-direction:column;gap:5px;max-height:200px;overflow-y:auto;margin-bottom:10px"></div>
+        <!-- 게임 종료 후 모든 번호 공개 -->
+        <div id="bb-secrets-reveal" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:10px"></div>
         <div id="bb-win" class="winner-banner" style="display:none"><div class="wtext" id="bb-win-text"></div></div>
       </div>
 

@@ -145,6 +145,10 @@ function bbAddLog(cur, msg) {
   return cur;
 }
 
+// ─── 상수 ─────────────────────────────────────────────────────────────────────
+
+const BB_TURN_MS = 30000; // 30초 턴 타이머
+
 // ─── 로비 ─────────────────────────────────────────────────────────────────────
 
 let _bbRounds = 7;
@@ -164,7 +168,7 @@ function initBoard(ap) {
     jailCard[u] = false;
     doubles[u]  = 0;
   });
-  return {
+  return withTimer({
     phase:    'rolling',
     activePlayers: ap,
     bankrupt: [],
@@ -182,14 +186,29 @@ function initBoard(ap) {
     log: ['게임 시작! 🎲'],
     ended: false,
     winner: null
-  };
+  }, BB_TURN_MS);
 }
 
 // ─── 렌더: 메인 ───────────────────────────────────────────────────────────────
 
+function passBoardTurn() {
+  db.ref(`rooms/${roomId}/game/state`).transaction(cur => {
+    if(!cur || cur.ended || cur.phase !== 'rolling') return cur;
+    const curUid = cur.activePlayers?.[cur.turnIdx];
+    cur = bbAddLog(cur, `${players[curUid]?.name||'?'}: ⏰ 시간 초과 (자동 패스)`);
+    return bbAdvanceTurn(cur, false);
+  });
+}
+
 function renderBoard(s) {
+  renderCommonTimer(s);
   renderControls(s);
   if(isEndedState(s)) { addTotalsOnce(s); }
+
+  // 타이머: 롤링 단계에서만 (buying/card 단계는 사용자 입력 대기라 타이머 없음)
+  if(s.phase === 'rolling' && !s.ended) {
+    maybeScheduleTimeout(s, 'board-' + s.turnIdx + '-' + s.round, () => passBoardTurn());
+  }
 
   const curUid = s.activePlayers?.[s.turnIdx];
   const isMyTurn = curUid === myUid && isActivePl() && !s.ended;
@@ -484,10 +503,13 @@ function renderBBActions(s) {
 function renderBBTeleGrid(s) {
   const el = q('bb-tele-grid');
   if(!el) return;
+  const myPos = s.pos?.[myUid] || 0;
   el.style.cssText = 'display:grid;grid-template-columns:repeat(4,1fr);gap:4px;max-height:180px;overflow-y:auto';
-  el.innerHTML = BB_SP.map(sp =>
-    `<button onclick="bbTeleport(${sp.pos})" style="font-size:9px;padding:4px 2px;border-radius:4px;background:var(--card);border:1px solid var(--border);cursor:pointer;color:var(--text)">${esc(sp.nm)}</button>`
-  ).join('');
+  el.innerHTML = BB_SP
+    .filter(sp => sp.pos !== myPos) // 현재 위치 제외
+    .map(sp =>
+      `<button onclick="bbTeleport(${sp.pos})" style="font-size:9px;padding:4px 2px;border-radius:4px;background:var(--card);border:1px solid var(--border);cursor:pointer;color:var(--text)">${esc(sp.nm)}</button>`
+    ).join('');
 }
 
 function renderBBFBList(s) {
@@ -609,19 +631,17 @@ function bbDoRoll() {
     const curPos = cur.pos?.[myUid] || 0;
     const newPos = (curPos + total) % 40;
 
-    if(newPos < curPos || (curPos + total) >= 40) {
-      // 출발 통과
+    // 출발점 통과 시만 20만 지급 (착지 추가 보너스 없음)
+    if((curPos + total) >= 40) {
       cur.money[myUid] = (cur.money[myUid]||0) + 200000;
       cur = bbAddLog(cur, `${players[myUid]?.name||'?'}: 출발 통과 +20만 🏁`);
     }
-    if(newPos === 0) {
-      // 출발 착지 추가 보너스
-      cur.money[myUid] = (cur.money[myUid]||0) + 200000;
-      cur = bbAddLog(cur, `${players[myUid]?.name||'?'}: 출발 착지! +20만 추가 🏁`);
-    }
 
     cur.pos[myUid] = newPos;
-    return bbHandleLanding(cur, myUid, BB_SP[newPos], isDouble, preCard);
+    cur = bbHandleLanding(cur, myUid, BB_SP[newPos], isDouble, preCard);
+    // 이동 후 타이머 리셋 (다음 턴 또는 구매/카드 페이즈 시작)
+    if(!cur.ended && cur.phase === 'rolling') cur = resetTimerFields(cur);
+    return cur;
   });
 }
 
@@ -699,8 +719,8 @@ function bbAdvanceTurn(cur, isDouble) {
     next = (next + 1) % total;
   }
 
-  // 라운드 완료 체크 (0번으로 wrap-around 시)
-  if(next <= cur.turnIdx) {
+  // 라운드 완료 체크: 인덱스가 앞으로 되감길 때만
+  if(next < cur.turnIdx) {
     cur.round = (cur.round||1) + 1;
     if(cur.maxRounds > 0 && cur.round > cur.maxRounds) {
       return bbEndByRounds(cur);
@@ -709,7 +729,7 @@ function bbAdvanceTurn(cur, isDouble) {
 
   cur.turnIdx = next;
   cur.phase   = 'rolling';
-  return cur;
+  return resetTimerFields(cur);
 }
 
 // ─── 구매 ─────────────────────────────────────────────────────────────────────
@@ -892,7 +912,8 @@ function bbBuild(pos, lv) {
     cur.properties[pos].level = lv;
     const lvNm=lv===1?'별장🏡':'빌딩🏢';
     cur = bbAddLog(cur, `${players[myUid]?.name||'?'}: ${sp.nm} ${lvNm} 건설 -${BB_W(cost)}`);
-    return cur;
+    // 건설 후 턴 넘김
+    return bbAdvanceTurn(cur, false);
   });
   _bbBuildOpen = false;
   const bpEl = q('bb-build-panel');
@@ -944,10 +965,11 @@ function bbCheckBankruptcy(cur, uid, debt, creditor) {
       .forEach(pos=>{ delete cur.properties[pos]; });
   }
 
-  // 무제한 모드: 1명 남으면 우승
+  // 1명 남으면 항상 우승 (라운드제/무제한 모두)
   const alive = (cur.activePlayers||[]).filter(u=>!cur.bankrupt.includes(u));
-  if(alive.length===1 && cur.maxRounds===0) {
-    cur.winner=alive[0]; cur.ended=true; cur.phase='ended';
+  if(alive.length<=1) {
+    cur.winner=alive[0]||null; cur.ended=true; cur.phase='ended';
+    if(alive[0]) cur = bbAddLog(cur, `${players[alive[0]]?.name||'?'}: 최후 생존 우승! 🏆`);
   }
   return cur;
 }

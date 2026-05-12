@@ -47,7 +47,7 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
 .btn-primary{background:var(--accent);color:#080d17}
 .btn-secondary{background:var(--border);color:var(--text)}
 .btn-danger{background:var(--red);color:#fff}
-#login-err{margin-top:10px;font-size:11px;color:var(--red);display:none}
+#login-err{margin-top:10px;font-size:11px;color:var(--red);min-height:16px}
 
 /* APP & LAYOUT */
 #app{display:none;height:100vh;flex-direction:column}
@@ -161,6 +161,8 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
 .ocell::after{content:'';position:absolute;top:0;bottom:0;left:50%;width:1px;background:#4b2b12;transform:translateX(-.5px)}
 .ocell.edge-top::after{top:50%}.ocell.edge-bottom::after{bottom:50%}.ocell.edge-left::before{left:50%}.ocell.edge-right::before{right:50%}
 .ostone{width:26px;height:26px;border-radius:50%;position:relative;z-index:2;box-shadow:0 2px 5px rgba(0,0,0,.45)}
+.ocell-forbidden{background:rgba(255,107,107,.15) !important}
+.ocell-forbidden::before,.ocell-forbidden::after{opacity:.5 !important}
 .os0{background:radial-gradient(circle at 35% 30%,#777,#111 58%,#000);}
 .os1{background:radial-gradient(circle at 35% 30%,#fff,#ddd 62%,#aaa);}
 .olegend{display:flex;gap:10px;margin-bottom:8px;font-size:11px;flex-wrap:wrap}
@@ -262,8 +264,8 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
   .icon-btn{display:flex}
   .hcrumb{display:none}
   #mobile-chat-preview{display:flex}
-  .ocell{width:26px!important;height:26px!important}
-  .ostone{width:21px!important;height:21px!important}
+  .ocell{width:32px!important;height:32px!important}
+  .ostone{width:26px!important;height:26px!important}
   .bcell{width:40px!important;height:40px!important;font-size:13px!important}
   .b-col-hdr{width:40px!important;height:24px!important;font-size:13px!important}
   #bingo-myboard{grid-template-columns:repeat(5,40px)!important;gap:3px!important}
@@ -343,6 +345,8 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
 .bingo-dot.won{background:var(--accent) !important;box-shadow:0 0 10px rgba(56,217,169,.55) !important;animation:dotPop .4s cubic-bezier(.34,1.56,.64,1)}
 @keyframes dotPop{from{transform:scale(0)}to{transform:scale(1)}}
 .bcalled-chip{width:34px !important;height:34px !important;font-size:12px !important;animation:chipIn .28s cubic-bezier(.34,1.56,.64,1);box-shadow:0 0 8px rgba(56,217,169,.3) !important}
+.bcalled-chip.bcalled-new{animation:chipFlash .7s cubic-bezier(.34,1.56,.64,1);background:#fff !important;color:#080d17 !important;box-shadow:0 0 20px rgba(255,255,255,.8) !important}
+@keyframes chipFlash{0%{transform:scale(1.5);background:#fff}50%{transform:scale(1.2);background:var(--accent)}100%{transform:scale(1);background:var(--accent)}}
 .bnum-btn{width:38px !important;height:38px !important;border-radius:6px !important;transition:all .12s}
 .bnum-btn:hover:not(:disabled):not(.bcalled){box-shadow:0 0 10px rgba(56,217,169,.2);transform:scale(1.08)}
 /* 야구 SBO 패널 */

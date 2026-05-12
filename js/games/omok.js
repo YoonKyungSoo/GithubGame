@@ -76,7 +76,16 @@ function renderOmok(s){
   for(let r=0;r<13;r++) for(let c=0;c<13;c++){
     const cell=document.createElement('div'); cell.className='ocell'+(r===0?' edge-top':'')+(r===12?' edge-bottom':'')+(c===0?' edge-left':'')+(c===12?' edge-right':'');
     if(s.board[r][c]>0) cell.innerHTML=`<div class="ostone os${s.board[r][c]-1}"></div>`;
-    else if(isMe&&!s.winner&&!s.draw) cell.onclick=()=>placeOmok(r,c);
+    else if(isMe&&!s.winner&&!s.draw) {
+      // 흑돌(curIdx%2===0)인 경우 33 금지 칸 표시
+      const stone=(s.curIdx%2===0)?1:2;
+      cell.onclick=()=>placeOmok(r,c);
+      if(stone===1){
+        // 미리 33 체크해서 금지 칸 시각적 표시
+        const testBoard=s.board.map(row=>[...row]); testBoard[r][c]=1;
+        if(omokIs33(testBoard,r,c)){cell.classList.add('ocell-forbidden'); cell.onclick=()=>{ if(navigator.vibrate)navigator.vibrate([30,20,30]); };}
+      }
+    }
     bd.appendChild(cell);
   }
 }
@@ -133,21 +142,59 @@ function startNextOmokRound(){
 function passOmokTurn(){
   db.ref(`rooms/${roomId}/game/state`).transaction(s=>{ if(!s||s.winner)return s; s.curIdx++; if(s.mode==='team'){ const stone=((s.curIdx-1)%2===0)?1:2; if(stone===1)s.bIdx++; else s.wIdx++; } return resetTimerFields(s); });
 }
+// 오목 방향별 연속 수 계산 (정확히 5개만 카운트)
+function omokCountLine(board, r, c, stone, dr, dc) {
+  let n = 1;
+  for(let i=1;i<6;i++){if(board[r+dr*i]?.[c+dc*i]===stone)n++;else break;}
+  for(let i=1;i<6;i++){if(board[r-dr*i]?.[c-dc*i]===stone)n++;else break;}
+  return n;
+}
+
+// 흑돌 33 검사: 돌을 놓은 후 열린 3이 2개 이상인지 확인
+function omokIs33(board, r, c) {
+  const stone = 1; // 흑돌
+  const dirs = [[1,0],[0,1],[1,1],[1,-1]];
+  let threeCount = 0;
+  const size = board.length;
+
+  for(const [dr,dc] of dirs) {
+    // 이 방향 연속 흑돌 수
+    let cnt = 1;
+    let fi = 1, bi = 1;
+    for(;fi<=4;fi++){ if(board[r+dr*fi]?.[c+dc*fi]===stone)cnt++;else break; }
+    for(;bi<=4;bi++){ if(board[r-dr*bi]?.[c-dc*bi]===stone)cnt++;else break; }
+    if(cnt !== 3) continue;
+    // 양 끝이 모두 비어있는지 확인 (열린 3)
+    const fr=r+dr*fi, fc=c+dc*fi;
+    const br=r-dr*bi, bc=c-dc*bi;
+    const frontOpen = fr>=0&&fr<size&&fc>=0&&fc<size&&board[fr][fc]===0;
+    const backOpen  = br>=0&&br<size&&bc>=0&&bc<size&&board[br][bc]===0;
+    if(frontOpen && backOpen) threeCount++;
+  }
+  return threeCount >= 2;
+}
+
 function placeOmok(r,c) {
   if(navigator.vibrate) navigator.vibrate(30);
   db.ref(`rooms/${roomId}/game/state`).transaction(s => {
     if(!s || s.winner || s.board[r][c]!==0) return s;
     const stone = (s.curIdx % 2 === 0) ? 1 : 2;
+
+    // 흑돌(stone===1) 33 금지 규칙
+    // 돌을 임시 배치 후 판정
     s.board[r][c] = stone;
-    
+    if(stone === 1 && omokIs33(s.board, r, c)) {
+      s.board[r][c] = 0; // 착수 불가 → 원상복구
+      return s; // 트랜잭션 abort (아무 변화 없음)
+    }
+
+    // 정확히 5목만 승리 (6목 이상은 패배)
     let won = false;
     for(const[dr,dc]of[[1,0],[0,1],[1,1],[1,-1]]){
-      let n=1;
-      for(let i=1;i<5;i++){if(s.board[r+dr*i]?.[c+dc*i]===stone)n++;else break;}
-      for(let i=1;i<5;i++){if(s.board[r-dr*i]?.[c-dc*i]===stone)n++;else break;}
-      if(n>=5) won=true;
+      const n = omokCountLine(s.board, r, c, stone, dr, dc);
+      if(n === 5) won=true;
     }
-    
+
     if(won){ s.winner=stone; s.ended=true; const winIds=s.mode==='team'?(stone===1?s.blackTeam:s.whiteTeam):[myUid]; winIds.forEach(u=>s.scores[u]=(s.scores[u]||0)+10); }
     else {
       // 무승부 체크: 169칸 모두 채워졌는지 확인

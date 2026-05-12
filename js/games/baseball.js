@@ -91,6 +91,17 @@ function renderBaseball(s){
     const near = (s.guesses||[]).some(g=>!g.timeout && g.strikes===3) ? '3스트라이크' : '9회 종료 · 최고 근접도';
     ti.textContent=`${players[s.winner]?.name||'승자'} 승리! (${near})`; ti.className='turn-ind';
     showWinnerModal(`${players[s.winner]?.name||''}님 승리!`, `숫자야구 ${near}`);
+    // 게임 종료 시 모든 번호 공개
+    const secEl=q('bb-secrets-reveal');
+    if(secEl){
+      secEl.style.display='block';
+      secEl.innerHTML='<div style="font-size:11px;font-weight:bold;margin-bottom:6px;color:var(--accent)">🔓 각자의 번호 공개</div>' +
+        active.map(u=>`<div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--border)20">
+          <span style="color:${getPC(u)};font-weight:bold;min-width:60px">${esc(players[u]?.name||'')}</span>
+          <span style="font-size:16px;font-weight:bold;font-family:monospace;color:var(--text)">${s.secrets?.[u]||'???'}</span>
+          ${u===myUid?'<span style="font-size:9px;color:var(--muted)">(나)</span>':''}
+        </div>`).join('');
+    }
   } else if(setup){
     const done=Object.keys(s.secrets||{}).length;
     ti.textContent=hasSecret?`내 번호 저장 완료 (${done}/${active.length})`:`나만의 번호 3개를 입력해주세요 (${done}/${active.length})`;

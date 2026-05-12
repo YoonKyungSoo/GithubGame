@@ -1,6 +1,16 @@
 ﻿// =========================================================
 // 2. MINE SWEEPER
 // =========================================================
+// 모바일 롱프레스 헬퍼 (500ms 이상 터치 유지 = 깃발 설치)
+function addLongPress(el, fn) {
+  let timer=null;
+  el.addEventListener('touchstart',e=>{
+    timer=setTimeout(()=>{ e.preventDefault(); if(navigator.vibrate)navigator.vibrate(40); fn(); timer=null; },500);
+  },{passive:true});
+  el.addEventListener('touchend',()=>{ if(timer){clearTimeout(timer);timer=null;} });
+  el.addEventListener('touchmove',()=>{ if(timer){clearTimeout(timer);timer=null;} });
+}
+
 const MINE_ADJ_COLORS=['','#4dabf7','#38d9a9','#ff6b6b','#9775fa','#ffa94d','#74c0fc','#f06595','#adb5bd'];
 const MINE_SVG_FLAG=`<svg viewBox="0 0 20 20" width="16" height="16" style="display:block;margin:auto"><rect x="8.5" y="3" width="2" height="13" rx="1" fill="#adb5bd"/><polygon points="10.5,3 18,7 10.5,11" fill="#ff6b6b"/><rect x="5" y="16" width="10" height="2" rx="1" fill="#7f8c8d"/></svg>`;
 const MINE_SVG_BOMB=`<svg viewBox="0 0 20 20" width="16" height="16" style="display:block;margin:auto"><circle cx="10" cy="12" r="6" fill="#2d3748"/><rect x="9" y="4" width="2" height="5" rx="1" fill="#718096"/><line x1="5.5" y1="7.5" x2="3.5" y2="5.5" stroke="#718096" stroke-width="1.5" stroke-linecap="round"/><line x1="14.5" y1="7.5" x2="16.5" y2="5.5" stroke="#718096" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="10" r="1.5" fill="#4a5568" opacity="0.7"/></svg>`;
@@ -36,12 +46,12 @@ function renderMine(s){
   const canAct=isMe&&!s.gameOver&&!s.won;
   for(let r=0;r<size;r++)for(let c=0;c<size;c++){
     const cell=document.createElement('div'); cell.className='mcell'; const data=s.board?.[r]?.[c];
-    if(!data){ if(canAct){cell.onclick=()=>commitMineReveal(r,c); cell.oncontextmenu=e=>{e.preventDefault();flagMineCellTx(r,c);};} }
+    if(!data){ if(canAct){cell.onclick=()=>commitMineReveal(r,c); cell.oncontextmenu=e=>{e.preventDefault();flagMineCellTx(r,c);}; addLongPress(cell,()=>flagMineCellTx(r,c));} }
     else if(data.revealed){ cell.classList.add('revealed'); if(data.mine){cell.classList.add('mmine');cell.innerHTML=MINE_SVG_EXPLODE;}else if(data.adj>0){cell.textContent=data.adj;cell.style.color=MINE_ADJ_COLORS[data.adj]||'#4dabf7';} }
-    else if(data.flagged){ cell.classList.add('mflagged'); cell.innerHTML=MINE_SVG_FLAG; if(canAct)cell.onclick=()=>flagMineCellTx(r,c); }
+    else if(data.flagged){ cell.classList.add('mflagged'); cell.innerHTML=MINE_SVG_FLAG; if(canAct){cell.onclick=()=>flagMineCellTx(r,c); addLongPress(cell,()=>flagMineCellTx(r,c));} }
     else {
       if(s.gameOver&&data.mine){cell.innerHTML=MINE_SVG_BOMB;}
-      if(canAct){cell.onclick=()=>_flagMode?flagMineCellTx(r,c):commitMineReveal(r,c); cell.oncontextmenu=e=>{e.preventDefault();flagMineCellTx(r,c);};}
+      if(canAct){cell.onclick=()=>_flagMode?flagMineCellTx(r,c):commitMineReveal(r,c); cell.oncontextmenu=e=>{e.preventDefault();flagMineCellTx(r,c);}; addLongPress(cell,()=>flagMineCellTx(r,c));}
     }
     bd.appendChild(cell);
   }

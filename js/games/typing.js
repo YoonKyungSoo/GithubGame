@@ -3,7 +3,9 @@
 // =========================================================
 function initTyping(ap){
   const scores={}; ap.forEach(u=>scores[u]=0);
-  return withTimer({phase:'typing', activePlayers:ap, round:1, texts:TYPING_TEXTS, submissions:[], scores, ended:false}, TYPING_MS);
+  // 게임마다 랜덤 8개 문장 선택
+  const texts=[...TYPING_TEXTS].sort(()=>Math.random()-.5).slice(0,8);
+  return withTimer({phase:'typing', activePlayers:ap, round:1, texts, submissions:[], scores, ended:false}, TYPING_MS);
 }
 function renderTyping(s){
   renderCommonTimer(s); renderControls(s); if(isEndedState(s)) addTotalsOnce(s);
@@ -17,7 +19,7 @@ function renderTyping(s){
     q('typing-input-area').style.display='none'; return;
   }
   const maxRound = (s.texts||TYPING_TEXTS).length;
-  q('typing-round').textContent=`라운드 ${s.round} / ${Math.min(5,maxRound)}`;
+  q('typing-round').textContent=`라운드 ${s.round} / ${maxRound}`;
   q('typing-text').textContent=s.texts[s.round-1];
   const alreadySub = (s.submissions||[]).some(x=>x.uid===myUid);
   const canType = isActivePl()&&!alreadySub&&s.phase==='typing';
@@ -43,7 +45,8 @@ function renderTyping(s){
     if(isHost) setTimeout(()=>{
       db.ref(`rooms/${roomId}/game/state`).transaction(cur=>{
         if(!cur||cur.phase!=='reveal'||cur.round!==s.round)return cur;
-        if(cur.round>=5)return{...cur,ended:true};
+        const maxR=(cur.texts||TYPING_TEXTS).length;
+        if(cur.round>=maxR)return{...cur,ended:true};
         cur=applyPendingPlayers(cur); return resetTimerFields({...cur, round:cur.round+1, phase:'typing', submissions:[]});
       });
     }, 2500);

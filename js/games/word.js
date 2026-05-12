@@ -37,14 +37,23 @@ function passWordTurn(){ db.ref(`rooms/${roomId}/game/state`).transaction(s=>{ i
 function submitWord(){
   const inp=q('winput'); const word=inp.value.trim(); if(!word)return;
   if(!isHangulWord2(word)){alert('한글 2~15자만 가능합니다.');return;}
-  db.ref(`rooms/${roomId}/game/state`).once('value',snap=>{
-    const s=snap.val(); if(!s||s.activePlayers[s.curIdx]!==myUid||!isActivePl())return;
-    if(word[0]!==s.lastChar){alert(`"${s.lastChar}"(으)로 시작해야 합니다!`);return;}
-    if(s.used.includes(word)){alert('이미 사용된 단어입니다!');return;}
-    inp.value='';
-    const ns=Object.assign({},s.scores,{[myUid]:(s.scores[myUid]||0)+word.length});
-    const nu=[...s.used,word], nh=[...(s.hist||[]),{uid:myUid,word}];
-    db.ref(`rooms/${roomId}/game/state`).update(resetTimerFields({curWord:word, lastChar:word[word.length-1], used:nu, hist:nh, scores:ns, curIdx:(s.curIdx+1)%s.activePlayers.length, gameOver:nu.length>=20, ended:nu.length>=20}));
+  const s=_currentGame; if(!s||!isActivePl())return;
+  if(s.activePlayers[s.curIdx]!==myUid){return;}
+  if(word[0]!==s.lastChar){alert(`"${s.lastChar}"(으)로 시작해야 합니다!`);return;}
+  if((s.used||[]).includes(word)){alert('이미 사용된 단어입니다!');return;}
+  inp.value='';
+  db.ref(`rooms/${roomId}/game/state`).transaction(cur=>{
+    if(!cur||cur.gameOver)return cur;
+    if(cur.activePlayers[cur.curIdx]!==myUid)return cur;
+    if(word[0]!==cur.lastChar)return cur;
+    if((cur.used||[]).includes(word))return cur;
+    cur.scores=cur.scores||{}; cur.scores[myUid]=(cur.scores[myUid]||0)+word.length;
+    cur.used=[...(cur.used||[]),word];
+    cur.hist=[...(cur.hist||[]),{uid:myUid,word}];
+    cur.curWord=word; cur.lastChar=word[word.length-1];
+    cur.curIdx=(cur.curIdx+1)%cur.activePlayers.length;
+    cur.gameOver=cur.used.length>=20; cur.ended=cur.gameOver;
+    return resetTimerFields(cur);
   });
 }
 

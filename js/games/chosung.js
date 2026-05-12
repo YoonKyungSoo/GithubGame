@@ -2,7 +2,7 @@
 // 4. CHOSUNG (초성게임)
 // =========================================================
 function initChosung(ap){
-  const words=[...CHOSUNG_DB].sort(()=>Math.random()-.5).slice(0,5);
+  const words=[...CHOSUNG_DB].sort(()=>Math.random()-.5).slice(0,8);
   const scores={}; ap.forEach(u=>scores[u]=0);
   return withTimer({phase:'guessing', activePlayers:ap, round:0, words, correctOrder:[], scores, ended:false});
 }

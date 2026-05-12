@@ -1,4 +1,36 @@
 ﻿// =========================================================
+// =========================================================
+// 재접속 지원
+// =========================================================
+(function tryAutoRejoin(){
+  const savedRoom = sessionStorage.getItem('gg_room');
+  const savedName = sessionStorage.getItem('gg_name');
+  if(savedRoom && savedName) {
+    db.ref(`rooms/${savedRoom}`).once('value', snap=>{
+      if(!snap.exists()){ sessionStorage.removeItem('gg_room'); sessionStorage.removeItem('gg_name'); return; }
+      // 자동 재접속
+      q('inp-name').value = savedName;
+      q('inp-room').value = savedRoom;
+      q('login-err').innerHTML = `<span style="color:var(--accent)">이전 방(${savedRoom})에 자동 재접속합니다...</span>`;
+      setTimeout(()=>{ myName=savedName; roomId=savedRoom; isHost=false; enterRoom(); }, 600);
+    });
+  }
+})();
+
+// =========================================================
+// 플레이어 연결 끊김 배너
+// =========================================================
+let _dcBannerTimer = null;
+function showDisconnectBanner(name) {
+  const el = q('disconnect-banner');
+  if(!el) return;
+  el.textContent = `⚠️ "${name}"님이 연결이 끊겼습니다`;
+  el.style.display = 'block';
+  if(_dcBannerTimer) clearTimeout(_dcBannerTimer);
+  _dcBannerTimer = setTimeout(()=>{ el.style.display='none'; }, 6000);
+}
+
+// =========================================================
 // WINNER MODAL
 // =========================================================
 function showWinnerModal(title, sub=''){
@@ -16,16 +48,31 @@ function endFromModal(){ closeWinnerModal(); endGameToLobby(); }
 
 // Constants / DB
 const CHOSUNG_DB=[
+  // 과일
   {word:'사과',hint:'🍎 과일'},{word:'바나나',hint:'🍌 과일'},{word:'수박',hint:'🍉 과일'},{word:'포도',hint:'🍇 과일'},{word:'딸기',hint:'🍓 과일'},
-  {word:'복숭아',hint:'🍑 과일'},{word:'오렌지',hint:'🍊 과일'},{word:'파인애플',hint:'🍍 과일'},{word:'블루베리',hint:'🫐 과일'},
-  {word:'컴퓨터',hint:'💻 기기'},{word:'스마트폰',hint:'📱 기기'},{word:'키보드',hint:'⌨️ 기기'},{word:'마우스',hint:'🖱️ 기기'},{word:'모니터',hint:'🖥️ 기기'},
+  {word:'복숭아',hint:'🍑 과일'},{word:'오렌지',hint:'🍊 과일'},{word:'파인애플',hint:'🍍 과일'},{word:'블루베리',hint:'🫐 과일'},{word:'체리',hint:'🍒 과일'},{word:'망고',hint:'🥭 과일'},{word:'레몬',hint:'🍋 과일'},
+  // 기기
+  {word:'컴퓨터',hint:'💻 기기'},{word:'스마트폰',hint:'📱 기기'},{word:'키보드',hint:'⌨️ 기기'},{word:'마우스',hint:'🖱️ 기기'},{word:'모니터',hint:'🖥️ 기기'},{word:'이어폰',hint:'🎧 기기'},{word:'태블릿',hint:'📱 기기'},
+  // 동물
   {word:'강아지',hint:'🐶 동물'},{word:'고양이',hint:'🐱 동물'},{word:'토끼',hint:'🐰 동물'},{word:'기린',hint:'🦒 동물'},{word:'코끼리',hint:'🐘 동물'},
-  {word:'펭귄',hint:'🐧 동물'},{word:'돌고래',hint:'🐬 동물'},{word:'호랑이',hint:'🐯 동물'},{word:'사자',hint:'🦁 동물'},
+  {word:'펭귄',hint:'🐧 동물'},{word:'돌고래',hint:'🐬 동물'},{word:'호랑이',hint:'🐯 동물'},{word:'사자',hint:'🦁 동물'},{word:'원숭이',hint:'🐒 동물'},{word:'악어',hint:'🐊 동물'},{word:'독수리',hint:'🦅 동물'},
+  // 음식
   {word:'피자',hint:'🍕 음식'},{word:'치킨',hint:'🍗 음식'},{word:'라면',hint:'🍜 음식'},{word:'김치',hint:'🥬 음식'},{word:'떡볶이',hint:'🌶️ 음식'},
-  {word:'초밥',hint:'🍣 음식'},{word:'햄버거',hint:'🍔 음식'},{word:'아이스크림',hint:'🍦 음식'},
-  {word:'비행기',hint:'✈️ 교통수단'},{word:'자동차',hint:'🚗 교통수단'},{word:'지하철',hint:'🚇 교통수단'},{word:'자전거',hint:'🚲 교통수단'},
-  {word:'선생님',hint:'🏫 직업'},{word:'의사',hint:'🏥 직업'},{word:'소방관',hint:'🚒 직업'},{word:'경찰관',hint:'🚓 직업'},
-  {word:'축구',hint:'⚽ 스포츠'},{word:'야구',hint:'⚾ 스포츠'},{word:'농구',hint:'🏀 스포츠'},{word:'수영',hint:'🏊 스포츠'}
+  {word:'초밥',hint:'🍣 음식'},{word:'햄버거',hint:'🍔 음식'},{word:'아이스크림',hint:'🍦 음식'},{word:'파스타',hint:'🍝 음식'},{word:'삼겹살',hint:'🥩 음식'},{word:'된장찌개',hint:'🍲 음식'},{word:'비빔밥',hint:'🍚 음식'},
+  // 교통
+  {word:'비행기',hint:'✈️ 교통수단'},{word:'자동차',hint:'🚗 교통수단'},{word:'지하철',hint:'🚇 교통수단'},{word:'자전거',hint:'🚲 교통수단'},{word:'오토바이',hint:'🏍️ 교통수단'},{word:'버스',hint:'🚌 교통수단'},{word:'기차',hint:'🚂 교통수단'},
+  // 직업
+  {word:'선생님',hint:'🏫 직업'},{word:'의사',hint:'🏥 직업'},{word:'소방관',hint:'🚒 직업'},{word:'경찰관',hint:'🚓 직업'},{word:'요리사',hint:'👨‍🍳 직업'},{word:'변호사',hint:'⚖️ 직업'},{word:'가수',hint:'🎤 직업'},
+  // 스포츠
+  {word:'축구',hint:'⚽ 스포츠'},{word:'야구',hint:'⚾ 스포츠'},{word:'농구',hint:'🏀 스포츠'},{word:'수영',hint:'🏊 스포츠'},{word:'테니스',hint:'🎾 스포츠'},{word:'배드민턴',hint:'🏸 스포츠'},{word:'볼링',hint:'🎳 스포츠'},
+  // 자연/날씨
+  {word:'무지개',hint:'🌈 자연'},{word:'번개',hint:'⚡ 날씨'},{word:'태풍',hint:'🌀 날씨'},{word:'산불',hint:'🔥 자연'},{word:'눈사람',hint:'⛄ 겨울'},{word:'단풍',hint:'🍁 계절'},
+  // 장소
+  {word:'도서관',hint:'📚 장소'},{word:'병원',hint:'🏥 장소'},{word:'편의점',hint:'🏪 장소'},{word:'공항',hint:'✈️ 장소'},{word:'놀이공원',hint:'🎡 장소'},
+  // 물건
+  {word:'우산',hint:'☂️ 물건'},{word:'안경',hint:'👓 물건'},{word:'지갑',hint:'👛 물건'},{word:'시계',hint:'⌚ 물건'},{word:'냉장고',hint:'🧊 가전'},
+  // 기타
+  {word:'생일',hint:'🎂 기념일'},{word:'크리스마스',hint:'🎄 기념일'},{word:'졸업',hint:'🎓 기념일'},{word:'결혼',hint:'💒 기념일'}
 ];
 const TP_CATS=[
   {cat:'🍎 과일',opts:['사과','바나나','딸기','포도','수박','오렌지']},
@@ -58,7 +105,10 @@ const OX_Q = [
   {q:'김치는 발효 음식이다',a:'O'},{q:'라면은 보통 끓는 물로 조리한다',a:'O'},{q:'스마트폰은 전화 기능만 할 수 있다',a:'X'},{q:'비행기는 하늘을 날 수 있다',a:'O'},
   {q:'자전거는 보통 페달을 밟아 움직인다',a:'O'},{q:'겨울은 여름보다 항상 덥다',a:'X'},{q:'손흥민은 축구 선수로 알려져 있다',a:'O'},{q:'피아노에는 건반이 있다',a:'O'}
 ];
-const WORD_SET=new Set(['사과','하늘','바다','구름','나무','기차','사랑','학교','가령','가정','결혼','대학교','민주주의','설날','시험','인터넷','정치','종교','지구','통신','하천','바나나','수박','포도','딸기','고양이','강아지','토끼']);
+const WORD_SET=new Set([
+  '사과','하늘','바다','구름','나무','기차','사랑','학교','가령','가정','결혼','대학교','민주주의','설날','시험','인터넷','정치','종교','지구','통신','하천','바나나','수박','포도','딸기','고양이','강아지','토끼',
+  '나라','라디오','오리','이름','름세','세계','계단','단풍','풍선','선물','물고기','기억','억만장자','자동차','차가움','움직임','임금','금메달','달빛','빛나리','리듬','듬직','직원','원피스','스카프','프라이팬','팬케이크','크레파스','스티커','커피','피아노','노래','래퍼','퍼즐','즐거움','움막','막대','대통령','령포','포기','기회','회사','사탕','탕수육','육교','교실','실수','수업','업무','무게','게임','임시','시장','장난','난로','로봇','봇물','물건','건강','강산','산토끼','끼니','니코틴','틴에이저','저녁','녁두리','두부','부모','모자','자유','유행','행복','복숭아','아이','이슬','슬픔','픔새','새벽','벽돌','돌멩이','이별','별빛','빛살','살구','구름','름다','다람쥐','쥐불','불꽃','꽃잎','잎새','새콤','콤파스','스포츠','츠마','마음','음악','악기','기술','술래','래산','산책','책상','상자','자석','석탄','탄생','생각','각도','도레미','미소','소설','설명','명함','함박','박수','수학','학생','생일','일기','기린','린스','스무','무지개','개나리','리본','본인','인형','형광','광고','고구마','마라톤','톤수','수영','영화','화살','살인','인사','사탕','탕비실'
+]);
 
 const q=id=>document.getElementById(id);
 const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -72,14 +122,23 @@ function isHangulWord2(w){return typeof w==='string'&&/^[가-힣]{2,15}$/.test(w
 
 // Room Logic
 function createRoom(){
-  myName=q('inp-name').value.trim(); if(!myName)return;
+  myName=q('inp-name').value.trim(); if(!myName){ q('login-err').textContent='이름을 입력하세요.'; return; }
+  q('login-err').textContent='';
   roomId=Math.random().toString(36).substr(2,6).toUpperCase(); isHost=true; hostUid=myUid;
   db.ref(`rooms/${roomId}/hostUid`).set(myUid);
+  // 방장이 연결 끊기면 방 자동 삭제
+  db.ref(`rooms/${roomId}`).onDisconnect().remove();
   enterRoom();
 }
 function joinRoom(){
   myName=q('inp-name').value.trim(); const code=q('inp-room').value.trim().toUpperCase();
-  if(!myName||!code)return; roomId=code; isHost=false; enterRoom();
+  if(!myName||!code){ q('login-err').textContent='이름과 방 코드를 입력하세요.'; return; }
+  q('login-err').textContent='확인 중...';
+  db.ref(`rooms/${code}`).once('value', snap=>{
+    if(!snap.exists()){ q('login-err').textContent='❌ 존재하지 않는 방입니다.'; return; }
+    q('login-err').textContent='';
+    roomId=code; isHost=false; enterRoom();
+  });
 }
 function copyRoomCode(){
   navigator.clipboard.writeText(roomId).then(()=>alert("방 코드가 복사되었습니다!"));
@@ -87,10 +146,27 @@ function copyRoomCode(){
 function enterRoom(){
   db.ref(`rooms/${roomId}/players/${myUid}`).set({name:myName, online:true, joined:Date.now()});
   db.ref(`rooms/${roomId}/players/${myUid}`).onDisconnect().update({online:false});
+  // 세션 저장 (재접속 지원)
+  sessionStorage.setItem('gg_room', roomId);
+  sessionStorage.setItem('gg_name', myName);
   q('login-screen').style.display='none'; q('app').classList.add('on'); q('room-code').textContent=roomId;
-  
+
+  let _prevPlayers = {}; // 이전 플레이어 상태 추적
   db.ref(`rooms/${roomId}/players`).on('value', snap=>{
-    players=snap.val()||{};
+    const newPlayers = snap.val()||{};
+    // 게임 중 플레이어 연결 끊김 감지
+    if(_currentGame && !isEndedState(_currentGame)) {
+      const active = _currentGame.activePlayers || [];
+      active.forEach(u=>{
+        if(_prevPlayers[u]?.online && !newPlayers[u]?.online) {
+          const name = _prevPlayers[u]?.name || newPlayers[u]?.name || '?';
+          sysChat(`⚠️ ${name}님이 게임 중 연결이 끊겼습니다!`);
+          showDisconnectBanner(name);
+        }
+      });
+    }
+    _prevPlayers = {...newPlayers};
+    players=newPlayers;
     _uidOrder=Object.keys(players).sort((a,b)=>players[a].joined-players[b].joined);
     updatePlayerUI();
   });
@@ -125,10 +201,21 @@ function enterRoom(){
 }
 function leaveRoom(){
   if(!confirm('방에서 나가시겠습니까?')) return;
+  sessionStorage.removeItem('gg_room');
+  sessionStorage.removeItem('gg_name');
   if(isHost){
     const next=_uidOrder.find(u=>u!==myUid&&players[u]?.online);
-    if(next){ db.ref(`rooms/${roomId}/hostUid`).set(next); sysChat(`👑 방장 권한이 ${players[next]?.name||''}님에게 자동 위임되었습니다.`); }
-    else db.ref(`rooms/${roomId}/hostUid`).remove();
+    if(next){
+      // 방장 위임 + onDisconnect 취소
+      db.ref(`rooms/${roomId}`).onDisconnect().cancel();
+      db.ref(`rooms/${roomId}/hostUid`).set(next);
+      sysChat(`👑 방장 권한이 ${players[next]?.name||''}님에게 자동 위임되었습니다.`);
+    } else {
+      // 혼자 남은 방장이 나가면 방 폭파
+      db.ref(`rooms/${roomId}`).remove();
+      setTimeout(()=>location.reload(),100);
+      return;
+    }
   }
   sysChat(`${myName}님이 퇴장했습니다.`);
   db.ref(`rooms/${roomId}/players/${myUid}`).update({online:false});
