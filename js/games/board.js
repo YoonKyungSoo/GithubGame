@@ -75,15 +75,32 @@ const BB_CARDS = [
 
 const BB_W = n => n >= 10000 ? (n/10000|0)+'만' : n.toLocaleString(); // 원 → 만원 표시
 
-function bbGrid(p) { // grid row/col (1-indexed) for CSS grid
-  if(p===0)  return [11,11];
-  if(p===10) return [11,1];
-  if(p===20) return [1,1];
-  if(p===30) return [1,11];
-  if(p>=1  && p<=9)  return [11, 11-p];
-  if(p>=11 && p<=19) return [11-(p-10), 1];
-  if(p>=21 && p<=29) return [1, p-19];
-  return [p-29, 11];
+// SVG 보드 치수 상수
+const BB_COR = 64;   // 코너 셀
+const BB_CELL = 44;  // 일반 셀
+const BB_SZ = 524;   // BB_COR*2 + BB_CELL*9 = 128+396
+
+// 각 칸의 SVG 좌표 반환 {x,y,w,h,side}
+function bbCellRect(pos) {
+  const C=BB_COR, S=BB_CELL, Z=BB_SZ;
+  if(pos===0)  return {x:Z-C, y:Z-C, w:C, h:C, side:'br'};
+  if(pos===10) return {x:0,   y:Z-C, w:C, h:C, side:'bl'};
+  if(pos===20) return {x:0,   y:0,   w:C, h:C, side:'tl'};
+  if(pos===30) return {x:Z-C, y:0,   w:C, h:C, side:'tr'};
+  if(pos>=1 &&pos<=9)  return {x:Z-C-pos*S,       y:Z-C,          w:S, h:C, side:'b'};
+  if(pos>=11&&pos<=19) return {x:0,               y:Z-C-(pos-10)*S, w:C, h:S, side:'l'};
+  if(pos>=21&&pos<=29) return {x:C+(pos-21)*S,    y:0,             w:S, h:C, side:'t'};
+  if(pos>=31&&pos<=39) return {x:Z-C,             y:C+(pos-31)*S,  w:C, h:S, side:'r'};
+  return null;
+}
+
+// 색상 밝기 조절
+function bbShade(hex, amt) {
+  const n = parseInt(hex.replace('#',''), 16);
+  const r = Math.max(0, Math.min(255, (n>>16)+amt));
+  const g = Math.max(0, Math.min(255, ((n>>8)&0xff)+amt));
+  const b = Math.max(0, Math.min(255, (n&0xff)+amt));
+  return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');
 }
 
 function bbCalcRent(sp, props, pos, cur) {
@@ -202,72 +219,165 @@ function renderBoard(s) {
   }
 }
 
-// ─── 렌더: 보드 그리드 ────────────────────────────────────────────────────────
+// ─── 렌더: 보드 그리드 (SVG) ─────────────────────────────────────────────────
 
 function renderBBGrid(s) {
   const bd = q('bb-board');
   if(!bd) return;
-  bd.innerHTML = '';
+  const Z = BB_SZ;
+  let o = `<svg viewBox="0 0 ${Z} ${Z}" xmlns="http://www.w3.org/2000/svg" style="display:block;width:${Z}px;height:${Z}px;max-width:100%">`;
+  o += `<defs>
+    <radialGradient id="bbcg" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#162036"/>
+      <stop offset="100%" stop-color="#090e1c"/>
+    </radialGradient>
+  </defs>`;
+  // 보드 배경
+  o += `<rect width="${Z}" height="${Z}" rx="10" fill="#09101e"/>`;
+  o += `<rect x="1" y="1" width="${Z-2}" height="${Z-2}" rx="9" fill="none" stroke="#203050" stroke-width="1.5"/>`;
+  // 중앙 영역
+  o += bbSVGCenter(s, BB_COR, BB_COR, Z - BB_COR*2);
+  // 40칸
+  BB_SP.forEach(sp => { const r=bbCellRect(sp.pos); if(r) o+=bbSVGCell(sp,r,s); });
+  o += '</svg>';
+  bd.innerHTML = o;
+}
 
-  BB_SP.forEach(sp => {
-    const [gr, gc] = bbGrid(sp.pos);
-    const div = document.createElement('div');
-    div.className = 'bb-space';
-    div.style.gridRow = gr;
-    div.style.gridColumn = gc;
-
-    const isCorner = [0,10,20,30].includes(sp.pos);
-    if(isCorner) div.classList.add('bb-corner');
-
-    const prop = s.properties?.[sp.pos];
-    const tokensHere = (s.activePlayers||[]).filter(u =>
-      (s.pos?.[u]===sp.pos) && !s.bankrupt?.includes(u)
-    );
-
-    let inner = '';
-
-    if(sp.gr) {
-      // 색상 바
-      const color = BB_GC[sp.gr];
-      const lvl   = prop?.level || 0;
-      const lvlIcon = lvl===2 ? '🏢' : lvl===1 ? '🏡' : '';
-      const ownerColor = prop?.owner ? getPC(prop.owner) : 'transparent';
-      inner = `<div class="bb-cbar" style="background:${color}"></div>
-               <div class="bb-spnm">${esc(sp.nm)}</div>
-               ${lvlIcon ? `<div class="bb-bldg">${lvlIcon}</div>` : ''}
-               <div class="bb-own-dot" style="background:${ownerColor};opacity:${prop?.owner?1:0}"></div>`;
-    } else {
-      inner = `<div class="bb-spicon">${sp.icon||''}</div>
-               <div class="bb-spnm">${esc(sp.nm)}</div>`;
-    }
-
-    // 플레이어 토큰
-    if(tokensHere.length) {
-      inner += `<div class="bb-tokens">${
-        tokensHere.map(u=>`<div class="bb-token" style="background:${getPC(u)}" title="${esc(players[u]?.name||'')}"></div>`).join('')
-      }</div>`;
-    }
-
-    div.innerHTML = inner;
-    bd.appendChild(div);
-  });
-
-  // 가운데 영역
-  const center = document.createElement('div');
-  center.className = 'bb-center';
-  center.style.gridRow = '2/11';
-  center.style.gridColumn = '2/11';
+// 중앙 영역
+function bbSVGCenter(s, cx, cy, cs) {
+  const tx=cx+cs/2, ty=cy+cs/2;
+  let o = `<rect x="${cx}" y="${cy}" width="${cs}" height="${cs}" fill="url(#bbcg)"/>`;
   if(s.lastDice) {
-    const {d1,d2,isDouble} = s.lastDice;
-    const dieFace = n => ['','⚀','⚁','⚂','⚃','⚄','⚅'][n] || n;
-    center.innerHTML = `
-      <div style="font-size:28px;letter-spacing:4px">${dieFace(d1)} ${dieFace(d2)}</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:2px">${d1}+${d2}=${d1+d2}${isDouble?' <span style="color:var(--accent)">더블!</span>':''}</div>
-      <div style="font-size:9px;color:var(--muted);margin-top:8px;letter-spacing:2px">BOARD GAME</div>`;
+    const {d1,d2,isDouble}=s.lastDice;
+    const df=n=>['','⚀','⚁','⚂','⚃','⚄','⚅'][n]||n;
+    o+=`<text x="${tx}" y="${ty-22}" text-anchor="middle" dominant-baseline="middle" font-size="52">${df(d1)} ${df(d2)}</text>`;
+    o+=`<text x="${tx}" y="${ty+16}" text-anchor="middle" font-size="15" fill="#cdd9e5" font-family="'Courier New',monospace">${d1}+${d2}=${d1+d2}</text>`;
+    if(isDouble) o+=`<text x="${tx}" y="${ty+36}" text-anchor="middle" font-size="13" fill="#38d9a9" font-family="'Courier New',monospace">🎲 더블!</text>`;
   } else {
-    center.innerHTML = `<div style="font-size:32px">🗺️</div><div style="font-size:11px;color:var(--accent);font-weight:700;margin-top:4px;letter-spacing:1px">부루마블</div>`;
+    o+=`<text x="${tx}" y="${ty-18}" text-anchor="middle" font-size="54">🗺️</text>`;
+    o+=`<text x="${tx}" y="${ty+22}" text-anchor="middle" font-size="19" fill="#38d9a9" font-weight="bold" font-family="'Courier New',monospace" letter-spacing="3">부루마블</text>`;
+    o+=`<text x="${tx}" y="${ty+40}" text-anchor="middle" font-size="10" fill="#2a4060" font-family="'Courier New',monospace" letter-spacing="2">BOARD GAME</text>`;
   }
-  bd.appendChild(center);
+  return o;
+}
+
+// 칸 디스패처
+function bbSVGCell(sp, r, s) {
+  const prop = s.properties?.[sp.pos];
+  const tok  = (s.activePlayers||[]).filter(u=>s.pos?.[u]===sp.pos&&!s.bankrupt?.includes(u));
+  if(['br','bl','tl','tr'].includes(r.side)) return bbSVGCorner(sp,r,s,tok);
+  if(sp.gr)  return bbSVGProp(sp,r,s,prop,tok);
+  return bbSVGSpecial(sp,r,s,tok);
+}
+
+// ── 코너 칸 ──
+function bbSVGCorner(sp, r, s, tok) {
+  const {x,y,w,h,side}=r;
+  const cx=x+w/2, cy=y+h/2;
+  const cfg={
+    0: {bg:'#091e10',icon:'🏁',nm:'출발',nc:'#38d9a9',sub:'+20만',sc:'#1d7a45'},
+    10:{bg:'#1a140a',icon:'🏝️',nm:'무인도',nc:'#ffa94d',sub:'감옥',sc:'#7a5520'},
+    20:{bg:'#091422',icon:'🅿️',nm:'무료주차',nc:'#4dabf7',sub:'',sc:''},
+    30:{bg:'#1e0808',icon:'🚓',nm:'무인도로',nc:'#ff6b6b',sub:'이동!',sc:'#aa2222'},
+  }[sp.pos]||{bg:'#111d35',icon:sp.icon||'',nm:sp.nm,nc:'#8ab4d4',sub:'',sc:''};
+  let o=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${cfg.bg}"/>`;
+  o+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="#1e3050" stroke-width=".6"/>`;
+  o+=`<text x="${cx}" y="${cy-8}" text-anchor="middle" dominant-baseline="middle" font-size="27">${cfg.icon}</text>`;
+  o+=`<text x="${cx}" y="${cy+14}" text-anchor="middle" font-size="${cfg.nm.length>4?8:9.5}" fill="${cfg.nc}" font-family="'Courier New',monospace" font-weight="bold">${cfg.nm}</text>`;
+  if(cfg.sub) o+=`<text x="${cx}" y="${cy+25}" text-anchor="middle" font-size="7.5" fill="${cfg.sc}" font-family="'Courier New',monospace">${cfg.sub}</text>`;
+  tok.forEach((u,i)=>{o+=`<circle cx="${x+8+i*13}" cy="${y+8}" r="5.5" fill="${getPC(u)}" stroke="#fff" stroke-width="1.2"/>`;});
+  return o;
+}
+
+// ── 도시 칸 ──
+function bbSVGProp(sp, r, s, prop, tok) {
+  const {x,y,w,h,side}=r;
+  const col=BB_GC[sp.gr], level=prop?.level||0;
+  const ownerCol=prop?.owner?getPC(prop.owner):null;
+  let o=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#0f1a2e"/>`;
+  o+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${col}" opacity=".07"/>`;
+  // 색상 바 (안쪽 모서리)
+  const B=5;
+  const [bx,by,bw,bh]=side==='b'?[x,y,w,B]:side==='t'?[x,y+h-B,w,B]:side==='l'?[x+w-B,y,B,h]:[x,y,B,h];
+  o+=`<rect x="${bx}" y="${by}" width="${bw}" height="${bh}" fill="${col}"/>`;
+  // 이름 + 가격
+  const tx=x+w/2, ty=y+h/2;
+  const isV=(side==='b'||side==='t');
+  const nmy=isV?ty-3:ty;
+  o+=`<text x="${tx}" y="${nmy}" text-anchor="middle" dominant-baseline="middle" font-size="6.5" fill="#7aa0c0" font-family="'Courier New',monospace">${esc(sp.nm)}</text>`;
+  if(isV) o+=`<text x="${tx}" y="${ty+9}" text-anchor="middle" font-size="5.5" fill="#2e4a68" font-family="'Courier New',monospace">${sp.buy}만</text>`;
+  // 소유자 점
+  if(ownerCol){
+    const[dx,dy]=side==='b'?[x+w-6,y+h-8]:side==='t'?[x+w-6,y+8]:side==='l'?[x+8,y+h-6]:[x+w-8,y+h-6];
+    o+=`<circle cx="${dx}" cy="${dy}" r="4" fill="${ownerCol}" stroke="#fff" stroke-width=".8"/>`;
+  }
+  // 건물
+  if(level>=1) o+=bbSVGBuilding(x,y,w,h,level,col);
+  // 테두리
+  o+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="#182840" stroke-width=".5"/>`;
+  // 토큰
+  tok.forEach((u,i)=>{const[tx2,ty2]=bbTokPos(x,y,w,h,side,i);o+=`<circle cx="${tx2}" cy="${ty2}" r="5.5" fill="${getPC(u)}" stroke="#fff" stroke-width="1.3"/><circle cx="${tx2}" cy="${ty2-1.5}" r="2" fill="rgba(255,255,255,.3)"/>`;});
+  return o;
+}
+
+// ── 특수 칸 (황금열쇠 / 세금 / 공항) ──
+function bbSVGSpecial(sp, r, s, tok) {
+  const {x,y,w,h,side}=r;
+  const tx=x+w/2, ty=y+h/2;
+  const isV=(side==='b'||side==='t');
+  let o=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#0b1728"/>`;
+  const iSz=isV?16:13;
+  if(sp.t==='card'){
+    o+=`<text x="${tx}" y="${ty-5}" text-anchor="middle" dominant-baseline="middle" font-size="${iSz}">🔑</text>`;
+    o+=`<text x="${tx}" y="${ty+11}" text-anchor="middle" font-size="5.5" fill="#c0940a" font-family="'Courier New',monospace">황금열쇠</text>`;
+  } else if(sp.t==='tax'){
+    o+=`<text x="${tx}" y="${ty-5}" text-anchor="middle" dominant-baseline="middle" font-size="${iSz}">💸</text>`;
+    o+=`<text x="${tx}" y="${ty+10}" text-anchor="middle" font-size="6" fill="#dd7070" font-family="'Courier New',monospace">세금</text>`;
+    o+=`<text x="${tx}" y="${ty+19}" text-anchor="middle" font-size="5.5" fill="#994444" font-family="'Courier New',monospace">${sp.tax}만원</text>`;
+  } else if(sp.t==='airport'){
+    const prop=s.properties?.[sp.pos];
+    const oCol=prop?.owner?getPC(prop.owner):null;
+    o+=`<text x="${tx}" y="${ty-5}" text-anchor="middle" dominant-baseline="middle" font-size="${iSz}">✈️</text>`;
+    o+=`<text x="${tx}" y="${ty+11}" text-anchor="middle" font-size="5.5" fill="#7ab8e0" font-family="'Courier New',monospace">${esc(sp.nm)}</text>`;
+    if(oCol) o+=`<circle cx="${x+w-6}" cy="${y+7}" r="3.5" fill="${oCol}" stroke="#fff" stroke-width=".7"/>`;
+  }
+  o+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="#182840" stroke-width=".5"/>`;
+  tok.forEach((u,i)=>{const[tx2,ty2]=bbTokPos(x,y,w,h,side,i);o+=`<circle cx="${tx2}" cy="${ty2}" r="5.5" fill="${getPC(u)}" stroke="#fff" stroke-width="1.3"/>`;});
+  return o;
+}
+
+// ── 건물 SVG ──
+function bbSVGBuilding(x, y, w, h, level, color) {
+  const cx=x+w/2, cy=y+h/2;
+  const dark=bbShade(color,-55);
+  if(level===1) {
+    const bx=cx-7, by=cy-6;
+    return `<g><polygon points="${bx-1},${by+8} ${bx+7},${by} ${bx+15},${by+8}" fill="${dark}"/>
+      <rect x="${bx}" y="${by+8}" width="14" height="9" fill="${color}" opacity=".92" rx="1"/>
+      <rect x="${bx+4}" y="${by+11}" width="5" height="6" fill="#0a1420"/></g>`;
+  } else {
+    const bx=cx-6, by=cy-11;
+    return `<g><rect x="${bx}" y="${by}" width="12" height="19" fill="${color}" opacity=".88" rx="1"/>
+      <rect x="${bx}" y="${by}" width="12" height="4" fill="${dark}" rx="1"/>
+      <rect x="${bx+1}" y="${by+5}" width="3" height="2" fill="rgba(255,255,255,.55)"/>
+      <rect x="${bx+6}" y="${by+5}" width="3" height="2" fill="rgba(255,255,255,.55)"/>
+      <rect x="${bx+1}" y="${by+9}" width="3" height="2" fill="rgba(255,255,255,.55)"/>
+      <rect x="${bx+6}" y="${by+9}" width="3" height="2" fill="rgba(255,255,255,.55)"/>
+      <rect x="${bx+1}" y="${by+13}" width="3" height="2" fill="rgba(255,255,255,.55)"/>
+      <rect x="${bx+6}" y="${by+13}" width="3" height="2" fill="rgba(255,255,255,.55)"/></g>`;
+  }
+}
+
+// ── 토큰 위치 ──
+function bbTokPos(x, y, w, h, side, idx) {
+  const off=idx*12;
+  switch(side){
+    case'b': return[x+6+off, y+h-7];
+    case't': return[x+6+off, y+7];
+    case'l': return[x+7,     y+6+off];
+    case'r': return[x+w-7,   y+6+off];
+    default: return[x+w/2,   y+h/2];
+  }
 }
 
 // ─── 렌더: 플레이어 패널 ──────────────────────────────────────────────────────
