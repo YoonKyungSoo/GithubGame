@@ -76,9 +76,9 @@ const BB_CARDS = [
 const BB_W = n => n >= 10000 ? (n/10000|0)+'만' : n.toLocaleString(); // 원 → 만원 표시
 
 // SVG 보드 치수 상수
-const BB_COR = 64;   // 코너 셀
-const BB_CELL = 44;  // 일반 셀
-const BB_SZ = 524;   // BB_COR*2 + BB_CELL*9 = 128+396
+const BB_COR = 90;   // 코너 셀
+const BB_CELL = 60;  // 일반 셀
+const BB_SZ = 720;   // BB_COR*2 + BB_CELL*9 = 180+540
 
 // 각 칸의 SVG 좌표 반환 {x,y,w,h,side}
 function bbCellRect(pos) {
@@ -243,21 +243,38 @@ function renderBoard(s) {
 function renderBBGrid(s) {
   const bd = q('bb-board');
   if(!bd) return;
-  const Z = BB_SZ;
+  const Z = BB_SZ, C = BB_COR;
   let o = `<svg viewBox="0 0 ${Z} ${Z}" xmlns="http://www.w3.org/2000/svg" style="display:block;width:${Z}px;height:${Z}px;max-width:100%">`;
   o += `<defs>
-    <radialGradient id="bbcg" cx="50%" cy="50%" r="60%">
-      <stop offset="0%" stop-color="#162036"/>
-      <stop offset="100%" stop-color="#090e1c"/>
-    </radialGradient>
+    <linearGradient id="bbWood" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7b4f2a"/>
+      <stop offset="40%" stop-color="#a0673a"/>
+      <stop offset="100%" stop-color="#6b3e1e"/>
+    </linearGradient>
+    <linearGradient id="bbFelt" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2e8b57"/>
+      <stop offset="100%" stop-color="#1f6b3e"/>
+    </linearGradient>
+    <filter id="bbShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="rgba(0,0,0,0.25)"/>
+    </filter>
   </defs>`;
-  // 보드 배경
-  o += `<rect width="${Z}" height="${Z}" rx="10" fill="#09101e"/>`;
-  o += `<rect x="1" y="1" width="${Z-2}" height="${Z-2}" rx="9" fill="none" stroke="#203050" stroke-width="1.5"/>`;
-  // 중앙 영역
-  o += bbSVGCenter(s, BB_COR, BB_COR, Z - BB_COR*2);
+  // 나무 프레임 (외곽)
+  o += `<rect width="${Z}" height="${Z}" rx="14" fill="url(#bbWood)"/>`;
+  // 나무결 장식 줄
+  for(let i=0;i<4;i++) {
+    o += `<rect x="${6+i*2}" y="${6+i*2}" width="${Z-12-i*4}" height="${Z-12-i*4}" rx="${11-i}" fill="none" stroke="rgba(0,0,0,0.08)" stroke-width=".8"/>`;
+  }
+  // 보드 크림 배경
+  o += `<rect x="8" y="8" width="${Z-16}" height="${Z-16}" rx="9" fill="#f5f0e0"/>`;
+  // 중앙 펠트
+  o += `<rect x="${C}" y="${C}" width="${Z-C*2}" height="${Z-C*2}" fill="url(#bbFelt)"/>`;
+  // 중앙 내용 (주사위/타이틀)
+  o += bbSVGCenter(s, C, C, Z - C*2);
   // 40칸
   BB_SP.forEach(sp => { const r=bbCellRect(sp.pos); if(r) o+=bbSVGCell(sp,r,s); });
+  // 전체 보드 얇은 테두리
+  o += `<rect x="8" y="8" width="${Z-16}" height="${Z-16}" rx="9" fill="none" stroke="rgba(0,0,0,0.12)" stroke-width="1"/>`;
   o += '</svg>';
   bd.innerHTML = o;
 }
@@ -265,17 +282,20 @@ function renderBBGrid(s) {
 // 중앙 영역
 function bbSVGCenter(s, cx, cy, cs) {
   const tx=cx+cs/2, ty=cy+cs/2;
-  let o = `<rect x="${cx}" y="${cy}" width="${cs}" height="${cs}" fill="url(#bbcg)"/>`;
+  // 펠트 배경은 renderBBGrid에서 이미 그림 — 여기서는 내부 장식만
+  let o='';
+  // 얇은 금색 테두리
+  o += `<rect x="${cx+4}" y="${cy+4}" width="${cs-8}" height="${cs-8}" fill="none" stroke="rgba(200,160,80,0.35)" stroke-width="1.5" rx="3"/>`;
   if(s.lastDice) {
     const {d1,d2,isDouble}=s.lastDice;
     const df=n=>['','⚀','⚁','⚂','⚃','⚄','⚅'][n]||n;
-    o+=`<text x="${tx}" y="${ty-22}" text-anchor="middle" dominant-baseline="middle" font-size="52">${df(d1)} ${df(d2)}</text>`;
-    o+=`<text x="${tx}" y="${ty+16}" text-anchor="middle" font-size="15" fill="#cdd9e5" font-family="'Courier New',monospace">${d1}+${d2}=${d1+d2}</text>`;
-    if(isDouble) o+=`<text x="${tx}" y="${ty+36}" text-anchor="middle" font-size="13" fill="#38d9a9" font-family="'Courier New',monospace">🎲 더블!</text>`;
+    o+=`<text x="${tx}" y="${ty-20}" text-anchor="middle" dominant-baseline="middle" font-size="70">${df(d1)} ${df(d2)}</text>`;
+    o+=`<text x="${tx}" y="${ty+30}" text-anchor="middle" font-size="18" fill="#d4edda" font-family="'Courier New',monospace" font-weight="bold">${d1}+${d2}=${d1+d2}</text>`;
+    if(isDouble) o+=`<text x="${tx}" y="${ty+54}" text-anchor="middle" font-size="15" fill="#90ee90" font-family="'Courier New',monospace">🎲 더블!</text>`;
   } else {
-    o+=`<text x="${tx}" y="${ty-18}" text-anchor="middle" font-size="54">🗺️</text>`;
-    o+=`<text x="${tx}" y="${ty+22}" text-anchor="middle" font-size="19" fill="#38d9a9" font-weight="bold" font-family="'Courier New',monospace" letter-spacing="3">부루마블</text>`;
-    o+=`<text x="${tx}" y="${ty+40}" text-anchor="middle" font-size="10" fill="#2a4060" font-family="'Courier New',monospace" letter-spacing="2">BOARD GAME</text>`;
+    o+=`<text x="${tx}" y="${ty-26}" text-anchor="middle" font-size="72">🗺️</text>`;
+    o+=`<text x="${tx}" y="${ty+36}" text-anchor="middle" font-size="26" fill="#d4edda" font-weight="bold" font-family="'Courier New',monospace" letter-spacing="5">부루마블</text>`;
+    o+=`<text x="${tx}" y="${ty+58}" text-anchor="middle" font-size="12" fill="rgba(200,240,210,0.45)" font-family="'Courier New',monospace" letter-spacing="3">BOARD GAME</text>`;
   }
   return o;
 }
@@ -294,17 +314,26 @@ function bbSVGCorner(sp, r, s, tok) {
   const {x,y,w,h,side}=r;
   const cx=x+w/2, cy=y+h/2;
   const cfg={
-    0: {bg:'#091e10',icon:'🏁',nm:'출발',nc:'#38d9a9',sub:'+20만',sc:'#1d7a45'},
-    10:{bg:'#1a140a',icon:'🏝️',nm:'무인도',nc:'#ffa94d',sub:'감옥',sc:'#7a5520'},
-    20:{bg:'#091422',icon:'🅿️',nm:'무료주차',nc:'#4dabf7',sub:'',sc:''},
-    30:{bg:'#1e0808',icon:'🚓',nm:'무인도로',nc:'#ff6b6b',sub:'이동!',sc:'#aa2222'},
-  }[sp.pos]||{bg:'#111d35',icon:sp.icon||'',nm:sp.nm,nc:'#8ab4d4',sub:'',sc:''};
+    0: {bg:'#e8f5e9',border:'#43a047',icon:'🏁',nm:'출발',nc:'#1b5e20',sub:'+20만',sc:'#2e7d32'},
+    10:{bg:'#fff8e1',border:'#fb8c00',icon:'🏝️',nm:'무인도',nc:'#bf360c',sub:'감옥',sc:'#e65100'},
+    20:{bg:'#e3f2fd',border:'#1e88e5',icon:'🅿️',nm:'무료주차',nc:'#0d47a1',sub:'FREE',sc:'#1565c0'},
+    30:{bg:'#fce4ec',border:'#e53935',icon:'🚓',nm:'무인도로',nc:'#b71c1c',sub:'이동!',sc:'#c62828'},
+  }[sp.pos]||{bg:'#f5f0e0',border:'#999',icon:sp.icon||'',nm:sp.nm,nc:'#333',sub:'',sc:''};
   let o=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${cfg.bg}"/>`;
-  o+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="#1e3050" stroke-width=".6"/>`;
-  o+=`<text x="${cx}" y="${cy-8}" text-anchor="middle" dominant-baseline="middle" font-size="27">${cfg.icon}</text>`;
-  o+=`<text x="${cx}" y="${cy+14}" text-anchor="middle" font-size="${cfg.nm.length>4?8:9.5}" fill="${cfg.nc}" font-family="'Courier New',monospace" font-weight="bold">${cfg.nm}</text>`;
-  if(cfg.sub) o+=`<text x="${cx}" y="${cy+25}" text-anchor="middle" font-size="7.5" fill="${cfg.sc}" font-family="'Courier New',monospace">${cfg.sub}</text>`;
-  tok.forEach((u,i)=>{o+=`<circle cx="${x+8+i*13}" cy="${y+8}" r="5.5" fill="${getPC(u)}" stroke="#fff" stroke-width="1.2"/>`;});
+  // 컬러 테두리 (inner side만: 코너에 따라 2면)
+  const bw=3;
+  if(sp.pos===0)  { o+=`<rect x="${x}" y="${y}" width="${bw}" height="${h}" fill="${cfg.border}"/>`;o+=`<rect x="${x}" y="${y}" width="${w}" height="${bw}" fill="${cfg.border}"/>`; }
+  if(sp.pos===10) { o+=`<rect x="${x+w-bw}" y="${y}" width="${bw}" height="${h}" fill="${cfg.border}"/>`;o+=`<rect x="${x}" y="${y}" width="${w}" height="${bw}" fill="${cfg.border}"/>`; }
+  if(sp.pos===20) { o+=`<rect x="${x+w-bw}" y="${y}" width="${bw}" height="${h}" fill="${cfg.border}"/>`;o+=`<rect x="${x}" y="${y+h-bw}" width="${w}" height="${bw}" fill="${cfg.border}"/>`; }
+  if(sp.pos===30) { o+=`<rect x="${x}" y="${y}" width="${bw}" height="${h}" fill="${cfg.border}"/>`;o+=`<rect x="${x}" y="${y+h-bw}" width="${w}" height="${bw}" fill="${cfg.border}"/>`; }
+  // 아이콘 (크게)
+  o+=`<text x="${cx}" y="${cy-12}" text-anchor="middle" dominant-baseline="middle" font-size="38">${cfg.icon}</text>`;
+  // 이름
+  o+=`<text x="${cx}" y="${cy+20}" text-anchor="middle" font-size="${cfg.nm.length>4?9:11}" fill="${cfg.nc}" font-family="'Courier New',monospace" font-weight="bold">${cfg.nm}</text>`;
+  if(cfg.sub) o+=`<text x="${cx}" y="${cy+34}" text-anchor="middle" font-size="8.5" fill="${cfg.sc}" font-family="'Courier New',monospace">${cfg.sub}</text>`;
+  // 전체 외곽선
+  o+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="rgba(0,0,0,0.18)" stroke-width="1"/>`;
+  tok.forEach((u,i)=>{o+=`<circle cx="${x+12+i*18}" cy="${y+12}" r="7.5" fill="${getPC(u)}" stroke="#fff" stroke-width="1.8"/>`;});
   return o;
 }
 
@@ -313,29 +342,45 @@ function bbSVGProp(sp, r, s, prop, tok) {
   const {x,y,w,h,side}=r;
   const col=BB_GC[sp.gr], level=prop?.level||0;
   const ownerCol=prop?.owner?getPC(prop.owner):null;
-  let o=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#0f1a2e"/>`;
-  o+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${col}" opacity=".07"/>`;
+  const BAR=12; // 색상 바 두께
+  // 크림 배경
+  let o=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#fdfcf7"/>`;
   // 색상 바 (안쪽 모서리)
-  const B=5;
-  const [bx,by,bw,bh]=side==='b'?[x,y,w,B]:side==='t'?[x,y+h-B,w,B]:side==='l'?[x+w-B,y,B,h]:[x,y,B,h];
+  let bx,by,bw,bh;
+  if(side==='b')     {bx=x;       by=y;       bw=w;   bh=BAR;}
+  else if(side==='t'){bx=x;       by=y+h-BAR; bw=w;   bh=BAR;}
+  else if(side==='l'){bx=x+w-BAR; by=y;       bw=BAR; bh=h;}
+  else               {bx=x;       by=y;       bw=BAR; bh=h;}
   o+=`<rect x="${bx}" y="${by}" width="${bw}" height="${bh}" fill="${col}"/>`;
-  // 이름 + 가격
-  const tx=x+w/2, ty=y+h/2;
-  const isV=(side==='b'||side==='t');
-  const nmy=isV?ty-3:ty;
-  o+=`<text x="${tx}" y="${nmy}" text-anchor="middle" dominant-baseline="middle" font-size="6.5" fill="#7aa0c0" font-family="'Courier New',monospace">${esc(sp.nm)}</text>`;
-  if(isV) o+=`<text x="${tx}" y="${ty+9}" text-anchor="middle" font-size="5.5" fill="#2e4a68" font-family="'Courier New',monospace">${sp.buy}만</text>`;
+  // 건물 표시 (색상 바 위에)
+  if(level>=1) o+=bbSVGBuilding(bx,by,bw,bh,level,col);
+  // 텍스트 위치 계산
+  let ntx,nmy,pry;
+  if(side==='b')     {ntx=x+w/2;               nmy=y+BAR+26; pry=y+BAR+40;}
+  else if(side==='t'){ntx=x+w/2;               nmy=y+22;     pry=y+36;}
+  else if(side==='l'){ntx=x+(w-BAR)/2;         nmy=y+h/2-6;  pry=y+h/2+8;}
+  else               {ntx=x+BAR+(w-BAR)/2;     nmy=y+h/2-6;  pry=y+h/2+8;}
+  const nm=esc(sp.nm);
+  const nmFz=nm.length>4?8:9.5;
+  o+=`<text x="${ntx}" y="${nmy}" text-anchor="middle" font-size="${nmFz}" fill="#1a1a1a" font-family="'Courier New',monospace" font-weight="bold">${nm}</text>`;
+  o+=`<text x="${ntx}" y="${pry}" text-anchor="middle" font-size="7.5" fill="#555" font-family="'Courier New',monospace">${sp.buy}만</text>`;
   // 소유자 점
   if(ownerCol){
-    const[dx,dy]=side==='b'?[x+w-6,y+h-8]:side==='t'?[x+w-6,y+8]:side==='l'?[x+8,y+h-6]:[x+w-8,y+h-6];
-    o+=`<circle cx="${dx}" cy="${dy}" r="4" fill="${ownerCol}" stroke="#fff" stroke-width=".8"/>`;
+    let ox,oy;
+    if(side==='b')     {ox=x+w-8; oy=y+h-9;}
+    else if(side==='t'){ox=x+w-8; oy=y+BAR+9;}
+    else if(side==='l'){ox=x+9;   oy=y+h-9;}
+    else               {ox=x+w-9; oy=y+h-9;}
+    o+=`<circle cx="${ox}" cy="${oy}" r="6" fill="${ownerCol}" stroke="#fff" stroke-width="1.4"/>`;
   }
-  // 건물
-  if(level>=1) o+=bbSVGBuilding(x,y,w,h,level,col);
   // 테두리
-  o+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="#182840" stroke-width=".5"/>`;
+  o+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="rgba(0,0,0,0.15)" stroke-width=".75"/>`;
   // 토큰
-  tok.forEach((u,i)=>{const[tx2,ty2]=bbTokPos(x,y,w,h,side,i);o+=`<circle cx="${tx2}" cy="${ty2}" r="5.5" fill="${getPC(u)}" stroke="#fff" stroke-width="1.3"/><circle cx="${tx2}" cy="${ty2-1.5}" r="2" fill="rgba(255,255,255,.3)"/>`;});
+  tok.forEach((u,i)=>{
+    const[tx2,ty2]=bbTokPos(x,y,w,h,side,i);
+    o+=`<circle cx="${tx2}" cy="${ty2}" r="7.5" fill="${getPC(u)}" stroke="#fff" stroke-width="1.8"/>`;
+    o+=`<circle cx="${tx2}" cy="${ty2-2.5}" r="2.5" fill="rgba(255,255,255,.4)"/>`;
+  });
   return o;
 }
 
@@ -344,58 +389,74 @@ function bbSVGSpecial(sp, r, s, tok) {
   const {x,y,w,h,side}=r;
   const tx=x+w/2, ty=y+h/2;
   const isV=(side==='b'||side==='t');
-  let o=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#0b1728"/>`;
-  const iSz=isV?16:13;
+  // 배경색 결정
+  const bgMap={card:'#fffde7',tax:'#fff5f5',airport:'#f0f8ff'};
+  const bg=bgMap[sp.t]||'#fdfcf7';
+  let o=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${bg}"/>`;
+  const iSz=isV?22:17;
+  // 아이콘 y위치
+  const iconY = isV ? ty-10 : ty-8;
+  const nm1Y  = isV ? ty+12 : ty+10;
+  const nm2Y  = isV ? ty+23 : ty+21;
   if(sp.t==='card'){
-    o+=`<text x="${tx}" y="${ty-5}" text-anchor="middle" dominant-baseline="middle" font-size="${iSz}">🔑</text>`;
-    o+=`<text x="${tx}" y="${ty+11}" text-anchor="middle" font-size="5.5" fill="#c0940a" font-family="'Courier New',monospace">황금열쇠</text>`;
+    o+=`<text x="${tx}" y="${iconY}" text-anchor="middle" dominant-baseline="middle" font-size="${iSz}">🔑</text>`;
+    o+=`<text x="${tx}" y="${nm1Y}" text-anchor="middle" font-size="8" fill="#b8860b" font-family="'Courier New',monospace" font-weight="bold">황금열쇠</text>`;
   } else if(sp.t==='tax'){
-    o+=`<text x="${tx}" y="${ty-5}" text-anchor="middle" dominant-baseline="middle" font-size="${iSz}">💸</text>`;
-    o+=`<text x="${tx}" y="${ty+10}" text-anchor="middle" font-size="6" fill="#dd7070" font-family="'Courier New',monospace">세금</text>`;
-    o+=`<text x="${tx}" y="${ty+19}" text-anchor="middle" font-size="5.5" fill="#994444" font-family="'Courier New',monospace">${sp.tax}만원</text>`;
+    o+=`<text x="${tx}" y="${iconY}" text-anchor="middle" dominant-baseline="middle" font-size="${iSz}">💸</text>`;
+    o+=`<text x="${tx}" y="${nm1Y}" text-anchor="middle" font-size="9" fill="#cc2222" font-family="'Courier New',monospace" font-weight="bold">세금</text>`;
+    o+=`<text x="${tx}" y="${nm2Y}" text-anchor="middle" font-size="8" fill="#aa2222" font-family="'Courier New',monospace">${sp.tax}만원</text>`;
   } else if(sp.t==='airport'){
     const prop=s.properties?.[sp.pos];
     const oCol=prop?.owner?getPC(prop.owner):null;
-    o+=`<text x="${tx}" y="${ty-5}" text-anchor="middle" dominant-baseline="middle" font-size="${iSz}">✈️</text>`;
-    o+=`<text x="${tx}" y="${ty+11}" text-anchor="middle" font-size="5.5" fill="#7ab8e0" font-family="'Courier New',monospace">${esc(sp.nm)}</text>`;
-    if(oCol) o+=`<circle cx="${x+w-6}" cy="${y+7}" r="3.5" fill="${oCol}" stroke="#fff" stroke-width=".7"/>`;
+    o+=`<text x="${tx}" y="${iconY}" text-anchor="middle" dominant-baseline="middle" font-size="${iSz}">✈️</text>`;
+    const apnm=esc(sp.nm); const apFz=apnm.length>5?7:8;
+    o+=`<text x="${tx}" y="${nm1Y}" text-anchor="middle" font-size="${apFz}" fill="#1565c0" font-family="'Courier New',monospace" font-weight="bold">${apnm}</text>`;
+    if(oCol) o+=`<circle cx="${x+w-9}" cy="${y+9}" r="5.5" fill="${oCol}" stroke="#fff" stroke-width="1.2"/>`;
   }
-  o+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="#182840" stroke-width=".5"/>`;
-  tok.forEach((u,i)=>{const[tx2,ty2]=bbTokPos(x,y,w,h,side,i);o+=`<circle cx="${tx2}" cy="${ty2}" r="5.5" fill="${getPC(u)}" stroke="#fff" stroke-width="1.3"/>`;});
+  o+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="rgba(0,0,0,0.15)" stroke-width=".75"/>`;
+  tok.forEach((u,i)=>{
+    const[tx2,ty2]=bbTokPos(x,y,w,h,side,i);
+    o+=`<circle cx="${tx2}" cy="${ty2}" r="7.5" fill="${getPC(u)}" stroke="#fff" stroke-width="1.8"/>`;
+    o+=`<circle cx="${tx2}" cy="${ty2-2.5}" r="2.5" fill="rgba(255,255,255,.4)"/>`;
+  });
   return o;
 }
 
-// ── 건물 SVG ──
-function bbSVGBuilding(x, y, w, h, level, color) {
-  const cx=x+w/2, cy=y+h/2;
-  const dark=bbShade(color,-55);
+// ── 건물 SVG (색상 바 위에 그림) ──
+// bx,by,bw,bh = 색상 바 좌표
+function bbSVGBuilding(bx, by, bw, bh, level, color) {
+  const cx=bx+bw/2, cy=by+bh/2;
+  const light=bbShade(color, 70);
+  const dark=bbShade(color, -60);
   if(level===1) {
-    const bx=cx-7, by=cy-6;
-    return `<g><polygon points="${bx-1},${by+8} ${bx+7},${by} ${bx+15},${by+8}" fill="${dark}"/>
-      <rect x="${bx}" y="${by+8}" width="14" height="9" fill="${color}" opacity=".92" rx="1"/>
-      <rect x="${bx+4}" y="${by+11}" width="5" height="6" fill="#0a1420"/></g>`;
+    // 집 모양 (삼각 지붕 + 사각 본체)
+    const hw=Math.min(bw*0.55,10), hh=Math.min(bh*0.45,6);
+    return `<g>
+      <polygon points="${cx},${cy-hh-4} ${cx-hw-2},${cy-1} ${cx+hw+2},${cy-1}" fill="${dark}"/>
+      <rect x="${cx-hw}" y="${cy-1}" width="${hw*2}" height="${hh+2}" fill="${light}" rx="1"/>
+      <rect x="${cx-2}" y="${cy+2}" width="4" height="${hh}" fill="rgba(0,0,0,0.35)" rx=".5"/>
+    </g>`;
   } else {
-    const bx=cx-6, by=cy-11;
-    return `<g><rect x="${bx}" y="${by}" width="12" height="19" fill="${color}" opacity=".88" rx="1"/>
-      <rect x="${bx}" y="${by}" width="12" height="4" fill="${dark}" rx="1"/>
-      <rect x="${bx+1}" y="${by+5}" width="3" height="2" fill="rgba(255,255,255,.55)"/>
-      <rect x="${bx+6}" y="${by+5}" width="3" height="2" fill="rgba(255,255,255,.55)"/>
-      <rect x="${bx+1}" y="${by+9}" width="3" height="2" fill="rgba(255,255,255,.55)"/>
-      <rect x="${bx+6}" y="${by+9}" width="3" height="2" fill="rgba(255,255,255,.55)"/>
-      <rect x="${bx+1}" y="${by+13}" width="3" height="2" fill="rgba(255,255,255,.55)"/>
-      <rect x="${bx+6}" y="${by+13}" width="3" height="2" fill="rgba(255,255,255,.55)"/></g>`;
+    // 호텔 모양 (직사각형 빌딩)
+    const hw=Math.min(bw*0.5,9), hh=Math.min(bh*0.6,8);
+    return `<g>
+      <rect x="${cx-hw}" y="${cy-hh}" width="${hw*2}" height="${hh*2}" fill="${light}" rx="1.5"/>
+      <rect x="${cx-hw}" y="${cy-hh}" width="${hw*2}" height="3" fill="${dark}" rx="1"/>
+      <rect x="${cx-hw+1}" y="${cy-hh+4}" width="3" height="2" fill="rgba(0,0,0,0.25)" rx=".3"/>
+      <rect x="${cx+hw-4}" y="${cy-hh+4}" width="3" height="2" fill="rgba(0,0,0,0.25)" rx=".3"/>
+    </g>`;
   }
 }
 
 // ── 토큰 위치 ──
 function bbTokPos(x, y, w, h, side, idx) {
-  const off=idx*12;
+  const off=idx*16;
   switch(side){
-    case'b': return[x+6+off, y+h-7];
-    case't': return[x+6+off, y+7];
-    case'l': return[x+7,     y+6+off];
-    case'r': return[x+w-7,   y+6+off];
-    default: return[x+w/2,   y+h/2];
+    case'b': return[x+10+off, y+h-11];
+    case't': return[x+10+off, y+11];
+    case'l': return[x+10,     y+10+off];
+    case'r': return[x+w-10,   y+10+off];
+    default: return[x+w/2,    y+h/2];
   }
 }
 
