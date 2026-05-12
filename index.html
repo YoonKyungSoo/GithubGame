@@ -625,6 +625,7 @@
 
       <!-- 부루마블 -->
       <div id="view-board" class="view">
+        <!-- 상단 헤더 -->
         <div class="ghdr">
           <div>
             <div class="vtitle">🎲 부루마블</div>
@@ -634,28 +635,29 @@
           <button class="btn btn-secondary" onclick="backToLobby()">나가기</button>
         </div>
 
-        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start">
+        <!-- 플레이어 자본금 바 (상단 가로 스크롤) -->
+        <div id="bb-money-bar"></div>
 
-          <!-- 보드 그리드 -->
+        <!-- 보드 + 주사위 오버레이 -->
+        <div class="bb-board-area">
           <div class="bb-board-wrap">
             <div id="bb-board" class="bb-board"></div>
           </div>
+          <!-- 주사위 / 액션 오버레이 (내 차례일 때) -->
+          <div id="bb-dice-overlay"></div>
+        </div>
 
-          <!-- 사이드 패널 -->
-          <div style="flex:1;min-width:170px;display:flex;flex-direction:column;gap:8px">
-
-            <!-- 플레이어 카드 목록 -->
-            <div style="font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:2px">플레이어</div>
-            <div id="bb-players" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px"></div>
-
-            <!-- 액션 영역 -->
-            <div id="bb-actions"></div>
-
-            <!-- 게임 로그 -->
-            <div style="font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:4px">게임 로그</div>
-            <div id="bb-log" style="font-size:10px;line-height:1.6;max-height:180px;overflow-y:auto;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:8px;color:var(--muted)"></div>
+        <!-- 하단: 구매/카드/감옥 액션 + 로그 -->
+        <div class="bb-bottom-row">
+          <div id="bb-actions" style="flex:1;min-width:220px"></div>
+          <div style="flex:0 0 180px;min-width:0">
+            <div style="font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:4px">📋 게임 로그</div>
+            <div id="bb-log" style="font-size:10px;line-height:1.7;max-height:140px;overflow-y:auto;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:8px;color:var(--muted)"></div>
           </div>
         </div>
+
+        <!-- 건설 패널 (별도 행) -->
+        <div id="bb-players" style="display:none"></div>
 
         <div id="board-win" class="winner-banner" style="display:none;margin-top:14px">
           <div class="wtext" id="board-win-text"></div>

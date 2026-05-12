@@ -223,7 +223,8 @@ function renderBoard(s) {
   if(ri) ri.textContent = '라운드 '+(s.maxRounds===0 ? s.round+' (무제한)' : s.round+' / '+s.maxRounds);
 
   renderBBGrid(s);
-  renderBBPlayers(s);
+  renderBBMoneyBar(s);
+  renderBBDiceOverlay(s);
   renderBBActions(s);
   renderBBLog(s);
 
@@ -288,10 +289,11 @@ function bbSVGCenter(s, cx, cy, cs) {
   o += `<rect x="${cx+4}" y="${cy+4}" width="${cs-8}" height="${cs-8}" fill="none" stroke="rgba(200,160,80,0.35)" stroke-width="1.5" rx="3"/>`;
   if(s.lastDice) {
     const {d1,d2,isDouble}=s.lastDice;
-    const df=n=>['','⚀','⚁','⚂','⚃','⚄','⚅'][n]||n;
-    o+=`<text x="${tx}" y="${ty-20}" text-anchor="middle" dominant-baseline="middle" font-size="70">${df(d1)} ${df(d2)}</text>`;
-    o+=`<text x="${tx}" y="${ty+30}" text-anchor="middle" font-size="18" fill="#d4edda" font-family="'Courier New',monospace" font-weight="bold">${d1}+${d2}=${d1+d2}</text>`;
-    if(isDouble) o+=`<text x="${tx}" y="${ty+54}" text-anchor="middle" font-size="15" fill="#90ee90" font-family="'Courier New',monospace">🎲 더블!</text>`;
+    const dSz=80;
+    o += bbDiceSVG(d1, tx-dSz-6, ty-dSz/2, dSz);
+    o += bbDiceSVG(d2, tx+6,     ty-dSz/2, dSz);
+    o+=`<text x="${tx}" y="${ty+52}" text-anchor="middle" font-size="18" fill="#d4edda" font-family="'Courier New',monospace" font-weight="bold">${d1}+${d2}=${d1+d2}</text>`;
+    if(isDouble) o+=`<text x="${tx}" y="${ty+76}" text-anchor="middle" font-size="15" fill="#90ee90" font-family="'Courier New',monospace">✨ 더블! 한 번 더!</text>`;
   } else {
     o+=`<text x="${tx}" y="${ty-26}" text-anchor="middle" font-size="72">🗺️</text>`;
     o+=`<text x="${tx}" y="${ty+36}" text-anchor="middle" font-size="26" fill="#d4edda" font-weight="bold" font-family="'Courier New',monospace" letter-spacing="5">부루마블</text>`;
@@ -333,7 +335,7 @@ function bbSVGCorner(sp, r, s, tok) {
   if(cfg.sub) o+=`<text x="${cx}" y="${cy+34}" text-anchor="middle" font-size="8.5" fill="${cfg.sc}" font-family="'Courier New',monospace">${cfg.sub}</text>`;
   // 전체 외곽선
   o+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="rgba(0,0,0,0.18)" stroke-width="1"/>`;
-  tok.forEach((u,i)=>{o+=`<circle cx="${x+12+i*18}" cy="${y+12}" r="7.5" fill="${getPC(u)}" stroke="#fff" stroke-width="1.8"/>`;});
+  tok.forEach((u,i)=>{o+=bbTokenSVG(x+12+i*18, y+14, getPC(u));});
   return o;
 }
 
@@ -352,34 +354,37 @@ function bbSVGProp(sp, r, s, prop, tok) {
   else if(side==='l'){bx=x+w-BAR; by=y;       bw=BAR; bh=h;}
   else               {bx=x;       by=y;       bw=BAR; bh=h;}
   o+=`<rect x="${bx}" y="${by}" width="${bw}" height="${bh}" fill="${col}"/>`;
-  // 건물 표시 (색상 바 위에)
-  if(level>=1) o+=bbSVGBuilding(bx,by,bw,bh,level,col);
+  // 건물: b/t는 셀 내부에, l/r는 바 위에 소형으로
+  if(level>=1) {
+    if(side==='b')      o+=bbBuildingSVG(x+w/2, y+BAR+64, level, col);
+    else if(side==='t') o+=bbBuildingSVG(x+w/2, y+52,     level, col);
+    else                o+=bbBuildingSVG(bx+bw/2, by+bh/2, level, col, true);
+  }
   // 텍스트 위치 계산
   let ntx,nmy,pry;
-  if(side==='b')     {ntx=x+w/2;               nmy=y+BAR+26; pry=y+BAR+40;}
-  else if(side==='t'){ntx=x+w/2;               nmy=y+22;     pry=y+36;}
-  else if(side==='l'){ntx=x+(w-BAR)/2;         nmy=y+h/2-6;  pry=y+h/2+8;}
-  else               {ntx=x+BAR+(w-BAR)/2;     nmy=y+h/2-6;  pry=y+h/2+8;}
+  if(side==='b')     {ntx=x+w/2;           nmy=y+BAR+24; pry=y+BAR+38;}
+  else if(side==='t'){ntx=x+w/2;           nmy=y+20;     pry=y+34;}
+  else if(side==='l'){ntx=x+(w-BAR)/2;     nmy=y+h/2-6;  pry=y+h/2+8;}
+  else               {ntx=x+BAR+(w-BAR)/2; nmy=y+h/2-6;  pry=y+h/2+8;}
   const nm=esc(sp.nm);
   const nmFz=nm.length>4?8:9.5;
   o+=`<text x="${ntx}" y="${nmy}" text-anchor="middle" font-size="${nmFz}" fill="#1a1a1a" font-family="'Courier New',monospace" font-weight="bold">${nm}</text>`;
   o+=`<text x="${ntx}" y="${pry}" text-anchor="middle" font-size="7.5" fill="#555" font-family="'Courier New',monospace">${sp.buy}만</text>`;
-  // 소유자 점
+  // 소유자 도트
   if(ownerCol){
     let ox,oy;
-    if(side==='b')     {ox=x+w-8; oy=y+h-9;}
-    else if(side==='t'){ox=x+w-8; oy=y+BAR+9;}
-    else if(side==='l'){ox=x+9;   oy=y+h-9;}
-    else               {ox=x+w-9; oy=y+h-9;}
-    o+=`<circle cx="${ox}" cy="${oy}" r="6" fill="${ownerCol}" stroke="#fff" stroke-width="1.4"/>`;
+    if(side==='b')     {ox=x+w-9; oy=y+h-10;}
+    else if(side==='t'){ox=x+w-9; oy=y+BAR+10;}
+    else if(side==='l'){ox=x+9;   oy=y+9;}
+    else               {ox=x+w-9; oy=y+9;}
+    o+=`<circle cx="${ox}" cy="${oy}" r="6" fill="${ownerCol}" stroke="#fff" stroke-width="1.5"/>`;
   }
   // 테두리
   o+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="rgba(0,0,0,0.15)" stroke-width=".75"/>`;
-  // 토큰
+  // 토큰 (사람 모양)
   tok.forEach((u,i)=>{
     const[tx2,ty2]=bbTokPos(x,y,w,h,side,i);
-    o+=`<circle cx="${tx2}" cy="${ty2}" r="7.5" fill="${getPC(u)}" stroke="#fff" stroke-width="1.8"/>`;
-    o+=`<circle cx="${tx2}" cy="${ty2-2.5}" r="2.5" fill="rgba(255,255,255,.4)"/>`;
+    o+=bbTokenSVG(tx2, ty2, getPC(u));
   });
   return o;
 }
@@ -416,54 +421,85 @@ function bbSVGSpecial(sp, r, s, tok) {
   o+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="rgba(0,0,0,0.15)" stroke-width=".75"/>`;
   tok.forEach((u,i)=>{
     const[tx2,ty2]=bbTokPos(x,y,w,h,side,i);
-    o+=`<circle cx="${tx2}" cy="${ty2}" r="7.5" fill="${getPC(u)}" stroke="#fff" stroke-width="1.8"/>`;
-    o+=`<circle cx="${tx2}" cy="${ty2-2.5}" r="2.5" fill="rgba(255,255,255,.4)"/>`;
+    o+=bbTokenSVG(tx2, ty2, getPC(u));
   });
   return o;
 }
 
-// ── 건물 SVG (색상 바 위에 그림) ──
-// bx,by,bw,bh = 색상 바 좌표
-function bbSVGBuilding(bx, by, bw, bh, level, color) {
-  const cx=bx+bw/2, cy=by+bh/2;
-  const light=bbShade(color, 70);
-  const dark=bbShade(color, -60);
+// ── 주사위 SVG (에셋 기반) ──
+function bbDiceSVG(n, x, y, sz) {
+  const r=sz/60;
+  const dps={1:[[30,30]],2:[[18,18],[42,42]],3:[[18,18],[30,30],[42,42]],
+    4:[[18,18],[42,18],[18,42],[42,42]],5:[[18,18],[42,18],[30,30],[18,42],[42,42]],
+    6:[[18,15],[42,15],[18,30],[42,30],[18,45],[42,45]]};
+  const dots=(dps[n]||[]);
+  let o=`<g transform="translate(${x},${y}) scale(${r})">`;
+  o+=`<rect x="1" y="1" width="58" height="58" rx="9" fill="white" stroke="#ccc" stroke-width="1.5"/>`;
+  dots.forEach(([dx,dy])=>{o+=`<circle cx="${dx}" cy="${dy}" r="5.5" fill="#2c2c2a"/>`;});
+  o+='</g>';
+  return o;
+}
+
+// ── 플레이어 토큰 SVG (에셋: 사람 모양) ──
+// cx,cy = 토큰 중심 좌표
+function bbTokenSVG(cx, cy, color) {
+  const s=0.27; // 60×80 → 16×21.6
+  const tx=cx-30*s, ty=cy-38*s;
+  return `<g transform="translate(${tx},${ty}) scale(${s})">
+    <ellipse cx="30" cy="72" rx="18" ry="6" fill="${color}" opacity="0.28"/>
+    <ellipse cx="30" cy="60" rx="14" ry="8" fill="${color}"/>
+    <rect x="22" y="28" width="16" height="32" rx="4" fill="${color}"/>
+    <circle cx="30" cy="22" r="14" fill="${color}"/>
+    <circle cx="25" cy="19" r="3.5" fill="white" opacity="0.85"/>
+    <circle cx="35" cy="19" r="3.5" fill="white" opacity="0.85"/>
+    <path d="M24 26 Q30 31 36 26" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
+  </g>`;
+}
+
+// ── 건물 SVG (에셋: 집/호텔 모양) ──
+// cx,cy = 건물 중심, small=true이면 바 위에 표시할 초소형
+function bbBuildingSVG(cx, cy, level, color, small=false) {
+  const dark=bbShade(color,-55);
   if(level===1) {
-    // 집 모양 (삼각 지붕 + 사각 본체)
-    const hw=Math.min(bw*0.55,10), hh=Math.min(bh*0.45,6);
-    return `<g>
-      <polygon points="${cx},${cy-hh-4} ${cx-hw-2},${cy-1} ${cx+hw+2},${cy-1}" fill="${dark}"/>
-      <rect x="${cx-hw}" y="${cy-1}" width="${hw*2}" height="${hh+2}" fill="${light}" rx="1"/>
-      <rect x="${cx-2}" y="${cy+2}" width="4" height="${hh}" fill="rgba(0,0,0,0.35)" rx=".5"/>
+    const s=small?0.18:0.46;
+    const tx=cx-25*s, ty=cy-24*s; // 집의 무게중심 약 (25,24) 기준
+    return `<g transform="translate(${tx},${ty}) scale(${s})">
+      <polygon points="25,5 45,22 5,22" fill="${dark}"/>
+      <rect x="12" y="22" width="26" height="20" fill="${color}" rx="1"/>
+      <rect x="20" y="30" width="10" height="12" fill="rgba(0,0,0,0.38)" rx="1"/>
     </g>`;
   } else {
-    // 호텔 모양 (직사각형 빌딩)
-    const hw=Math.min(bw*0.5,9), hh=Math.min(bh*0.6,8);
-    return `<g>
-      <rect x="${cx-hw}" y="${cy-hh}" width="${hw*2}" height="${hh*2}" fill="${light}" rx="1.5"/>
-      <rect x="${cx-hw}" y="${cy-hh}" width="${hw*2}" height="3" fill="${dark}" rx="1"/>
-      <rect x="${cx-hw+1}" y="${cy-hh+4}" width="3" height="2" fill="rgba(0,0,0,0.25)" rx=".3"/>
-      <rect x="${cx+hw-4}" y="${cy-hh+4}" width="3" height="2" fill="rgba(0,0,0,0.25)" rx=".3"/>
+    const s=small?0.16:0.40;
+    const tx=cx-30*s, ty=cy-30*s;
+    return `<g transform="translate(${tx},${ty}) scale(${s})">
+      <rect x="8" y="20" width="44" height="34" fill="${color}" rx="2"/>
+      <polygon points="30,4 52,20 8,20" fill="${dark}"/>
+      <rect x="14" y="26" width="8" height="8" fill="rgba(255,255,255,0.75)" rx="1"/>
+      <rect x="26" y="26" width="8" height="8" fill="rgba(255,255,255,0.75)" rx="1"/>
+      <rect x="38" y="26" width="8" height="8" fill="rgba(255,255,255,0.75)" rx="1"/>
+      <rect x="24" y="38" width="12" height="14" fill="rgba(0,0,0,0.35)" rx="1"/>
     </g>`;
   }
 }
 
-// ── 토큰 위치 ──
+// ── 토큰 위치 (사람 모형: 16px 폭, 22px 높이) ──
 function bbTokPos(x, y, w, h, side, idx) {
-  const off=idx*16;
+  const off=idx*15;
   switch(side){
-    case'b': return[x+10+off, y+h-11];
-    case't': return[x+10+off, y+11];
-    case'l': return[x+10,     y+10+off];
-    case'r': return[x+w-10,   y+10+off];
-    default: return[x+w/2,    y+h/2];
+    case'b': return[x+9+off, y+h-14];
+    case't': return[x+9+off, y+14];
+    case'l': return[x+9,     y+12+off];
+    case'r': return[x+w-9,   y+12+off];
+    default: return[x+w/2,   y+h/2];
   }
 }
 
-// ─── 렌더: 플레이어 패널 ──────────────────────────────────────────────────────
+// ─── 렌더: 플레이어 자본금 바 (상단 가로형) ──────────────────────────────────
 
-function renderBBPlayers(s) {
-  const el = q('bb-players');
+function renderBBPlayers(s) { renderBBMoneyBar(s); } // 하위 호환
+
+function renderBBMoneyBar(s) {
+  const el = q('bb-money-bar');
   if(!el) return;
   el.innerHTML = (s.activePlayers||[]).map(u => {
     const isBankrupt = s.bankrupt?.includes(u);
@@ -472,19 +508,50 @@ function renderBBPlayers(s) {
     const posName    = BB_SP[s.pos?.[u]||0]?.nm || '';
     const color      = getPC(u);
     const netW       = bbNetWorth(s, u);
-    return `<div class="bb-pcard${isBankrupt?' bb-bankrupt':''}" style="border-color:${color}40">
-      <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px">
-        <div class="bb-token" style="background:${color};flex-shrink:0"></div>
-        <span style="font-weight:700;font-size:11px;color:${color};flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(players[u]?.name||'?')}</span>
-        ${isJail?'<span style="font-size:9px">🏝️</span>':''}
-        ${isBankrupt?'<span style="font-size:9px;color:var(--red)">파산</span>':''}
-        ${s.jailCard?.[u]?'<span style="font-size:9px">🔒</span>':''}
+    const isCur      = s.activePlayers?.[s.turnIdx]===u && !s.ended;
+    // 사람 토큰 미니 SVG
+    const tokSVG=`<svg width="22" height="30" viewBox="0 0 60 80" style="flex-shrink:0">
+      <ellipse cx="30" cy="72" rx="18" ry="6" fill="${color}" opacity="0.25"/>
+      <ellipse cx="30" cy="60" rx="14" ry="8" fill="${color}"/>
+      <rect x="22" y="28" width="16" height="32" rx="4" fill="${color}"/>
+      <circle cx="30" cy="22" r="14" fill="${color}"/>
+      <circle cx="25" cy="19" r="3.5" fill="white" opacity="0.85"/>
+      <circle cx="35" cy="19" r="3.5" fill="white" opacity="0.85"/>
+      <path d="M24 26 Q30 31 36 26" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </svg>`;
+    return `<div class="bb-mcard${isBankrupt?' bb-bankrupt':''}${isCur?' bb-mcard-cur':''}" style="border-color:${color}${isCur?'':'55'}">
+      ${tokSVG}
+      <div style="flex:1;min-width:0">
+        <div style="font-size:10px;font-weight:bold;color:${color};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:70px">
+          ${esc(players[u]?.name?.slice(0,6)||'?')}${isJail?' 🏝️':''}${isBankrupt?' 💀':''}
+        </div>
+        <div style="font-size:13px;font-weight:800;color:var(--text);line-height:1.2">${BB_W(money)}</div>
+        <div style="font-size:9px;color:var(--muted)">${esc(posName)}</div>
       </div>
-      <div style="font-size:13px;font-weight:700;color:var(--text)">${BB_W(money)}</div>
-      <div style="font-size:9px;color:var(--muted);margin-top:1px">순자산 ${BB_W(netW>0?netW:0)}</div>
-      <div style="font-size:9px;color:var(--muted)">${esc(posName)}</div>
     </div>`;
   }).join('');
+}
+
+// ─── 렌더: 주사위 오버레이 ────────────────────────────────────────────────────
+
+function renderBBDiceOverlay(s) {
+  const el = q('bb-dice-overlay');
+  if(!el) return;
+  const curUid = s.activePlayers?.[s.turnIdx];
+  const isMyTurn = curUid === myUid && isActivePl() && !s.ended;
+  if(s.phase === 'rolling' && isMyTurn && !s.jail?.[myUid]?.inJail) {
+    el.innerHTML = `<button class="bb-big-dice-btn" onclick="bbDoRoll()">
+      <svg width="48" height="48" viewBox="0 0 60 60" style="margin-bottom:4px;display:block">
+        <rect x="1" y="1" width="58" height="58" rx="9" fill="white" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+        <circle cx="18" cy="18" r="5.5" fill="#1a1a1a"/><circle cx="42" cy="42" r="5.5" fill="#1a1a1a"/>
+        <circle cx="42" cy="18" r="5.5" fill="#1a1a1a"/><circle cx="18" cy="42" r="5.5" fill="#1a1a1a"/>
+        <circle cx="18" cy="30" r="5.5" fill="#1a1a1a"/><circle cx="42" cy="30" r="5.5" fill="#1a1a1a"/>
+      </svg>
+      <span style="display:block;font-size:14px;font-weight:bold">🎲 주사위 굴리기</span>
+    </button>`;
+  } else {
+    el.innerHTML = '';
+  }
 }
 
 // ─── 렌더: 액션 버튼 ─────────────────────────────────────────────────────────
@@ -517,12 +584,13 @@ function renderBBActions(s) {
         </div>
         <div id="bb-build-panel" style="display:none;margin-top:8px"></div>`;
     } else {
-      el.innerHTML = `
-        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
-          <button class="btn btn-primary" style="min-width:130px;font-size:13px" onclick="bbDoRoll()">🎲 주사위 굴리기</button>
-          ${buildable.length?`<button class="btn btn-secondary" onclick="bbToggleBuild()">🏗️ 건설</button>`:''}
-        </div>
-        <div id="bb-build-panel" style="display:none;margin-top:8px"></div>`;
+      // 주사위는 오버레이가 담당 — 여기에는 건설 버튼만
+      el.innerHTML = buildable.length
+        ? `<div style="display:flex;gap:8px;justify-content:center">
+             <button class="btn btn-secondary" onclick="bbToggleBuild()">🏗️ 건물 건설</button>
+           </div>
+           <div id="bb-build-panel" style="display:none;margin-top:8px"></div>`
+        : `<div id="bb-build-panel" style="display:none"></div>`;
     }
 
   } else if(s.phase === 'buying' && isMyTurn) {
