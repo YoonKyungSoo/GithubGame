@@ -95,10 +95,10 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
 /* 게임 모드: 사이드바 숨기고 화면 최대화 */
 #body.game-mode #sb{display:none}
 #body.game-mode #main > .view{max-width:none}
-#body.game-mode #main{padding:12px 16px;overflow:hidden}
-/* 부루마블: 스크롤 없이 한 화면에 모두 표시 */
+#body.game-mode #main{padding:12px 16px}
+/* 부루마블: 뷰포트에 맞게 자연스럽게 들어가도록 */
 #view-board{max-width:none!important}
-#view-board.active{overflow:hidden;flex:1;min-height:0;display:flex;flex-direction:column}
+#view-board.active{display:flex;flex-direction:column}
 .vtitle{font-size:16px;font-weight:bold;margin-bottom:3px}
 .vsub{font-size:10px;color:var(--muted);margin-bottom:14px}
 .ghdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;gap:10px;flex-wrap:wrap}
@@ -234,9 +234,14 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
 /* 게임 로그 (컴팩트 한 줄 스트립) */
 .bb-log-strip{flex-shrink:0;font-size:9px;line-height:1.5;max-height:46px;overflow-y:auto;background:var(--card);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--muted);margin-top:4px;scrollbar-width:none}
 .bb-log-strip::-webkit-scrollbar{display:none}
-/* 보드 영역 — 남은 공간 모두 사용, 스크롤 없음 */
-.bb-board-area{display:flex;justify-content:center;align-items:flex-start;flex:1;min-height:0;overflow:hidden}
-.bb-board-wrap{display:flex;justify-content:center;align-items:flex-start;width:100%;height:100%;max-width:720px}
+/* 보드 영역 — 뷰포트 높이에 맞게 보드 크기 자동 제한 (잘림 없음) */
+.bb-board-area{display:flex;justify-content:center;align-items:flex-start;padding:4px 0}
+.bb-board-wrap{
+  /* 보드는 정사각형이므로 max-width = 최대 높이와 동일
+     뷰포트 높이 - (헤더+액션+자본금바+로그+여백 ≈ 260px) 안에 들어오게 */
+  max-width:min(720px, calc(100vh - 260px));
+  width:100%;
+}
 .bb-board{display:block;border-radius:14px;box-shadow:0 14px 50px rgba(0,0,0,.5),0 6px 20px rgba(0,0,0,.35);width:100%;overflow:hidden}
 /* 하위 호환 (이전 오버레이 등) */
 .bb-bottom-row{display:none}
@@ -293,9 +298,10 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
   .bnum-btn{width:32px!important;height:32px!important}
   .bsetup-cell{width:44px!important;height:44px!important;font-size:13px!important}
   .bsetup-num{width:34px!important;height:34px!important;font-size:11px!important}
-  /* 부루마블 모바일 — 평면 표시, 스크롤 없음 */
+  /* 부루마블 모바일 */
   .bb-board{border-radius:10px}
-  .bb-board-wrap{max-width:calc(100vw - 16px)!important}
+  /* 모바일: 가로폭 vs (뷰포트높이 - 약 200px) 중 작은 값으로 제한 */
+  .bb-board-wrap{max-width:min(calc(100vw - 16px), calc(100vh - 200px))!important}
   .bb-mcard{min-width:80px;padding:4px 6px;gap:4px;border-radius:7px}
   #bb-money-bar{gap:4px;padding:3px 0 5px}
   .bb-action-box{padding:6px 10px;gap:6px}
