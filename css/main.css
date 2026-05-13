@@ -95,9 +95,10 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
 /* 게임 모드: 사이드바 숨기고 화면 최대화 */
 #body.game-mode #sb{display:none}
 #body.game-mode #main > .view{max-width:none}
-#body.game-mode #main{padding:12px 16px}
-/* 부루마블은 특히 넓게 */
+#body.game-mode #main{padding:12px 16px;overflow:hidden}
+/* 부루마블: 스크롤 없이 한 화면에 모두 표시 */
 #view-board{max-width:none!important}
+#view-board.active{overflow:hidden;flex:1;min-height:0;display:flex;flex-direction:column}
 .vtitle{font-size:16px;font-weight:bold;margin-bottom:3px}
 .vsub{font-size:10px;color:var(--muted);margin-bottom:14px}
 .ghdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;gap:10px;flex-wrap:wrap}
@@ -217,28 +218,33 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
 
 /* BOARD GAME (부루마블) */
 /* 자본금 바 */
-#bb-money-bar{display:flex;gap:8px;overflow-x:auto;padding:6px 0 10px;flex-shrink:0;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
-#bb-money-bar::-webkit-scrollbar{height:3px}#bb-money-bar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-.bb-mcard{display:flex;align-items:center;gap:7px;padding:8px 10px;background:var(--card);border:2px solid var(--border);border-radius:10px;flex-shrink:0;min-width:100px;transition:border-color .2s,box-shadow .2s}
-.bb-mcard-cur{border-color:var(--accent)!important;box-shadow:0 0 12px rgba(56,217,169,.25)}
-/* 보드 영역 */
-.bb-board-area{position:relative;display:flex;justify-content:center}
-.bb-board-wrap{perspective:1400px;perspective-origin:50% 8%;display:flex;justify-content:center;padding-bottom:80px;overflow:visible;flex-shrink:0}
-.bb-board{display:block;transform:rotateX(42deg);transform-origin:center bottom;box-shadow:0 100px 160px rgba(0,0,0,.9),0 50px 80px rgba(0,0,0,.6),0 20px 40px rgba(0,0,0,.4);border-radius:14px;overflow:visible;will-change:transform;max-width:720px;width:100%}
-/* 주사위 오버레이 버튼 */
-#bb-dice-overlay{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);z-index:20;pointer-events:auto}
-.bb-big-dice-btn{display:flex;flex-direction:column;align-items:center;background:linear-gradient(135deg,#38d9a9,#20b88a);border:none;border-radius:18px;color:#06140f;font-family:inherit;font-weight:800;padding:14px 28px;cursor:pointer;box-shadow:0 8px 28px rgba(56,217,169,.55),0 3px 10px rgba(0,0,0,.4);animation:bbDicePulse 1.6s ease-in-out infinite;touch-action:manipulation;letter-spacing:.3px}
-.bb-big-dice-btn:hover{transform:scale(1.06)!important;animation:none;box-shadow:0 12px 36px rgba(56,217,169,.7)}
-.bb-big-dice-btn:active{transform:scale(0.95)!important}
-@keyframes bbDicePulse{0%,100%{box-shadow:0 8px 28px rgba(56,217,169,.55),0 3px 10px rgba(0,0,0,.4)}50%{box-shadow:0 10px 40px rgba(56,217,169,.85),0 4px 14px rgba(0,0,0,.5)}}
-/* 하단 행 */
-.bb-bottom-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;align-items:flex-start}
+#bb-money-bar{display:flex;gap:6px;overflow-x:auto;padding:4px 0 6px;flex-shrink:0;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+#bb-money-bar::-webkit-scrollbar{display:none}
+.bb-mcard{display:flex;align-items:center;gap:6px;padding:5px 8px;background:var(--card);border:2px solid var(--border);border-radius:8px;flex-shrink:0;min-width:88px;transition:border-color .2s,box-shadow .2s}
+.bb-mcard-cur{border-color:var(--accent)!important;box-shadow:0 0 10px rgba(56,217,169,.3)}
+/* 상단 액션 */
+#bb-top-actions{flex-shrink:0;margin-bottom:4px}
+.bb-action-box{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 12px;display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:0}
+.bb-jail-box{border-color:rgba(255,107,107,.3)!important}
+.bb-buy-box{border-color:rgba(56,217,169,.3)!important}
+.bb-card-box{background:linear-gradient(135deg,rgba(56,217,169,.08),rgba(77,171,247,.05))!important;border-color:rgba(56,217,169,.3)!important;flex-direction:column;align-items:stretch!important}
+.bb-action-row{display:flex;gap:8px;padding:4px 0}
+.bb-waiting-row{font-size:10px;color:var(--muted);padding:4px 2px}
+.bb-build-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(27,45,79,.6)}
+/* 게임 로그 (컴팩트 한 줄 스트립) */
+.bb-log-strip{flex-shrink:0;font-size:9px;line-height:1.5;max-height:46px;overflow-y:auto;background:var(--card);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--muted);margin-top:4px;scrollbar-width:none}
+.bb-log-strip::-webkit-scrollbar{display:none}
+/* 보드 영역 — 남은 공간 모두 사용, 스크롤 없음 */
+.bb-board-area{display:flex;justify-content:center;align-items:flex-start;flex:1;min-height:0;overflow:hidden}
+.bb-board-wrap{display:flex;justify-content:center;align-items:flex-start;width:100%;height:100%;max-width:720px}
+.bb-board{display:block;border-radius:14px;box-shadow:0 14px 50px rgba(0,0,0,.5),0 6px 20px rgba(0,0,0,.35);width:100%;overflow:hidden}
+/* 하위 호환 (이전 오버레이 등) */
+.bb-bottom-row{display:none}
+#bb-dice-overlay{display:none}
+.bb-big-dice-btn{display:none}
+.bb-bankrupt{opacity:.45;filter:grayscale(.8)}
 .bb-token{width:10px;height:10px;border-radius:50%;border:1px solid rgba(255,255,255,.3);flex-shrink:0}
 .bb-pcard{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:7px 8px;flex:1;min-width:90px;max-width:140px}
-.bb-bankrupt{opacity:.45;filter:grayscale(.8)}
-.bb-action-box{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px;text-align:center}
-.bb-card-box{background:linear-gradient(135deg,rgba(56,217,169,.08),rgba(77,171,247,.05))!important;border-color:rgba(56,217,169,.3)!important}
-.bb-build-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(27,45,79,.6)}
 
 /* TYPING */
 .typing-order{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
@@ -287,17 +293,41 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--text);
   .bnum-btn{width:32px!important;height:32px!important}
   .bsetup-cell{width:44px!important;height:44px!important;font-size:13px!important}
   .bsetup-num{width:34px!important;height:34px!important;font-size:11px!important}
-  .bb-board{transform:rotateX(22deg)!important;max-width:calc(100vw - 16px)!important}
-  .bb-board-wrap{padding-bottom:36px!important;perspective:900px!important}
-  #bb-dice-overlay{bottom:22px}
-  .bb-big-dice-btn{padding:10px 20px}
-  .bb-bottom-row{flex-direction:column}
-  .bb-mcard{min-width:90px;padding:6px 8px}
-  /* 모바일에서만 게임 카드 가로 스크롤 */
-  .gcards{display:flex;overflow-x:auto;padding-bottom:8px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
-  .gcards::-webkit-scrollbar{height:4px}.gcards::-webkit-scrollbar-track{background:var(--bg)}.gcards::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
-  .gcard{flex-shrink:0;width:140px;scroll-snap-align:start}
+  /* 부루마블 모바일 — 평면 표시, 스크롤 없음 */
+  .bb-board{border-radius:10px}
+  .bb-board-wrap{max-width:calc(100vw - 16px)!important}
+  .bb-mcard{min-width:80px;padding:4px 6px;gap:4px;border-radius:7px}
+  #bb-money-bar{gap:4px;padding:3px 0 5px}
+  .bb-action-box{padding:6px 10px;gap:6px}
+  /* ── 게임 카드: 3행 × 가로 드래그 그리드 ── */
+  .gcards{
+    display:grid;
+    grid-template-rows:repeat(3,auto);
+    grid-auto-flow:column;
+    grid-auto-columns:112px;
+    gap:8px;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    scroll-snap-type:x mandatory;
+    scrollbar-width:none;
+    padding:2px 2px 12px;
+    margin-bottom:0;
+  }
+  .gcards::-webkit-scrollbar{display:none}
+  .gcard{
+    width:112px;
+    scroll-snap-align:start;
+    padding:10px 10px 8px;
+  }
+  .gcard .gimg{width:44px!important;height:44px!important;margin-bottom:6px!important}
+  .gcard .gname{font-size:10px!important}
 }
+
+/* 게임 카드 스크롤 인디케이터 (모바일) */
+.gcards-dots{display:none;justify-content:center;gap:5px;margin-top:6px;margin-bottom:4px}
+.gcards-dot{width:6px;height:6px;border-radius:50%;background:var(--border);transition:all .2s;cursor:pointer}
+.gcards-dot.active{width:18px;border-radius:3px;background:var(--accent)}
+@media(max-width:768px){.gcards-dots{display:flex}}
 
 /* ======= TRENDY UI OVERHAUL ======= */
 /* 게임 카드 */

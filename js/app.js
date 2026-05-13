@@ -31,6 +31,49 @@ function showDisconnectBanner(name) {
 }
 
 // =========================================================
+// 게임 카드 모바일 스크롤 인디케이터
+// =========================================================
+(function initGcardsIndicator(){
+  // DOMContentLoaded 이후에 초기화
+  window.addEventListener('DOMContentLoaded', ()=>{
+    const cards = document.querySelector('.gcards');
+    const dotsEl = document.getElementById('gcards-dots');
+    if(!cards || !dotsEl) return;
+    if(window.innerWidth > 768) return; // 모바일만
+
+    // 열 수 계산 (게임 개수 / 3행)
+    const totalCards = cards.querySelectorAll('.gcard').length;
+    const cols = Math.ceil(totalCards / 3);
+
+    // 점 생성
+    dotsEl.innerHTML = Array.from({length:cols},(_,i)=>
+      `<div class="gcards-dot${i===0?' active':''}" onclick="scrollGcardsTo(${i})"></div>`
+    ).join('');
+
+    // 스크롤 → 현재 열 감지
+    let ticking = false;
+    cards.addEventListener('scroll', ()=>{
+      if(ticking) return; ticking = true;
+      requestAnimationFrame(()=>{
+        const colW = cards.scrollWidth / cols;
+        const curCol = Math.round(cards.scrollLeft / colW);
+        dotsEl.querySelectorAll('.gcards-dot').forEach((d,i)=>d.classList.toggle('active', i===curCol));
+        ticking = false;
+      });
+    }, {passive:true});
+  });
+})();
+
+function scrollGcardsTo(colIdx){
+  const cards = document.querySelector('.gcards');
+  if(!cards) return;
+  const totalCards = cards.querySelectorAll('.gcard').length;
+  const cols = Math.ceil(totalCards / 3);
+  const colW = cards.scrollWidth / cols;
+  cards.scrollTo({left: colIdx * colW, behavior:'smooth'});
+}
+
+// =========================================================
 // WINNER MODAL
 // =========================================================
 function showWinnerModal(title, sub=''){

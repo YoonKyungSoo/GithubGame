@@ -224,8 +224,7 @@ function renderBoard(s) {
 
   renderBBGrid(s);
   renderBBMoneyBar(s);
-  renderBBDiceOverlay(s);
-  renderBBActions(s);
+  renderBBTopActions(s);
   renderBBLog(s);
 
   const we = q('board-win');
@@ -245,7 +244,7 @@ function renderBBGrid(s) {
   const bd = q('bb-board');
   if(!bd) return;
   const Z = BB_SZ, C = BB_COR;
-  let o = `<svg viewBox="0 0 ${Z} ${Z}" xmlns="http://www.w3.org/2000/svg" style="display:block;width:${Z}px;height:${Z}px;max-width:100%">`;
+  let o = `<svg viewBox="0 0 ${Z} ${Z}" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;max-width:${Z}px;height:auto">`;
   o += `<defs>
     <linearGradient id="bbWood" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#7b4f2a"/>
@@ -298,6 +297,22 @@ function bbSVGCenter(s, cx, cy, cs) {
     o+=`<text x="${tx}" y="${ty-26}" text-anchor="middle" font-size="72">🗺️</text>`;
     o+=`<text x="${tx}" y="${ty+36}" text-anchor="middle" font-size="26" fill="#d4edda" font-weight="bold" font-family="'Courier New',monospace" letter-spacing="5">부루마블</text>`;
     o+=`<text x="${tx}" y="${ty+58}" text-anchor="middle" font-size="12" fill="rgba(200,240,210,0.45)" font-family="'Courier New',monospace" letter-spacing="3">BOARD GAME</text>`;
+  }
+  // ── 주사위 버튼 (SVG 중앙 하단 / 내 차례 + rolling + 감옥 아님) ──
+  const _cu = s.activePlayers?.[s.turnIdx];
+  const _showDice = !s.ended && s.phase==='rolling' &&
+                    typeof myUid!=='undefined' && _cu===myUid &&
+                    typeof isActivePl==='function' && isActivePl() &&
+                    !s.jail?.[myUid]?.inJail;
+  if(_showDice) {
+    const bW=220, bH=70, bx=tx-bW/2, by=cy+cs-bH-18;
+    o += `<g onclick="bbDoRoll()" style="cursor:pointer" role="button">
+      <rect x="${bx}" y="${by}" width="${bW}" height="${bH}" rx="18" fill="#38d9a9" filter="url(#bbShadow)"/>
+      <rect x="${bx+2}" y="${by+2}" width="${bW-4}" height="${bH-4}" rx="16" fill="none" stroke="rgba(255,255,255,0.38)" stroke-width="1.5"/>
+      ${bbDiceSVG(6, bx+10, by+8, 54)}
+      <text x="${tx+26}" y="${by+29}" text-anchor="middle" font-size="19" fill="#04110c" font-weight="900" font-family="'Courier New',monospace">🎲 주사위</text>
+      <text x="${tx+26}" y="${by+51}" text-anchor="middle" font-size="14" fill="#04110c" font-weight="700" font-family="'Courier New',monospace">굴리기!</text>
+    </g>`;
   }
   return o;
 }
@@ -532,23 +547,72 @@ function renderBBMoneyBar(s) {
   }).join('');
 }
 
-// ─── 렌더: 주사위 오버레이 ────────────────────────────────────────────────────
+// ─── 렌더: 상단 액션 (구매 / 카드 / 감옥 / 건설) ──────────────────────────────
 
-function renderBBDiceOverlay(s) {
-  const el = q('bb-dice-overlay');
+function renderBBTopActions(s) {
+  const el = q('bb-top-actions');
   if(!el) return;
-  const curUid = s.activePlayers?.[s.turnIdx];
-  const isMyTurn = curUid === myUid && isActivePl() && !s.ended;
-  if(s.phase === 'rolling' && isMyTurn && !s.jail?.[myUid]?.inJail) {
-    el.innerHTML = `<button class="bb-big-dice-btn" onclick="bbDoRoll()">
-      <svg width="48" height="48" viewBox="0 0 60 60" style="margin-bottom:4px;display:block">
-        <rect x="1" y="1" width="58" height="58" rx="9" fill="white" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
-        <circle cx="18" cy="18" r="5.5" fill="#1a1a1a"/><circle cx="42" cy="42" r="5.5" fill="#1a1a1a"/>
-        <circle cx="42" cy="18" r="5.5" fill="#1a1a1a"/><circle cx="18" cy="42" r="5.5" fill="#1a1a1a"/>
-        <circle cx="18" cy="30" r="5.5" fill="#1a1a1a"/><circle cx="42" cy="30" r="5.5" fill="#1a1a1a"/>
-      </svg>
-      <span style="display:block;font-size:14px;font-weight:bold">🎲 주사위 굴리기</span>
-    </button>`;
+
+  const curUid   = s.activePlayers?.[s.turnIdx];
+  const isMyTurn = curUid === myUid && isActivePl();
+
+  if(s.ended) { el.innerHTML=''; return; }
+
+  if(s.phase === 'rolling' && isMyTurn) {
+    const myJail   = s.jail?.[myUid];
+    const buildable = bbGetBuildable(s);
+
+    if(myJail?.inJail) {
+      // 감옥: 납부/면제권/더블 버튼을 상단에 표시
+      const canPay  = (s.money?.[myUid]||0) >= 500000;
+      const hasCard = s.jailCard?.[myUid];
+      el.innerHTML = `<div class="bb-action-box bb-jail-box">
+        <span style="font-size:12px;color:var(--red);font-weight:bold;margin-right:8px">🏝️ 무인도 감금 (${myJail.turnsLeft}턴)</span>
+        ${canPay  ? `<button class="btn btn-danger"     style="font-size:11px;padding:4px 10px" onclick="bbJailPay()">💸 50만 납부</button>` : ''}
+        ${hasCard ? `<button class="btn btn-secondary"  style="font-size:11px;padding:4px 10px" onclick="bbJailCard()">🔒 면제권 사용</button>` : ''}
+        <button class="btn btn-primary" style="font-size:11px;padding:4px 10px" onclick="bbDoRoll()">🎲 더블로 탈출</button>
+        ${buildable.length ? `<button class="btn btn-secondary" style="font-size:11px;padding:4px 10px" onclick="bbToggleBuild()">🏗️ 건물</button>` : ''}
+      </div>
+      <div id="bb-build-panel" style="display:none;margin-top:6px"></div>`;
+    } else {
+      // 일반 차례: 주사위는 SVG 안에 있으므로 건설 버튼만
+      el.innerHTML = buildable.length
+        ? `<div class="bb-action-row">
+             <button class="btn btn-secondary" style="font-size:11px;padding:4px 12px" onclick="bbToggleBuild()">🏗️ 건물 건설</button>
+           </div>
+           <div id="bb-build-panel" style="display:none;margin-top:6px"></div>`
+        : `<div id="bb-build-panel" style="display:none"></div>`;
+    }
+
+  } else if(s.phase === 'buying' && isMyTurn) {
+    const sp   = BB_SP[s.pendingPos];
+    const cost = sp?.t==='airport' ? 400000 : (sp?.buy||0)*10000;
+    const canBuy = (s.money?.[myUid]||0) >= cost;
+    el.innerHTML = `<div class="bb-action-box bb-buy-box">
+      <span style="font-size:14px;font-weight:bold;margin-right:8px">${esc(sp?.nm||'')} 구매?</span>
+      <span style="font-size:11px;color:var(--muted);margin-right:10px">가격 ${BB_W(cost)}</span>
+      ${canBuy ? `<button class="btn btn-primary" style="font-size:12px;padding:5px 14px" onclick="bbBuy()">✅ 구매</button>` : `<span style="font-size:11px;color:var(--red);margin-right:8px">잔액 부족</span>`}
+      <button class="btn btn-secondary" style="font-size:12px;padding:5px 12px" onclick="bbPass()">❌ 패스</button>
+    </div>`;
+
+  } else if(s.phase === 'card' && isMyTurn) {
+    const card = BB_CARDS.find(c => c.id === s.pendingCard);
+    if(!card) { bbApplyCard(); return; }
+    const needPick = card.eff === 'teleport' || card.eff === 'freebuild';
+    el.innerHTML = `<div class="bb-action-box bb-card-box">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span style="font-size:24px">🔑</span>
+        <span style="font-size:12px;font-weight:bold;flex:1;min-width:0">${esc(card.txt)}</span>
+        ${!needPick ? `<button class="btn btn-primary" style="font-size:12px;padding:5px 14px" onclick="bbApplyCard()">확인</button>` : ''}
+      </div>
+      ${card.eff==='teleport'  ? `<div style="margin-top:6px;font-size:10px;color:var(--muted);margin-bottom:4px">이동할 칸 선택</div><div id="bb-tele-grid"></div>` : ''}
+      ${card.eff==='freebuild' ? `<div style="margin-top:6px;font-size:10px;color:var(--muted);margin-bottom:4px">건설할 도시 선택</div><div id="bb-fb-list"></div>` : ''}
+    </div>`;
+    if(card.eff==='teleport')  setTimeout(()=>renderBBTeleGrid(s), 0);
+    if(card.eff==='freebuild') setTimeout(()=>renderBBFBList(s), 0);
+
+  } else if(!isMyTurn && !s.ended) {
+    el.innerHTML = `<div class="bb-waiting-row">${esc(players[curUid]?.name||'?')} 차례 대기 중...</div>`;
   } else {
     el.innerHTML = '';
   }

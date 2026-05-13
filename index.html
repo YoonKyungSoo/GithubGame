@@ -423,6 +423,8 @@
           </div>
 
         </div>
+        <!-- 모바일 스크롤 인디케이터 -->
+        <div id="gcards-dots" class="gcards-dots"></div>
         <div style="margin-top:10px">
           <button class="btn btn-primary" id="start-btn" onclick="startEntryPhase()" disabled>🎮 게임 방 생성</button>
         </div>
@@ -635,31 +637,27 @@
           <button class="btn btn-secondary" onclick="backToLobby()">나가기</button>
         </div>
 
-        <!-- 플레이어 자본금 바 (상단 가로 스크롤) -->
+        <!-- 맨 위: 구매 / 카드 / 감옥 액션 (내 차례일 때만 표시) -->
+        <div id="bb-top-actions"></div>
+
+        <!-- 플레이어 자본금 바 -->
         <div id="bb-money-bar"></div>
 
-        <!-- 보드 + 주사위 오버레이 -->
+        <!-- 게임판 (주사위 버튼은 SVG 중앙에 내장됨) -->
         <div class="bb-board-area">
           <div class="bb-board-wrap">
             <div id="bb-board" class="bb-board"></div>
           </div>
-          <!-- 주사위 / 액션 오버레이 (내 차례일 때) -->
-          <div id="bb-dice-overlay"></div>
         </div>
 
-        <!-- 하단: 구매/카드/감옥 액션 + 로그 -->
-        <div class="bb-bottom-row">
-          <div id="bb-actions" style="flex:1;min-width:220px"></div>
-          <div style="flex:0 0 180px;min-width:0">
-            <div style="font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:4px">📋 게임 로그</div>
-            <div id="bb-log" style="font-size:10px;line-height:1.7;max-height:140px;overflow-y:auto;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:8px;color:var(--muted)"></div>
-          </div>
-        </div>
+        <!-- 게임 로그 (하단 한 줄 컴팩트) -->
+        <div id="bb-log" class="bb-log-strip"></div>
 
-        <!-- 건설 패널 (별도 행) -->
+        <!-- 숨김 요소 (하위 호환) -->
+        <div id="bb-actions" style="display:none"></div>
         <div id="bb-players" style="display:none"></div>
 
-        <div id="board-win" class="winner-banner" style="display:none;margin-top:14px">
+        <div id="board-win" class="winner-banner" style="display:none;margin-top:8px">
           <div class="wtext" id="board-win-text"></div>
         </div>
       </div>
